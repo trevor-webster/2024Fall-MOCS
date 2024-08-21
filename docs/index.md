@@ -102,33 +102,33 @@ toc: false
   <a href="https://mocs.observablehq.com/2024FALL-MOCS/getting-started/" target="_blank">First lesson<span style="display: inline-block; margin-left: 0.25rem;">↗︎</span></a>
 </div>
 
-<div class="gallery grid grid-cols-2" style="grid-auto-rows;">
-    <a href="https://jstonge.observablehq.cloud/hello-research-groups/grontology" target="_blank">
+<div class="gallery grid grid-cols-4" style="grid-auto-rows;">
+    <a href="https://mocs.observablehq.cloud/mocs-fall-2024/odes/getting-started" target="_blank">
     <picture>
-        <source srcset="./assets/defining.webp" media="(prefers-color-scheme: dark)">
-        <img src="./assets/defining.webp">
+        <source srcset="./assets/lotka-volterra.webp" media="(prefers-color-scheme: dark)">
+        <img src="./assets/lotka-volterra.webp">
     </picture>
     <div class="small arrow">💡 ODEs</div>
     </a>
-    <a href="https://jstonge.observablehq.cloud/hello-research-groups/grontology" target="_blank">
+    <a href="https://mocs.observablehq.cloud/mocs-fall-2024/cellular-automata/getting-started" target="_blank">
     <picture>
-        <source srcset="./assets/defining.webp" media="(prefers-color-scheme: dark)">
-        <img src="./assets/defining.webp">
+        <source srcset="./assets/ElementaryCARule030_700.webp" media="(prefers-color-scheme: dark)">
+        <img src="./assets/ElementaryCARule030_700.webp">
     </picture>
     <div class="small arrow">💡 Cellular automata</div>
     </a>
-    <a href="https://jstonge.observablehq.cloud/hello-research-groups/grontology" target="_blank">
+    <a href="https://mocs.observablehq.cloud/mocs-fall-2024/networks/getting-started" target="_blank">
     <picture>
-        <source srcset="./assets/defining.webp" media="(prefers-color-scheme: dark)">
-        <img src="./assets/defining.webp">
+        <source srcset="./assets/menczer.webp" media="(prefers-color-scheme: dark)">
+        <img src="./assets/menczer.webp">
     </picture>
     <div class="small arrow">💡 Networks</div>
     </a>
-    <a href="https://jstonge.observablehq.cloud/hello-research-groups/grontology" target="_blank">
+    <a href="https://mocs.observablehq.cloud/mocs-fall-2024/abms/getting-started" target="_blank">
     <picture>
-        <source srcset="./assets/defining.webp" media="(prefers-color-scheme: dark)">
-        <img src="./assets/defining.webp">
+        <source srcset="./assets/abms.webp" media="(prefers-color-scheme: dark)">
+        <img src="./assets/abms.webp">
     </picture>
-    <div class="small arrow">💡 ABMs</div>
+    <div class="small arrow">💡 Agent-based modeling</div>
     </a>
 </div>

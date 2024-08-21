@@ -36,6 +36,8 @@ export default {
         { name: "Getting started", path: "cellular-automata/getting-started" },
       ]
     },
+    { name: "Schedule & Assignments", path: "/schedule" },
+    { name: "Extra ressources", path: "/extra-resources" },
     { name: "References", path: "/refs" },
   ],
   // Content to add to the head of the page, e.g. for a favicon:
