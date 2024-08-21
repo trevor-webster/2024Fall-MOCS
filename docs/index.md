@@ -97,9 +97,9 @@ toc: false
 </style>
 
 <div class="hero">
-  <h1>Modeling of Complex Systems</h1>
+  <h1>Modeling Complex Systems</h1>
   <h2>Welcome to MOCS Fall 2024! </h2>
-  <a href="https://mocs.observablehq.com/2024FALL-MOCS/getting-started/" target="_blank">First lesson<span style="display: inline-block; margin-left: 0.25rem;">↗︎</span></a>
+  <a href="https://mocs.observablehq.cloud/mocs-fall-2024/getting-started" target="_blank">First lesson<span style="display: inline-block; margin-left: 0.25rem;">↗︎</span></a>
 </div>
 
 <div class="gallery grid grid-cols-4" style="grid-auto-rows;">

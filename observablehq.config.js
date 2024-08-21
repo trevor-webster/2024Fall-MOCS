@@ -37,11 +37,12 @@ export default {
       ]
     },
     { name: "Schedule & Assignments", path: "/schedule" },
-    { name: "Extra ressources", path: "/extra-resources" },
+    { name: "Extra ressources", path: "/extra-ressources" },
     { name: "References", path: "/refs" },
   ],
   // Content to add to the head of the page, e.g. for a favicon:
   head: '<link rel="icon" href="observable.png" type="image/png" sizes="32x32">',
+  footer: `<a href="https://github.com/jstonge/2024Fall-MOCS">view source</a>`,
   root: "docs", // path to the source root for preview
   output: "dist", // path to the output root for build
   search: true, // activate search

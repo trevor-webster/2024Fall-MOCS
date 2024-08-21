@@ -12,5 +12,6 @@
 
 ## Introduction with more maths
 
- - [Nonlinear Dynamics and Chaos 3rd ed (Strogatz 2024)](https://www.routledge.com/Nonlinear-Dynamics-and-Chaos-With-Applications-to-Physics-Biology-Chemistry-and-Engineering/Strogatz/p/book/9780367026509?srsltid=AfmBOoqrabgNKvlTDyAQiCCuPgrnIIKeCtczqcLkb9AFEFmdWw72l-fA)
+   - [Nonlinear Dynamics and Chaos 3rd ed (Strogatz 2024)](https://www.routledge.com/Nonlinear-Dynamics-and-Chaos-With-Applications-to-Physics-Biology-Chemistry-and-Engineering/Strogatz/p/book/9780367026509?srsltid=AfmBOoqrabgNKvlTDyAQiCCuPgrnIIKeCtczqcLkb9AFEFmdWw72l-fA)
+   - [Primer of Ecological Theory 1st Edition (Roughgarden 1998)](https://books.google.ca/books/about/Primer_of_Ecological_Theory.html?id=PmHwAAAAMAAJ&source=kp_book_description&redir_esc=y)
 
