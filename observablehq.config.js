@@ -2,30 +2,46 @@
 export default {
   // The project’s title; used in the sidebar and webpage titles.
   title: "MOCS Fall 2024",
-
-  // The pages and sections in the sidebar. If you don’t specify this option,
-  // all pages will be listed in alphabetical order. Listing pages explicitly
-  // lets you organize them into sections and have unlisted pages.
-  // pages: [
-  //   {
-  //     name: "Examples",
-  //     pages: [
-  //       {name: "Dashboard", path: "/example-dashboard"},
-  //       {name: "Report", path: "/example-report"}
-  //     ]
-  //   }
-  // ],
-
+  pages: [
+    { name: "Getting Started", path: "/getting-started" },
+    {
+      name: "Agent-based modeling",
+      open: false,
+      pager: "abms",
+      pages: [
+        { name: "Getting started", path: "abms/getting-started" },
+      ]
+    },
+    {
+      name: "Ordinary Differential Equations",
+      open: false,
+      pager: "odes",
+      pages: [
+        { name: "Getting started", path: "odes/getting-started" },
+      ]
+    },
+    {
+      name: "Networks",
+      open: false,
+      pager: "networks",
+      pages: [
+        { name: "Getting started", path: "networks/getting-started" },
+      ]
+    },
+    {
+      name: "Cellular Automata",
+      open: false,
+      pager: "cellular-automata",
+      pages: [
+        { name: "Getting started", path: "cellular-automata/getting-started" },
+      ]
+    },
+    { name: "References", path: "/refs" },
+  ],
   // Content to add to the head of the page, e.g. for a favicon:
   head: '<link rel="icon" href="observable.png" type="image/png" sizes="32x32">',
-
-  // Some additional configuration options and their defaults:
-  // theme: "default", // try "light", "dark", "slate", etc.
-  // header: "", // what to show in the header (HTML)
-  // footer: "Built with Observable.", // what to show in the footer (HTML)
-  // toc: true, // whether to show the table of contents
-  // pager: true, // whether to show previous & next links in the footer
-  // root: "docs", // path to the source root for preview
-  // output: "dist", // path to the output root for build
-  // search: true, // activate search
+  root: "docs", // path to the source root for preview
+  output: "dist", // path to the output root for build
+  search: true, // activate search
+  style: "style.css"
 };
