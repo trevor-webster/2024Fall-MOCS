@@ -1,4 +1,3 @@
-
 # Getting started
 
 Welcome to MOCS Fall 2024. This is the support website where we will share most of the content for the class, except for the homeworks. Homeworks will be available on Brightspace.
@@ -59,6 +58,19 @@ In this class, we will seek to understand his definition. But at the end, you sh
 ### The interactivity of complex systems
 
  - [Complexity Explorables](https://www.complexity-explorables.org/)
+
+### Readings
+
+For the class, we will mostly use Hiroki Sayama's [Introduction to the Modeling and Analysis of Complex Systems](https://math.libretexts.org/Bookshelves/Scientific_Computing_Simulations_and_Modeling/Introduction_to_the_Modeling_and_Analysis_of_Complex_Systems_(Sayama)). It is free and online. It has python code. 
+
+But I also think that the following two books could have done as much a good job:
+    
+- [A First Course in Network Science (Menczer 2020)](https://www.cambridge.org/highereducation/books/first-course-in-network-science/EE22722F27519D8BB1443C7225C57BAF#overview)
+- [ Modeling Social Behavior: Mathematical and Agent-Based Models of Social Dynamics and Cultural Evolution (Smaldino 2023)](https://press.princeton.edu/books/paperback/9780691224145/modeling-social-behavior?srsltid=AfmBOorePduR0U08FlRogK-f7wGabiko62RAu8iX6knapk_xWLGUw9jE)
+
+They also cover some of the same materials. They are more biased towards social science examples if you enjoy that, such that disinformation and cultural evolution.
+
+On top of the textbook, we will read more in-depth articles as well. The (current) reading list can be found in the [schedule section](./schedule). The reading list might change based on discussion in class.
 
 ## About ChatGPT
 

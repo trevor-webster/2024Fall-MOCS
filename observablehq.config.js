@@ -4,6 +4,7 @@ export default {
   title: "MOCS Fall 2024",
   pages: [
     { name: "Getting Started", path: "/getting-started" },
+    { name: "Week 1: Why models", path: "/W1L1-why-models" },
     {
       name: "Agent-based modeling",
       open: false,
@@ -36,13 +37,13 @@ export default {
         { name: "Getting started", path: "cellular-automata/getting-started" },
       ]
     },
-    { name: "Schedule & Assignments", path: "/schedule" },
-    { name: "Extra ressources", path: "/extra-ressources" },
+    { name: "Table of Contents", path: "/toc" },
+    { name: "Computational ressources", path: "/comp-ressources" },
     { name: "References", path: "/refs" },
   ],
   // Content to add to the head of the page, e.g. for a favicon:
   head: '<link rel="icon" href="observable.png" type="image/png" sizes="32x32">',
-  footer: `<a href="https://github.com/jstonge/2024Fall-MOCS">view source</a>`,
+  footer: ({path}) => `<a href="https://github.com/jstonge/2024Fall-MOCS/blob/main/docs${path}.md?plain=1">view source</a>`,
   root: "docs", // path to the source root for preview
   output: "dist", // path to the output root for build
   search: true, // activate search
