@@ -7,37 +7,45 @@ export default {
     { name: "Week 1: Why models", path: "/W1-why-models" },
     { name: "Week 2: Modeling", path: "/W2-modeling" },
     {
-      name: "Ordinary Differential Equations",
+      name: "Dynamics",
       open: false,
-      pager: "M1-odes",
+      pager: "M1-Dynamics",
       pages: [
-        { name: "Getting started", path: "M1-odes/getting-started" },
-        { name: "Week 3: Compartments", path: "M1-odes/W3-compartments" },
+        { name: "Getting started", path: "M1-Dynamics/getting-started" },
+        { name: "Week 3: Compartments", path: "M1-Dynamics/W3-compartments" },
       ]
     },
     {
-      name: "Cellular Automata",
+      name: "Structure, part 1",
       open: false,
-      pager: "M2-cellular-automata",
+      pager: "M2-Structure-part-1",
       pages: [
-        { name: "Getting started", path: "M2-cellular-automata/getting-started" },
-        { name: "A game of life", path: "M2-cellular-automata/W6-game-of-life" },
+        { name: "Getting started", path: "M2-Structure-part-1/getting-started" },
+        { name: "A game of life", path: "M2-Structure-part-1/W6-game-of-life" },
       ]
     },
     {
-      name: "Agent-based modeling",
+      name: "Structure, part 2",
       open: false,
-      pager: "M3-abms",
+      pager: "M3-Structure-part-2",
       pages: [
-        { name: "Getting started", path: "M3-abms/getting-started" },
+        { name: "Getting started", path: "M3-Structure-part-2/getting-started" },
       ]
     },
     {
-      name: "Networks",
+      name: "Dynamics & Structure",
       open: false,
-      pager: "M4-networks",
+      pager: "M4-Dynamics-and-Structure",
       pages: [
-        { name: "Getting started", path: "M4-networks/getting-started" },
+        { name: "Getting started", path: "M4-Dynamics-and-Structure/getting-started" },
+      ]
+    },
+    {
+      name: "Model Theory (redux)",
+      open: false,
+      pager: "M0-Model-theory-redux",
+      pages: [
+        { name: "Getting started", path: "M0-Model-theory-redux/getting-started" },
       ]
     },
     { name: "Table of Contents", path: "/toc" },
