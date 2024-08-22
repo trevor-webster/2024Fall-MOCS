@@ -6,6 +6,7 @@ Differential equations are the foundation of modern science. In this class, we'l
 ### Courses
 
  - [Liz Bradley's intro to ODES](https://www.youtube.com/watch?v=aZRqW3XZ_6U&list=PLF0b3ThojznQ9xUDm-EbgFAnzdbeDVuSz&index=24)
+ - [Introduction to Computational Thinking](https://computationalthinking.mit.edu/Fall24/): see modules on epidemic and climate modeling.
 
 ### Introductory videos
 

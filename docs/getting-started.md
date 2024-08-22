@@ -1,6 +1,6 @@
 # Getting started
 
-Welcome to MOCS Fall 2024. This is the support website where we will share most of the content for the class, except for the homeworks. Homeworks will be available on Brightspace.
+Welcome to MOCS Fall 2024. This is the support website where we'll share most of the class content, excluding homework assignments. Homeworks will be available on [Brightspace](https://brightspace.uvm.edu/d2l/login).
 
 How is this website organized?
 
@@ -34,7 +34,7 @@ How is this website organized?
         </picture>
         <div class="small arrow">Prianka (teaching assistant)</div>
     </a>
-    <a href="https://www.linkedin.com/in/prianka-bhattacharjee-bb7a69109/" target="_blank">
+    <a href="http://laurenthebertdufresne.github.io/" target="_blank">
         <picture>
             <source srcset="./assets/lhd.webp" media="(prefers-color-scheme: dark)">
             <img style="opacity: 0.3;" src="./assets/lhd.webp">
@@ -97,16 +97,17 @@ What is fun about ChatGPT is that it gives likable answers that seem right but a
         background: #eee;
         padding: 1em;
         border-radius: 1em;
-        }
-        .quote figcaption,
-        .quote blockquote {
+    }
+    
+    .quote figcaption,
+    .quote blockquote {
         margin: 1em;
     }
 
     /* Gallery */
 
     .gallery {
-        max-width: calc(870px + 2rem);
+        max-width: calc(1200px + 2rem);
     }
 
     .gallery a {
@@ -117,20 +118,19 @@ What is fun about ChatGPT is that it gives likable answers that seem right but a
     }
 
     .gallery img {
-    width: 100%; /* Ensures the image takes up the full width of the container */
-    height: 200px; /* Sets a fixed height for all images */
-    object-fit: cover; /* Maintains aspect ratio while ensuring the image covers the entire area */
-    border-radius: 8px;
-    box-shadow: 0 0 0 0.75px rgba(128, 128, 128, 0.2), 0 6px 12px 0 rgba(0, 0, 0, 0.2);
-    aspect-ratio: 2500 / 1900; /* Can be removed if you're using fixed dimensions */
-}
+        width: 100%; /* Ensures the image takes up the full width of the container */
+        height: 200px; /* Sets a fixed height for all images */
+        object-fit: cover; /* Maintains aspect ratio while ensuring the image covers the entire area */
+        border-radius: 8px;
+        box-shadow: 0 0 0 0.75px rgba(128, 128, 128, 0.2), 0 6px 12px 0 rgba(0, 0, 0, 0.2);
+        aspect-ratio: 2500 / 1900; /* Can be removed if you're using fixed dimensions */
+    }
 
 @media (prefers-color-scheme: dark) {
     .gallery img {
         box-shadow: 0 0 0 0.75px rgba(128, 128, 128, 0.2), 0 6px 12px 0 rgba(0, 0, 0, 0.4);
+        }
     }
-}
-
     .gallery a:not(:hover, :focus) {
         color: var(--theme-foreground-muted);
     }

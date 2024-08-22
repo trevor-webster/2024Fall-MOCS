@@ -42,6 +42,7 @@ export default {
     },
     { name: "Table of Contents", path: "/toc" },
     { name: "Computational ressources", path: "/comp-ressources" },
+    { name: "Syllabus", path: "/syllabus" },
     { name: "References", path: "/refs" },
   ],
   // Content to add to the head of the page, e.g. for a favicon:
