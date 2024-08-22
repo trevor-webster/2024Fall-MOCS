@@ -5,16 +5,16 @@ Welcome to MOCS Fall 2024. This is the support website where we will share most 
 How is this website organized?
 
 - You can find a bibliography [here](./refs). 
-- You can find extra ressources for computer sciency stuff (Github, Python, Julia, etc) in [here](./extra-ressources). 
-- For each module,
+- You can find extra ressources for computer sciency stuff (Github, Python, Julia, etc) in [here](./extra-ressources). Prianka will be your guide.
+- For each module
     - We will share some introductory videos and readings on the module's getting started page.
     - We will share fun, interactive content related to the module
 
 ## Who are we?
 
-<div class="gallery grid grid-cols-3" style="grid-auto-rows;">
+<div class="gallery grid grid-cols-4" style="grid-auto-rows;">
     <a href="htttps://socks.w3.uvm.edu/socks/node/38?rnd=0.1937717982807522#giulioburgio" target="_blank">
-        <picture style="width: 65%;">
+        <picture>
             <source srcset="./assets/Giulio.webp" media="(prefers-color-scheme: dark)">
             <img src="./assets/Giulio.webp">
         </picture>
@@ -33,6 +33,13 @@ How is this website organized?
             <img src="./assets/prianka.webp">
         </picture>
         <div class="small arrow">Prianka (teaching assistant)</div>
+    </a>
+    <a href="https://www.linkedin.com/in/prianka-bhattacharjee-bb7a69109/" target="_blank">
+        <picture>
+            <source srcset="./assets/lhd.webp" media="(prefers-color-scheme: dark)">
+            <img style="opacity: 0.3;" src="./assets/lhd.webp">
+        </picture>
+        <div style="opacity: 0.3;" class="small arrow">Laurent Hébert-Dufresne (Instructor on sabbatical)</div>
     </a>
 </div>
 
@@ -54,27 +61,34 @@ Laurent Hébert-Dufresne gave the following answer to a journalist:
 
 In this class, we will seek to understand his definition. But at the end, you should have your own's answer to that question. You should be able to say if you agree or disagree with LHD's answer.
 
+Here is Laurent introducing MOCS in his own words as well:
 
-### The interactivity of complex systems
+<iframe src="https://streaming.uvm.edu/embed/49955/" width="560" height="315" frameborder="0" allowfullscreen></iframe>
 
- - [Complexity Explorables](https://www.complexity-explorables.org/)
+We will be sharing more clips like these, as Laurent does an excellent job of explaining complex systems concepts. Our role as instructors will be to help you deepen your understanding of the insights from these clips and to offer additional perspectives of our own.
 
-### Readings
+## Readings
 
-For the class, we will mostly use Hiroki Sayama's [Introduction to the Modeling and Analysis of Complex Systems](https://math.libretexts.org/Bookshelves/Scientific_Computing_Simulations_and_Modeling/Introduction_to_the_Modeling_and_Analysis_of_Complex_Systems_(Sayama)). It is free and online. It has python code. 
+For the class, we will use Hiroki Sayama's [Introduction to the Modeling and Analysis of Complex Systems](https://math.libretexts.org/Bookshelves/Scientific_Computing_Simulations_and_Modeling/Introduction_to_the_Modeling_and_Analysis_of_Complex_Systems_(Sayama)). It is free and online. It has python code. 
 
 But I also think that the following two books could have done as much a good job:
     
 - [A First Course in Network Science (Menczer 2020)](https://www.cambridge.org/highereducation/books/first-course-in-network-science/EE22722F27519D8BB1443C7225C57BAF#overview)
 - [ Modeling Social Behavior: Mathematical and Agent-Based Models of Social Dynamics and Cultural Evolution (Smaldino 2023)](https://press.princeton.edu/books/paperback/9780691224145/modeling-social-behavior?srsltid=AfmBOorePduR0U08FlRogK-f7wGabiko62RAu8iX6knapk_xWLGUw9jE)
 
-They also cover some of the same materials. They are more biased towards social science examples if you enjoy that, such that disinformation and cultural evolution.
+They cover some of the same materials. They are geared towards the social sciences, with plenty of examples of disinformation and cultural evolution.
 
-On top of the textbook, we will read more in-depth articles as well. The (current) reading list can be found in the [schedule section](./schedule). The reading list might change based on discussion in class.
+On top of the textbook, we will read in-depth articles. Each week, there will be a section called <big>`Further reading`</big> at the bottom of the page. Articles denoted with stars(*) are mandatory. They will be the basis for in-class discussions and small assignements. For instance, **next weeks readings** are
 
-## About ChatGPT
+ - [Why Model? (Epstein)](https://www.cs.unm.edu/~joel/cs4all/WhyModel.pdf)<sup>*</sup>
+ - [Models in Science (SEP; Ch.1-2)](https://plato.stanford.edu/entries/models-science/)<sup>*</sup>
+ - [How to Translate a Verbal Theory Into a Formal Model (Smaldino)](https://www2.psych.ubc.ca/~schaller/528Readings/Smaldino2020.pdf)
 
-[TODO: statement about chatGPT. How we could use the specific ways how chatGPT is wrong as a way to make better exercice.]
+We will keep an updated list for the mandatory readings in [Table of Content](./toc).
+
+<!-- ## About ChatGPT
+
+What is fun about ChatGPT is that it gives likable answers that seem right but are often wrong in nuanced ways. As part of becoming modelers, you will learn to recognize those mistakes.  -->
 
 <style>
 
@@ -103,17 +117,19 @@ On top of the textbook, we will read more in-depth articles as well. The (curren
     }
 
     .gallery img {
-        max-width: 100%;
-        border-radius: 8px;
-        box-shadow: 0 0 0 0.75px rgba(128, 128, 128, 0.2), 0 6px 12px 0 rgba(0, 0, 0, 0.2);
-        aspect-ratio: 2500 / 1900;
-    }
+    width: 100%; /* Ensures the image takes up the full width of the container */
+    height: 200px; /* Sets a fixed height for all images */
+    object-fit: cover; /* Maintains aspect ratio while ensuring the image covers the entire area */
+    border-radius: 8px;
+    box-shadow: 0 0 0 0.75px rgba(128, 128, 128, 0.2), 0 6px 12px 0 rgba(0, 0, 0, 0.2);
+    aspect-ratio: 2500 / 1900; /* Can be removed if you're using fixed dimensions */
+}
 
-    @media (prefers-color-scheme: dark) {
+@media (prefers-color-scheme: dark) {
     .gallery img {
         box-shadow: 0 0 0 0.75px rgba(128, 128, 128, 0.2), 0 6px 12px 0 rgba(0, 0, 0, 0.4);
     }
-    }
+}
 
     .gallery a:not(:hover, :focus) {
         color: var(--theme-foreground-muted);

@@ -2,8 +2,6 @@
 toc: false
 ---
 
-
-
 <div class="hero">
   <h1>Modeling Complex Systems</h1>
   <h2>Welcome to MOCS Fall 2024! </h2>

@@ -2,9 +2,11 @@
 toc: false
 ---
 
-# ODEs
+# Mathematical models
 
-Differential equations are the foundations of modern science (nothing less). They take  
+Differential equations are the foundations of modern science (nothing less).
+
+<iframe src="https://streaming.uvm.edu/embed/49956/" width="560" height="315" frameborder="0" allowfullscreen></iframe>
 
 ## Introductory content
 
