@@ -12,6 +12,7 @@ export default {
       pager: "M1-odes",
       pages: [
         { name: "Getting started", path: "M1-odes/getting-started" },
+        { name: "Week 3: Compartments", path: "M1-odes/W3-compartments" },
       ]
     },
     {

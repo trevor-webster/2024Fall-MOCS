@@ -1,14 +1,9 @@
 
 # Agent-based Modeling
 
-## Introductory content
-
 ### Courses
 
  - [Smaldino's ABM Courses](https://smaldino.com/wp/abm-courses/)
-
-
-## Fun stuff
 
 ### Introductory videos
 

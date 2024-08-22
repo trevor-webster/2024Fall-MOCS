@@ -1,22 +1,11 @@
----
-toc: false
----
-
 # Mathematical models
 
-Differential equations are the foundations of modern science (nothing less).
+Differential equations are the foundation of modern science. In this class, we'll approach the math gently, but we won't shy away from it either. In this section, we provide additional materials to help you familiarize yourself with or learn more about differential equations. Note that this section is intended to motivate you to learn about the topic. While these videos can help you gain some intuition, mathematics is fundamentally a know-how. To truly get it, you need to get your hands dirty.
 
-<iframe src="https://streaming.uvm.edu/embed/49956/" width="560" height="315" frameborder="0" allowfullscreen></iframe>
-
-## Introductory content
 
 ### Courses
 
  - [Liz Bradley's intro to ODES](https://www.youtube.com/watch?v=aZRqW3XZ_6U&list=PLF0b3ThojznQ9xUDm-EbgFAnzdbeDVuSz&index=24)
-
-## Fun stuff
-
-Note that this section is about motivating the student to learn about the topic. Intuitions might give you original insights and some understanding, but mathematics is also a know-how. You need to do the exercices.
 
 ### Introductory videos
 
@@ -30,3 +19,5 @@ Note that this section is about motivating the student to learn about the topic.
  - [Mike Bostock's Predator and Prey notebook](https://observablehq.com/@mbostock/predator-and-prey)
  - [Mark Maclure's First order, autonomous systems of ODEs notebook](https://observablehq.com/@mcmcclur/first-order-autonomous-systems-of-odes)
  - [Jo Wood's Phase Portraits](https://observablehq.com/@jwolondon/phaseportrait)
+
+ p.s. Do you have more examples? Click on 'view Source' in the top right corner of the page, and propose your changes on the Git repository by clicking the ✎ icon.
