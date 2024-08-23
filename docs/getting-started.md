@@ -1,10 +1,12 @@
 # Getting started
 
-Welcome to MOCS Fall 2024. This is the support website where we'll share most of the class content, excluding homework assignments. Homeworks will be available on [Brightspace](https://brightspace.uvm.edu/d2l/login).
+Welcome to Modeling Complex Systems (MOCS) Fall 2024! This is the support website where we'll share most of the class content, excluding homework assignments. Homeworks will be available on [Brightspace](https://brightspace.uvm.edu/d2l/login).
+
+MOCS is designed as a hybrid, graduate level introduction to computational and mathematical modeling of complex systems. This is a core course for students at [Vermont Complex Systems](https://vermontcomplexsystems.org/), but everybody are welcome. We use a breadth-first presentation of varied topics and methods, with hands-on experiences and mini-research problems with an emphasis on the relations and trade-offs between the different approaches. Undergraduates are held to the same expectations as graduate students. 
 
 How is this website organized?
 
-- You can find a bibliography [here](./refs)
+- You can find a bibliography [here](./refs
 - You can find extra ressources for computer sciency stuff (Github, Python, Julia, etc) in [here](./extra-ressources). Prianka will be your guide.
 - For each module
     - We will share some introductory videos and readings on the module's getting started page.

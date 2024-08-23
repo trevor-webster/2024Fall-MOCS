@@ -12,7 +12,7 @@
       <p>How do they encourage transdiscplinary research? How are they useful pillars to start a field? How can they be misleading? Do you remember what are the different features that came out of his examples of complex systems? How do they relate to these relationships?</p>
   </div>
   <div class="right-div reading-box">
-    <h3>📚 Reading List</h3>
+    <h3>📚 Week 2 readings</h3>
     <ul class="reading-list">
       <li><span>📖</span> <a href="https://math.libretexts.org/Bookshelves/Scientific_Computing_Simulations_and_Modeling/Introduction_to_the_Modeling_and_Analysis_of_Complex_Systems_(Sayama)/02%3A_Fundamentals_of_Modeling" target="_blank">Fundamentals of Modeling  (Ch. 2 Sayama)</a><sup>*</sup></li>
       <li><span>📖</span> <a href="https://github.com/jstonge/2024Fall-MOCS/blob/main/docs/assets/OttoDay-2007-Ch2.pdf" target="_blank">How to construct a model (Ch. 2 Otto & Day)</a></li>
