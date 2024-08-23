@@ -1,4 +1,14 @@
-## Why models
+## Introduction to modeling complex systems
+
+<div class="reading-box">
+  <h3>📚 Week 1 readings</h3>
+  <ul class="reading-list">
+    <li><span>📖</span> <a href="https://math.libretexts.org/Bookshelves/Scientific_Computing_Simulations_and_Modeling/Introduction_to_the_Modeling_and_Analysis_of_Complex_Systems_(Sayama)/01%3A_Introduction_to_Modeling_and_Analysis" target="_blank">Ch. 1 Sayama</a><sup>*</sup></li>
+    <li><span>🌐</span> <a href="https://complexityexplained.github.io/" target="_blank">What is Complexity Science?</a></li>
+    <li><span>🌀</span> <a href="https://www.complexity-explorables.org/" target="_blank">Complexity Explorables</a></li>
+    <li><span>📄</span> <a href="https://kwarc.info/teaching/TDM/Borges.pdf" target="_blank">On Exactitude in Science (short paragraph)</a><sup>*</sup></li>
+  </ul>
+</div>
 
 In this lecture, we define what are models and explain why modeling is key to understanding complex systems.
 
@@ -20,7 +30,10 @@ To clarify our definitions of models, we can examine some examples of complex sy
 
 These phenomena are at the hearth of complex systems. Were there any commonalities among the examples from the clip? One that I find intriguing is how various crowds behave in coherent ways, such as circle pits, bird flocking (fun fact: the sound made by a flock is called a murmuration), and fish bowl (or fish tornadoes?). Each of these exhibits interesting properties, such as nonseparability or emergence. But are circle pits really the same as flocking? By labeling both as emergent phenomena, are we potentially overlooking some key differences?
 
-## Further Readings
-
- - [Complexity Explorables](https://www.complexity-explorables.org/)
- - [What is Complexity Science?](https://complexityexplained.github.io/)
+<div class="callout-box">
+  <h3>Things to do by Thursday at noon</h3>
+  <ul class="checklist">
+    <li><input type="checkbox" id="task1"><label for="task1"> Quiz 1  (Multiple attempts allowed. Before attempting, read Syllabus and all the assigned readings, watch videos)</label></li>
+    <li><input type="checkbox" id="task2"><label for="task2"> Optional: Join the CSDS Slack </label></li>
+  </ul>
+</div>

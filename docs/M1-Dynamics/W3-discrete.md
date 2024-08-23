@@ -1,4 +1,4 @@
 
-# Compartment models
+# Discrete models
 
 🚧 Coming soon 🚧

@@ -67,7 +67,7 @@ Here is Laurent introducing MOCS in his own words as well:
 
 We will be sharing more clips like these, as Laurent does an excellent job of explaining complex systems concepts. Our role as instructors will be to help you deepen your understanding of the insights from these clips and to offer additional perspectives of our own.
 
-## Readings
+## Textbook(s)
 
 For the class, we will use Hiroki Sayama's [Introduction to the Modeling and Analysis of Complex Systems](https://math.libretexts.org/Bookshelves/Scientific_Computing_Simulations_and_Modeling/Introduction_to_the_Modeling_and_Analysis_of_Complex_Systems_(Sayama)). It is free and online. It has python code. 
 
@@ -76,19 +76,16 @@ But I also think that the following two books could have done as much a good job
 - [A First Course in Network Science (Menczer 2020)](https://www.cambridge.org/highereducation/books/first-course-in-network-science/EE22722F27519D8BB1443C7225C57BAF#overview)
 - [ Modeling Social Behavior: Mathematical and Agent-Based Models of Social Dynamics and Cultural Evolution (Smaldino 2023)](https://press.princeton.edu/books/paperback/9780691224145/modeling-social-behavior?srsltid=AfmBOorePduR0U08FlRogK-f7wGabiko62RAu8iX6knapk_xWLGUw9jE)
 
-They cover some of the same materials. They are geared towards the social sciences, with plenty of examples of disinformation and cultural evolution.
+They cover some of the same materials. They are geared towards the social sciences, with plenty of examples of disinformation and cultural evolution. 
 
-On top of the textbook, we will read in-depth articles. Each week, there will be a section called <big>`Further reading`</big> at the bottom of the page. Articles denoted with stars(*) are mandatory. They will be the basis for in-class discussions and small assignements. For instance, **next weeks readings** are
+We will also read in-depth articles. Each week, there will be a <big>`This week reading`</big> box at the start of the page. Articles denoted with stars(*) are mandatory. 
 
- - [Why Model? (Epstein)](https://www.cs.unm.edu/~joel/cs4all/WhyModel.pdf)<sup>*</sup>
- - [Models in Science (SEP; Ch.1-2)](https://plato.stanford.edu/entries/models-science/)<sup>*</sup>
- - [How to Translate a Verbal Theory Into a Formal Model (Smaldino)](https://www2.psych.ubc.ca/~schaller/528Readings/Smaldino2020.pdf)
+## How-to follow the class content
 
-We will keep an updated list for the mandatory readings in [Table of Content](./toc).
+You must look through each week content before coming to class on Tuesdays. The content includes short clips and readings. They will be the basis for in-class discussions and small quizzes that you must take before the Thursday of the same week. 
 
-<!-- ## About ChatGPT
+<!-- We will try keep an updated list for the mandatory readings in [Table of Content](./toc). -->
 
-What is fun about ChatGPT is that it gives likable answers that seem right but are often wrong in nuanced ways. As part of becoming modelers, you will learn to recognize those mistakes.  -->
 
 <style>
 
@@ -126,33 +123,33 @@ What is fun about ChatGPT is that it gives likable answers that seem right but a
         aspect-ratio: 2500 / 1900; /* Can be removed if you're using fixed dimensions */
     }
 
-@media (prefers-color-scheme: dark) {
-    .gallery img {
-        box-shadow: 0 0 0 0.75px rgba(128, 128, 128, 0.2), 0 6px 12px 0 rgba(0, 0, 0, 0.4);
+    @media (prefers-color-scheme: dark) {
+        .gallery img {
+            box-shadow: 0 0 0 0.75px rgba(128, 128, 128, 0.2), 0 6px 12px 0 rgba(0, 0, 0, 0.4);
+            }
         }
-    }
-    .gallery a:not(:hover, :focus) {
-        color: var(--theme-foreground-muted);
-    }
+        .gallery a:not(:hover, :focus) {
+            color: var(--theme-foreground-muted);
+        }
 
-    .gallery a:hover img,
-    .gallery a:focus img {
-        box-shadow: 0 0 0 0.75px var(--theme-foreground-focus), 0 6px 12px 0 rgba(0, 0, 0, 0.2);
-    }
+        .gallery a:hover img,
+        .gallery a:focus img {
+            box-shadow: 0 0 0 0.75px var(--theme-foreground-focus), 0 6px 12px 0 rgba(0, 0, 0, 0.2);
+        }
 
-    .gallery figcaption {
-        font-size: 12px;
-        color: inherit;
-    }
+        .gallery figcaption {
+            font-size: 12px;
+            color: inherit;
+        }
 
-    .arrow {
-        font-weight: 500;
-    }
+        .arrow {
+            font-weight: 500;
+        }
 
-    .arrow::after {
-        content: "→";
-        display: inline-block;
-        margin-left: 0.25rem;
-    }
+        .arrow::after {
+            content: "→";
+            display: inline-block;
+            margin-left: 0.25rem;
+        }
 
 </style>

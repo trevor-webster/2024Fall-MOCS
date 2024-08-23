@@ -52,3 +52,132 @@ a.observablehq-version-badge {
 .observablehq-version-badge::before {
   content: attr(data-version);
 }
+
+/* NEXT WEEK CALLOUT */
+
+.callout-box {
+  padding: 15px;
+  background-color: rgba(251, 133, 0, 0.2);
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin: 15px 0;
+  margin-top: 2rem;
+  max-width: 500px;
+}
+
+.callout-box h3 {
+  margin-top: 0;
+  font-size: 15px;
+}
+
+.checklist {
+  list-style: none;
+  padding: 0;
+}
+
+.checklist li {
+  margin: 8px 0;
+  font-size: 15px;
+}
+
+input[type="checkbox"] {
+  margin-right: 8px;
+}
+
+/* READING BOX */
+
+.reading-box {
+  padding: 15px;
+  background-color: rgba(2, 48, 71, 0.1);
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin: 15px 0;
+  max-width: 500px;
+}
+
+.reading-box h3 {
+  margin-top: 20px;
+  font-size: 16px;
+}
+
+.reading-list {
+  list-style: none;
+  padding: 0;
+}
+
+.reading-list li {
+  margin: 8px 0;
+  font-size: 16px;
+}
+
+.reading-list li span {
+  margin-right: 10px;
+}
+
+/* MATH DEEP DIVE */
+
+.math-box {
+  padding: 15px;
+  background-color: rgba(119, 156, 174, 0.355);
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin: 15px 0;
+  max-width: 700px;
+}
+
+.math-box h3 {
+  margin-top: 20px;
+  font-size: 16px;
+}
+
+.math-list {
+  list-style: none;
+  padding: 0;
+}
+
+.math-list li {
+  margin: 8px 0;
+  font-size: 16px;
+}
+
+.math-list li span {
+  margin-right: 10px;
+}
+
+/* CALLBACK */
+
+.callback {
+  background-color: #f9f9f9;
+  border-left: 5px solid #007acc; /* Accent color */
+  padding: 15px 20px;
+  margin: 20px 0;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  color: #333;
+}
+
+.callback h3 {
+  margin-top: 0;
+  font-size: 16px;
+  color: #007acc;
+}
+
+.callback p {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+/* FLEX CONTAINER */
+
+.flex-container {
+  display: flex;
+  justify-content: space-between; /* Distributes space evenly between the divs */
+  gap: 20px; /* Optional: Adds space between the divs */
+}
+
+  .left-div, .right-div {
+    flex: 1; /* Makes both divs take up equal space */
+    padding: 10px;
+    border-radius: 8px; /* Optional: Rounds the corners */
+  }
