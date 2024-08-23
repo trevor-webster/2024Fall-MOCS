@@ -52,6 +52,7 @@ export default {
     { name: "Computational ressources", path: "/comp-ressources" },
     { name: "Syllabus", path: "/syllabus" },
     { name: "References", path: "/refs" },
+    { name: "Notebooks", path: "https://github.com/jstonge/2024Fall-MOCS/tree/main/notebooks"},
   ],
   // Content to add to the head of the page, e.g. for a favicon:
   head: '<link rel="icon" href="observable.png" type="image/png" sizes="32x32">',
