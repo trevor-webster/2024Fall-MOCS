@@ -1,6 +1,5 @@
 // See https://observablehq.com/framework/config for documentation.
 export default {
-  // The project’s title; used in the sidebar and webpage titles.
   title: "MOCS Fall 2024",
   pages: [
     { name: "Getting Started", path: "/getting-started" },
@@ -57,9 +56,10 @@ export default {
         { name: "Getting started", path: "M0-Model-theory-redux/getting-started" },
       ]
     },
-    { name: "Computational ressources", path: "/comp-ressources" },
     { name: "Syllabus", path: "/syllabus" },
+    { name: "Evaluation", path: "/eval" },
     { name: "References", path: "/refs" },
+    { name: "Computational ressources", path: "/comp-ressources" },
     { name: "Notebooks ↗", path: "https://github.com/jstonge/2024Fall-MOCS/tree/main/notebooks"},
   ],
   // Content to add to the head of the page, e.g. for a favicon:

@@ -53,6 +53,17 @@ a.observablehq-version-badge {
   content: attr(data-version);
 }
 
+.caution {
+  border-left: solid 1px;
+  border-radius: 0 4px 4px 0;
+  padding: 1rem 2rem;
+  margin: 1rem 0;
+  box-sizing: border-box;
+  max-width: 640px;
+  border-left-color: rgba(238, 127, 0, 0.645); /* Green border */
+  background-color: rgba(251, 133, 0, 0.2);
+}
+
 /* NEXT WEEK CALLOUT */
 
 .callout-box {
