@@ -4,7 +4,7 @@ Welcome to MOCS Fall 2024. This is the support website where we'll share most of
 
 How is this website organized?
 
-- You can find a bibliography [here](./refs). 
+- You can find a bibliography [here](./refs)
 - You can find extra ressources for computer sciency stuff (Github, Python, Julia, etc) in [here](./extra-ressources). Prianka will be your guide.
 - For each module
     - We will share some introductory videos and readings on the module's getting started page.
@@ -83,8 +83,6 @@ We will also read in-depth articles. Each week, there will be a <big>`This week 
 ## How-to follow the class content
 
 You must look through each week content before coming to class on Tuesdays. The content includes short clips and readings. They will be the basis for in-class discussions and small quizzes that you must take before the Thursday of the same week. 
-
-<!-- We will try keep an updated list for the mandatory readings in [Table of Content](./toc). -->
 
 
 <style>
