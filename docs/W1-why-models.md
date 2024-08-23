@@ -4,6 +4,7 @@
   <h3>📚 Week 1 readings</h3>
   <ul class="reading-list">
     <li><span>📖</span> <a href="https://math.libretexts.org/Bookshelves/Scientific_Computing_Simulations_and_Modeling/Introduction_to_the_Modeling_and_Analysis_of_Complex_Systems_(Sayama)/01%3A_Introduction_to_Modeling_and_Analysis" target="_blank">Introduction to Modeling and Analysis  (Ch. 1 Sayama)</a><sup>*</sup></li>
+    <li><span>📖</span> <a href="https://github.com/jstonge/2024Fall-MOCS/blob/main/docs/assets/Smaldino-2023-ch1" target="_blank">Doing Violence to Reality (Ch. 1 Smaldino)</a> Not mandatory, but really you should read it.</li>
     <li><span>🌐</span> <a href="https://complexityexplained.github.io/" target="_blank">What is Complexity Science?</a></li>
     <li><span>🌀</span> <a href="https://www.complexity-explorables.org/" target="_blank">Complexity Explorables</a></li>
     <li><span>📄</span> <a href="https://kwarc.info/teaching/TDM/Borges.pdf" target="_blank">On Exactitude in Science (short paragraph)</a><sup>*</sup></li>
