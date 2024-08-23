@@ -16,6 +16,7 @@
     <ul class="reading-list">
       <li><span>📖</span> <a href="https://math.libretexts.org/Bookshelves/Scientific_Computing_Simulations_and_Modeling/Introduction_to_the_Modeling_and_Analysis_of_Complex_Systems_(Sayama)/02%3A_Fundamentals_of_Modeling" target="_blank">Fundamentals of Modeling  (Ch. 2 Sayama)</a><sup>*</sup></li>
       <li><span>📖</span> <a href="https://github.com/jstonge/2024Fall-MOCS/blob/main/docs/assets/OttoDay-2007-Ch2.pdf" target="_blank">How to construct a model (Ch. 2 Otto & Day)</a></li>
+      <li><span>📖</span> <a href="https://github.com/jstonge/2024Fall-MOCS/blob/main/docs/assets/Smaldino-2023-ch1.pdf" target="_blank">Doing Violence to Reality (The rest of Ch.1 Smaldino)</a><sup>*</sup></li>
       <li><span>📄</span> <a href="https://www.cs.unm.edu/~joel/cs4all/WhyModel.pdf" target="_blank">Why Model? (Epstein)</a><sup>*</sup></li>
       <li><span>🔍</span> <a href="https://plato.stanford.edu/entries/models-science/" target="_blank">Sections 1-2 of Models in Science (SEP)</a><sup>*</sup></li>
       <li><span>🔍</span> <a href="https://www.jstor.org/stable/27836590" target="_blank">THE STRATEGY OF MODEL BUILDING IN POPULATION BIOLOGY (Levins 1966)</a></li>

@@ -4,18 +4,18 @@
   <h3>📚 Week 1 readings</h3>
   <ul class="reading-list">
     <li><span>📖</span> <a href="https://math.libretexts.org/Bookshelves/Scientific_Computing_Simulations_and_Modeling/Introduction_to_the_Modeling_and_Analysis_of_Complex_Systems_(Sayama)/01%3A_Introduction_to_Modeling_and_Analysis" target="_blank">Introduction to Modeling and Analysis  (Ch. 1 Sayama)</a><sup>*</sup></li>
-    <li><span>📖</span> <a href="https://github.com/jstonge/2024Fall-MOCS/blob/main/docs/assets/Smaldino-2023-ch1" target="_blank">Doing Violence to Reality (Ch. 1 Smaldino)</a> Not mandatory, but really you should read it.</li>
+    <li><span>📖</span> <a href="https://github.com/jstonge/2024Fall-MOCS/blob/main/docs/assets/Smaldino-2023-ch1.pdf" target="_blank">Doing Violence to Reality (Section 1 and 1.1. Smaldino)</a><sup>*</sup></li>
     <li><span>🌐</span> <a href="https://complexityexplained.github.io/" target="_blank">What is Complexity Science?</a></li>
     <li><span>🌀</span> <a href="https://www.complexity-explorables.org/" target="_blank">Complexity Explorables</a></li>
     <li><span>📄</span> <a href="https://kwarc.info/teaching/TDM/Borges.pdf" target="_blank">On Exactitude in Science (short paragraph)</a><sup>*</sup></li>
   </ul>
 </div>
 
-In this lecture, we define what are models and explain why modeling is key to understanding complex systems.
+This week, we define what are models and explain why modeling is key to understanding complex systems.
 
 <iframe src="https://streaming.uvm.edu/embed/49956/" width="560" height="315" frameborder="0" allowfullscreen></iframe>
 
-Lhd offers three definitions of models
+Lhd offers three definitions of models:
 
 - simplified worlds and computational parabolas
 - rule-based phenomenological (qualitative?) mechanisms
@@ -23,7 +23,7 @@ Lhd offers three definitions of models
 
 As cognitive scientist, I would add that models are also [cognitive gadgets](https://cognitivemedium.com/tat/index.html) (see also [Heyes' book](https://www.hup.harvard.edu/books/9780674980150)). When Lhd talks about his romantic love for modeling, he describes it as a way of life. 
 
-You can sit on the shore of Lake Champlain and start thinking about the timing of blue-green algae. With some modeling experience, you may start thinking about how the different parts of a systems come together. You learn to set aside certain details while abstracting  components. Abstraction leads to greater generalization, enabling you to create narratives that apply to multiple contexts.
+When something becomes a way of life, it changes how you engage the world around you. You can sit on the shore of Lake Champlain and start pondering about the timing of blue-green algae. With some modeling experience, you may start thinking about how the different parts of a systems come together. You learn to set aside certain details while abstracting other components. Abstraction leads to greater generalization, enabling you to create narratives that apply to multiple contexts.
 
 To clarify our definitions of models, we can examine some examples of complex systems
 
