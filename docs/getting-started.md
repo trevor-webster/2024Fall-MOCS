@@ -2,15 +2,16 @@
 
 Welcome to Modeling Complex Systems (MOCS) Fall 2024! This is the support website where we'll share most of the class content, excluding homework assignments. Homeworks will be available on [Brightspace](https://brightspace.uvm.edu/d2l/login).
 
-MOCS is designed as a hybrid, graduate level introduction to computational and mathematical modeling of complex systems. This is a core course for students at [Vermont Complex Systems](https://vermontcomplexsystems.org/), but everybody are welcome. We use a breadth-first presentation of varied topics and methods, with hands-on experiences and mini-research problems with an emphasis on the relations and trade-offs between the different approaches. Undergraduates are held to the same expectations as graduate students. 
+MOCS is designed as a hybrid, graduate level introduction to computational and mathematical modeling of complex systems. This is a core course for students at [Vermont Complex Systems](https://vermontcomplexsystems.org/), but everybody are welcome. We use a breadth-first presentation of varied topics and methods, with hands-on experiences and mini-research problems with an emphasis on the relations and trade-offs between the different approaches. Undergraduates are held to the same expectations as graduate students. See [syllabus](./syllabus) for more details.
 
 How is this website organized?
 
-- You can find a bibliography [here](./refs
-- You can find extra ressources for computer sciency stuff (Github, Python, Julia, etc) in [here](./extra-ressources). Prianka will be your guide.
 - For each module
     - We will share some introductory videos and readings on the module's getting started page.
-    - We will share fun, interactive content related to the module
+    - We will share fun, interactive content related to the module.
+- You can find additional references on complex systems [here](./refs). Module-specific content is available on each module's main page.
+- You will make jupyter notebooks available throughout the semester [here](./notebooks).
+- You can find extra ressources for computer sciency stuff (Github, Python, Julia, etc) and advanced readings in [here](./extra-ressources). Prianka will be your guide for the computer sciency stuff.
 
 ## Who are we?
 
@@ -61,7 +62,7 @@ Laurent Hébert-Dufresne gave the following answer to a journalist:
     &mdash; LHD's answer, <cite><a href="https://www.uvm.edu/news/story/honeybees-hate-speech">Honeybees to Hate Speech</a></cite>  </figcaption>
 </figure>
 
-In this class, we will seek to understand his definition. But at the end, you should have your own's answer to that question. You should be able to say if you agree or disagree with LHD's answer.
+In this class, we will seek to understand his definition. But at the end, you should have your own answer. You should be able to say if you agree or disagree with LHD's answer. 
 
 Here is Laurent introducing MOCS in his own words as well:
 

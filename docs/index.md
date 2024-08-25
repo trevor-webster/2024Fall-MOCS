@@ -5,7 +5,7 @@ toc: false
 <div class="hero">
   <h1>Modeling Complex Systems</h1>
   <h2>Welcome to MOCS Fall 2024! </h2>
-  <a href="https://mocs.observablehq.cloud/mocs-fall-2024/getting-started" target="_blank">First lesson<span style="display: inline-block; margin-left: 0.25rem;">↗︎</span></a>
+  <a href="https://mocs.observablehq.cloud/mocs-fall-2024/getting-started" target="_blank">Get started<span style="display: inline-block; margin-left: 0.25rem;">→</span></a>
 </div>
 
 <div class="gallery grid grid-cols-4" style="grid-auto-rows;">
@@ -39,7 +39,59 @@ toc: false
     </a>
 </div>
 
+
 <style>
+    
+    /* Gallery */
+
+    .gallery {
+        max-width: calc(1200px + 2rem);
+    }
+
+    .gallery a {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .gallery img {
+        width: 100%; /* Ensures the image takes up the full width of the container */
+        height: 200px; /* Sets a fixed height for all images */
+        object-fit: cover; /* Maintains aspect ratio while ensuring the image covers the entire area */
+        border-radius: 8px;
+        box-shadow: 0 0 0 0.75px rgba(128, 128, 128, 0.2), 0 6px 12px 0 rgba(0, 0, 0, 0.2);
+        aspect-ratio: 2500 / 1900; /* Can be removed if you're using fixed dimensions */
+    }
+
+    @media (prefers-color-scheme: dark) {
+        .gallery img {
+            box-shadow: 0 0 0 0.75px rgba(128, 128, 128, 0.2), 0 6px 12px 0 rgba(0, 0, 0, 0.4);
+            }
+        }
+        .gallery a:not(:hover, :focus) {
+            color: var(--theme-foreground-muted);
+        }
+
+        .gallery a:hover img,
+        .gallery a:focus img {
+            box-shadow: 0 0 0 0.75px var(--theme-foreground-focus), 0 6px 12px 0 rgba(0, 0, 0, 0.2);
+        }
+
+        .gallery figcaption {
+            font-size: 12px;
+            color: inherit;
+        }
+
+        .arrow {
+            font-weight: 500;
+        }
+
+        .arrow::after {
+            content: "→";
+            display: inline-block;
+            margin-left: 0.25rem;
+        }
 
 .hero {
   display: flex;

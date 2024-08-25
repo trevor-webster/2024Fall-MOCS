@@ -18,7 +18,6 @@ export default {
       name: "Structure, part 1",
       path: "Structure-part-1",
       pages: [
-        { name: "Getting started", path: "/M2-Structure-part-1/getting-started" },
         { name: "Week 6: A game of life", path: "/M2-Structure-part-1/W6-intro-ca" },
         { name: "Week 7: Stochastic CA", path: "/M2-Structure-part-1/W7-stochastic-ca" },
       ]
@@ -27,7 +26,6 @@ export default {
       name: "Structure, part 2",
       path: "Structure-part-2",
       pages: [
-        { name: "Getting started", path: "/M3-Structure-part-2/getting-started" },
         { name: "Week 9: Networks", path: "/M3-Structure-part-2/W9-networks" },
         { name: "Week 10: Models on networks", path: "/M3-Structure-part-2/W10-on-networks" },
         { name: "Week 11: Models of networks", path: "/M3-Structure-part-2/W11-of-networks" },
@@ -38,7 +36,6 @@ export default {
       name: "Dynamics & Structure",
       path: "Dynamics-and-Structure",
       pages: [
-        { name: "Getting started", path: "/M4-Dynamics-and-Structure/getting-started" },
         { name: "Week 13: ABMs in archeology", path: "/M4-Dynamics-and-Structure/W13-crabtree-abms" },
         { name: "Week 14: Evolutionary game theory", path: "/M4-Dynamics-and-Structure/W14-evo-game-theory" },
       ]

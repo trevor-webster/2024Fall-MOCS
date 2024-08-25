@@ -1,16 +1,10 @@
 ---
 toc: true
 ---
+
 # Module 1: Dynamics
 
 Differential equations are the foundation of modern science. In this class, we'll approach the math gently, but we won't shy away from it either. In this section, we provide additional materials to help you familiarize yourself with or learn more about differential equations. Note that this section is intended to motivate you to learn about the topic. While these videos can help you gain some intuition, mathematics is fundamentally a know-how. To truly get it, you need to get your hands dirty.
-
-### Courses
-
- - [Liz Bradley's intro to ODES](https://www.youtube.com/watch?v=aZRqW3XZ_6U&list=PLF0b3ThojznQ9xUDm-EbgFAnzdbeDVuSz&index=24)
- - [Introduction to Computational Thinking](https://computationalthinking.mit.edu/Fall24/): see modules on epidemic and climate modeling.
- - [differential-equations (khan academy)](https://www.khanacademy.org/math/differential-equations)
- - [Math 113B: Intro to Mathematical Modeling in Biology (UCI)](https://ocw.uci.edu/lectures/math_113b_lec_02_intro_to_mathematical_modeling_in_biology_bacterial_growth.html): I remember first learning about dynamical systems. For some reason, this course by Germán A. Enciso at UC Irvine really stuck with me.
 
 ### Motivational videos
 
@@ -18,6 +12,20 @@ Differential equations are the foundation of modern science. In this class, we'l
  - [Zach Star's  This is why you're learning differential equations ](https://www.youtube.com/watch?v=ifbaAqfqpc4)
  - [Trefor Bazett's ODEs series](https://www.youtube.com/playlist?list=PLHXZ9OQGMqxde-SlgmWlCmNHroIWtujBw)
  - [3b1b Simulating an epidemic (SIR model)](https://www.youtube.com/watch?v=gxAaO2rsdIs)
+
+### Additional readings
+
+  - [Chaos: Making a New Science (Gleick 2008)](https://www.penguinrandomhouse.ca/books/321477/chaos-by-james-gleick/9780143113454): Amazing book on Chaos theory's origin story.
+  - [ A Biologist's Guide to Mathematical Modeling in Ecology and Evolution (Otto and Day 2007)](https://press.princeton.edu/books/hardcover/9780691123448/a-biologists-guide-to-mathematical-modeling-in-ecology-and-evolution?srsltid=AfmBOopJ4i2Ls1pXkGaEJGDc61Vvol-dJADY9XJrU0q3MKIJuJTfg0D6): Great textbook that strikes a good balance between accessibility and the mathematics of dynamical systems in ecology.
+  - [Nonlinear Dynamics and Chaos 3rd ed (Strogatz 2024)](https://www.routledge.com/Nonlinear-Dynamics-and-Chaos-With-Applications-to-Physics-Biology-Chemistry-and-Engineering/Strogatz/p/book/9780367026509?srsltid=AfmBOoqrabgNKvlTDyAQiCCuPgrnIIKeCtczqcLkb9AFEFmdWw72l-fA): Go-to textbook for mathematical dynamical systems.
+  - [Primer of Ecological Theory 1st Edition (Roughgarden 1998)](https://books.google.ca/books/about/Primer_of_Ecological_Theory.html?id=PmHwAAAAMAAJ&source=kp_book_description&redir_esc=y): Everything you ever wanted to know on modeling prey-predator interactions.
+
+### Courses
+
+ - [Liz Bradley's intro to ODES](https://www.youtube.com/watch?v=aZRqW3XZ_6U&list=PLF0b3ThojznQ9xUDm-EbgFAnzdbeDVuSz&index=24)
+ - [Introduction to Computational Thinking](https://computationalthinking.mit.edu/Fall24/): see modules on epidemic and climate modeling.
+ - [differential-equations (khan academy)](https://www.khanacademy.org/math/differential-equations)
+ - [Math 113B: Intro to Mathematical Modeling in Biology (UCI)](https://ocw.uci.edu/lectures/math_113b_lec_02_intro_to_mathematical_modeling_in_biology_bacterial_growth.html): I remember first learning about dynamical systems. For some reason, this course by Germán A. Enciso at UC Irvine really stuck with me.
 
 ### Interactive notebooks
 
