@@ -11,7 +11,6 @@
 
 🚧 Coming soon 🚧
 
-
 <div class="callout-box">
   <h3>Things to do by Thursday at noon</h3>
   <ul class="checklist">

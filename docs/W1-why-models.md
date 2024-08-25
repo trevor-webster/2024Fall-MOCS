@@ -29,7 +29,7 @@ To clarify our definitions of models, we can examine some examples of complex sy
 
 <iframe src="https://streaming.uvm.edu/embed/49957/" width="560" height="315" frameborder="0" allowfullscreen></iframe>
 
-These phenomena are at the hearth of complex systems. Were there any commonalities among the examples from the clip? One that I find intriguing is how various crowds behave in coherent ways, such as circle pits, bird flocking (fun fact: the sound made by a flock is called a murmuration), and fish bowl (or fish tornadoes?). Each of these exhibits interesting properties, such as nonseparability or emergence. But are circle pits really the same as flocking? By labeling both as emergent phenomena, are we potentially overlooking some key differences?
+These phenomena are at the heart of complex systems. Were there any commonalities among the examples from the clip? One that I find intriguing is how various crowds behave in coherent ways, such as circle pits, bird flocking (fun fact: the sound made by a flock is called a murmuration), and fish bowl (or fish tornadoes?). Each of these exhibits interesting properties, such as nonseparability or emergence. But are circle pits really the same as flocking? By labeling both as emergent phenomena, are we potentially overlooking some key differences?
 
 <div class="callout-box">
   <h3>Things to do by Thursday at noon</h3>

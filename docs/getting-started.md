@@ -35,7 +35,7 @@ How is this website organized?
             <source srcset="./assets/prianka.webp" media="(prefers-color-scheme: dark)">
             <img src="./assets/prianka.webp">
         </picture>
-        <div class="small arrow">Prianka (teaching assistant)</div>
+        <div class="small arrow">Prianka Bhattacharjee (teaching assistant)</div>
     </a>
     <a href="http://laurenthebertdufresne.github.io/" target="_blank">
         <picture>
