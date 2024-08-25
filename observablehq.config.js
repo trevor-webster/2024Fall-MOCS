@@ -7,53 +7,47 @@ export default {
     { name: "Week 2: Modeling", path: "/W2-modeling" },
     {
       name: "Dynamics",
-      open: false,
-      pager: "M1-Dynamics",
+      path: "Dynamics",
       pages: [
-        { name: "Getting started", path: "M1-Dynamics/getting-started" },
-        { name: "Week 3: Discrete models", path: "M1-Dynamics/W3-discrete" },
-        { name: "Week 4: Continous models", path: "M1-Dynamics/W4-continuous" },
-        { name: "Week 5: Chaos", path: "M1-Dynamics/W5-chaos" },
+        { name: "Week 3: Discrete models", path: "/M1-Dynamics/W3-discrete" },
+        { name: "Week 4: Continous models", path: "/M1-Dynamics/W4-continuous" },
+        { name: "Week 5: Chaos", path: "/M1-Dynamics/W5-chaos" },
       ]
     },
     {
       name: "Structure, part 1",
-      open: false,
-      pager: "M2-Structure-part-1",
+      path: "Structure-part-1",
       pages: [
-        { name: "Getting started", path: "M2-Structure-part-1/getting-started" },
-        { name: "Week 6: A game of life", path: "M2-Structure-part-1/W6-intro-ca" },
-        { name: "Week 7: Stochastic CA", path: "M2-Structure-part-1/W7-stochastic-ca" },
+        { name: "Getting started", path: "/M2-Structure-part-1/getting-started" },
+        { name: "Week 6: A game of life", path: "/M2-Structure-part-1/W6-intro-ca" },
+        { name: "Week 7: Stochastic CA", path: "/M2-Structure-part-1/W7-stochastic-ca" },
       ]
     },
     {
       name: "Structure, part 2",
-      open: false,
-      pager: "M3-Structure-part-2",
+      path: "Structure-part-2",
       pages: [
-        { name: "Getting started", path: "M3-Structure-part-2/getting-started" },
-        { name: "Week 9:Networks", path: "M3-Structure-part-2/W9-networks" },
-        { name: "Week 10:Models on networks", path: "M3-Structure-part-2/W10-on-networks" },
-        { name: "Week 11:Models of networks", path: "M3-Structure-part-2/W11-of-networks" },
-        { name: "Week 12:Models on and of networks", path: "M3-Structure-part-2/W12-on-and-of-networks" },
+        { name: "Getting started", path: "/M3-Structure-part-2/getting-started" },
+        { name: "Week 9: Networks", path: "/M3-Structure-part-2/W9-networks" },
+        { name: "Week 10: Models on networks", path: "/M3-Structure-part-2/W10-on-networks" },
+        { name: "Week 11: Models of networks", path: "/M3-Structure-part-2/W11-of-networks" },
+        { name: "Week 12: Models on and of networks", path: "/M3-Structure-part-2/W12-on-and-of-networks" },
       ]
     },
     {
       name: "Dynamics & Structure",
-      open: false,
-      pager: "M4-Dynamics-and-Structure",
+      path: "Dynamics-and-Structure",
       pages: [
-        { name: "Getting started", path: "M4-Dynamics-and-Structure/getting-started" },
-        { name: "Week 13: ABMs in archeology", path: "M4-Dynamics-and-Structure/W13-crabtree-abms" },
-        { name: "Week 14: Evolutionary game theory", path: "M4-Dynamics-and-Structure/W14-evo-game-theory" },
+        { name: "Getting started", path: "/M4-Dynamics-and-Structure/getting-started" },
+        { name: "Week 13: ABMs in archeology", path: "/M4-Dynamics-and-Structure/W13-crabtree-abms" },
+        { name: "Week 14: Evolutionary game theory", path: "/M4-Dynamics-and-Structure/W14-evo-game-theory" },
       ]
     },
     {
       name: "Model Theory (redux)",
-      open: false,
-      pager: "M0-Model-theory-redux",
+      path: "Model-theory-redux",
       pages: [
-        { name: "Getting started", path: "M0-Model-theory-redux/getting-started" },
+
       ]
     },
     { name: "Syllabus", path: "/syllabus" },

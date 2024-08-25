@@ -1,4 +1,3 @@
-
 # Module 4: Dynamics and structure
 
 🚧 Coming soon 🚧
