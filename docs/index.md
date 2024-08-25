@@ -9,28 +9,28 @@ toc: false
 </div>
 
 <div class="gallery grid grid-cols-4" style="grid-auto-rows;">
-    <a href="https://mocs.observablehq.cloud/mocs-fall-2024/odes/getting-started" target="_blank">
+    <a href="https://mocs.observablehq.cloud/mocs-fall-2024/M1-Dynamics/getting-started" target="_blank">
     <picture>
         <source srcset="./assets/lotka-volterra.webp" media="(prefers-color-scheme: dark)">
         <img src="./assets/lotka-volterra.webp">
     </picture>
     <div class="small arrow">💡 ODEs</div>
     </a>
-    <a href="https://mocs.observablehq.cloud/mocs-fall-2024/cellular-automata/getting-started" target="_blank">
+    <a href="https://mocs.observablehq.cloud/mocs-fall-2024/M2-Structure-part-1/getting-started" target="_blank">
     <picture>
         <source srcset="./assets/ElementaryCARule030_700.webp" media="(prefers-color-scheme: dark)">
         <img src="./assets/ElementaryCARule030_700.webp">
     </picture>
     <div class="small arrow">💡 Cellular automata</div>
     </a>
-    <a href="https://mocs.observablehq.cloud/mocs-fall-2024/networks/getting-started" target="_blank">
+    <a href="https://mocs.observablehq.cloud/mocs-fall-2024/M3-Structure-part-2/getting-started" target="_blank">
     <picture>
         <source srcset="./assets/menczer.webp" media="(prefers-color-scheme: dark)">
         <img src="./assets/menczer.webp">
     </picture>
     <div class="small arrow">💡 Networks</div>
     </a>
-    <a href="https://mocs.observablehq.cloud/mocs-fall-2024/abms/getting-started" target="_blank">
+    <a href="https://mocs.observablehq.cloud/mocs-fall-2024/M4-Dynamics-and-Structure/getting-started" target="_blank">
     <picture>
         <source srcset="./assets/abms.webp" media="(prefers-color-scheme: dark)">
         <img src="./assets/abms.webp">

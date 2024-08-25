@@ -163,6 +163,7 @@ input[type="checkbox"] {
   padding: 15px 20px;
   margin: 20px 0;
   border-radius: 4px;
+  max-width: 500px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   color: #333;
 }
@@ -185,6 +186,7 @@ input[type="checkbox"] {
   display: flex;
   justify-content: space-between; /* Distributes space evenly between the divs */
   gap: 20px; /* Optional: Adds space between the divs */
+  flex-wrap: wrap; /* Allows items to wrap onto the next row if there's not enough space */
 }
 
   .left-div, .right-div {
@@ -192,3 +194,12 @@ input[type="checkbox"] {
     padding: 10px;
     border-radius: 8px; /* Optional: Rounds the corners */
   }
+
+  @media screen and (max-width: 767px) {
+    /* Hero full width or with some padding on small screen */
+    .left-div, .right-div {
+      flex: 1 1 100%; /* Allows divs to shrink and wrap onto a new line when needed */
+      padding: 10px;
+      border-radius: 8px;
+    }
+}
