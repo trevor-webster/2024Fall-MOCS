@@ -2,7 +2,7 @@
 
 Welcome to Modeling Complex Systems (MOCS) Fall 2024! This is the support website where we'll share most of the class content, excluding homework assignments. Homeworks will be available on [Brightspace](https://brightspace.uvm.edu/d2l/login).
 
-MOCS is designed as a hybrid, graduate level introduction to computational and mathematical modeling of complex systems. This is a core course for students at [Vermont Complex Systems](https://vermontcomplexsystems.org/), but everybody are welcome. We use a breadth-first presentation of varied topics and methods, with hands-on experiences and mini-research problems with an emphasis on the relations and trade-offs between the different approaches. Undergraduates are held to the same expectations as graduate students. See [syllabus](./syllabus) for more details.
+MOCS is designed as a hybrid, graduate level introduction to computational and mathematical modeling of complex systems. This is a core course for students at [Vermont Complex Systems Center](https://vermontcomplexsystems.org/), but everybody are welcome. We use a breadth-first presentation of varied topics and methods, with hands-on experiences and mini-research problems with an emphasis on the relations and trade-offs between the different approaches. Undergraduates are held to the same expectations as graduate students. See [syllabus](./syllabus) for more details.
 
 How is this website organized?
 
@@ -11,13 +11,13 @@ How is this website organized?
     - We will share fun, interactive content related to the module.
 - You can find additional references on complex systems [here](./refs). Module-specific content is available on each module's main page.
 - We will make jupyter notebooks available throughout the semester [here](./notebooks).
-- You can find extra ressources for computer sciency stuff (Github, Python, Julia, etc) and advanced readings in [here](./extra-ressources). Prianka will be your guide for the computer sciency stuff.
+- You can find extra ressources for computer sciency stuff (Github, Python, Julia, etc) and advanced readings in [here](./extra-resources). Prianka will be your guide for the computer sciency stuff.
 - We have 
 
 ## Who are we?
 
 <div class="gallery grid grid-cols-4" style="grid-auto-rows;">
-    <a href="htttps://socks.w3.uvm.edu/socks/node/38?rnd=0.1937717982807522#giulioburgio" target="_blank">
+    <a href="https://www.uvm.edu/socks/node/38?rnd=0.8126330183365708#giulioburgio" target="_blank">
         <picture>
             <source srcset="./assets/Giulio.webp" media="(prefers-color-scheme: dark)">
             <img src="./assets/Giulio.webp">
@@ -57,19 +57,19 @@ Laurent Hébert-Dufresne gave the following answer to a journalist:
     <br><br>
     Now, I don't think that “complexity science” is a science. I think we use the phrase a lot and it depends on how you want to define a science. But complexity science doesn't have a shared set of questions, systems of interest, or tools. It's all over the place.
     <br><br>
-    So, I use “complexity” almost as virtue signaling—to group the subfield of scientists interested in studying these complex systems and open to doing it with tools and perspective from different disciplines. Identifying with “complexity” is a signal that you're open to dialogue and weird ideas more so than a defined science. So that's why it's not npj complexity science, it's npj complexity. It's more of a perspective or a mentality and less of a science. That's how I see it. And I think that's the identity of the journal. No particular systems of interest, but more about a perspective with which we do many kinds of science.
+    So, I use “complexity” almost as virtue signaling—to group the subfield of scientists interested in studying these complex systems and open to doing it with tools and perspective from different disciplines. Identifying with “complexity” is a signal that you're open to dialogue and weird ideas more so than a defined science. [...] It's more of a perspective or a mentality and less of a science. That's how I see it. [...] No particular systems of interest, but more about a perspective with which we do many kinds of science.
   </blockquote>
   <figcaption>
     &mdash; LHD's answer, <cite><a href="https://www.uvm.edu/news/story/honeybees-hate-speech">Honeybees to Hate Speech</a></cite>  </figcaption>
 </figure>
 
-In this class, we will seek to understand his definition. But at the end, you should have your own answer. You should be able to say if you agree or disagree with LHD's answer. 
+In this class, we will seek to understand his definition. But at the end, you should have your own answer, which may or not agree with LHD's. 
 
-Here is Laurent introducing MOCS in his own words as well:
+Here is LHD introducing MOCS in his own words as well:
 
 <iframe src="https://streaming.uvm.edu/embed/49955/" width="560" height="315" frameborder="0" allowfullscreen></iframe>
 
-We will be sharing more clips like these, as Laurent does an excellent job of explaining complex systems concepts. Our role as instructors will be to help you deepen your understanding of the insights from these clips and to offer additional perspectives of our own.
+We will be sharing more clips like these, as LHD does an excellent job in explaining complex systems concepts. Our role as instructors will be to help you deepen your understanding of the insights from these clips and to offer additional perspectives of our own.
 
 ## Textbook(s)
 
@@ -84,7 +84,7 @@ They cover some of the same materials. They are geared towards the social scienc
 
 We will also read in-depth articles. Each week, there will be a <big>`This week reading`</big> box at the start of the page. Articles denoted with stars(*) are mandatory. 
 
-## How-to follow the class content
+## How to follow the class content
 
 You must look through each week content before coming to class on Tuesdays. The content includes short clips and readings. They will be the basis for in-class discussions and small quizzes that you must take before the Thursday of the same week. 
 
