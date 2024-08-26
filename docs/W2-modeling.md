@@ -55,3 +55,38 @@ Here is LHD's recipe for modeling complex systems
     <li><input type="checkbox" id="task1"><label for="task1">Quiz 2 (Sections 1 and 2 of Models in Science by Frigg and Hartmann, Why Model? by Epstein, and Chapter 2 of the textbook.)</label></li>
   </ul>
 </div>
+
+--- 
+
+## Bonus materials
+
+Thinking too much about models can lead to philosophical side effects, such as rejecting the idea of a grandu unified theory (GUT) in science that would explain everything. This is known in philosophy as epistemic pluralism, where multiple, seemingly contradictory views can coexist. 
+
+A brand of epistemic pluralism is defended at lenght by Scott Page, in his [The Model Thinker](https://www.google.com/url?sa=t&source=web&rct=j&opi=89978449&url=https://www.basicbooks.com/titles/scott-e-page/the-model-thinker/9780465094639/&ved=2ahUKEwiOlZWq3pKIAxVGD1kFHREyFv0QFnoECEUQAQ&usg=AOvVaw3CKVi95uVUxB4dCAJL2SwO) (note that the idea is much older than Page, e.g. [Levins 1966](https://www.jstor.org/stable/27836590). But Page made the idea very sexy). He argues that multiple independent models can be more effective than a single one in addressing complex issues. However, this approach suggests that we may lack a definitive criterion for rejecting models with certainty. What implications does epistemic pluralism have for democracy, especially since we generally expect it to rely on scientific consensus?
+
+Philip Kitcher explores this theme in [Science, Truth, and Democracy ](https://academic.oup.com/book/4724). He argues that epistemic pluralism, which leads to numerous perspectives on the world, forces us to prioritize some over others. For example, as a society, we must decide whether it's ethical to invest in projects like large hadron colliders while facing impending climate crises. How do you feel about that?
+
+<figure class="quote">
+  <blockquote>
+  <h3>Famous modelers</h3>
+  Why does it seem reasonable to compare billard balls moving on a table bounded by cushions with air particles jiggling around?
+  Marry Hesse (1924 – 2016) pioneered the idea that modelers like to draw analogies between billard balls and gas because of similarities. Similarities can take different forms. You can have objects who look alike; but sometimes modelers find original ways to analogize, seemingly different objects. When thinking by analogy, one might realize that pitch is analogous to color, as is loudness to brightness, leading to see commonalities between sound and light. 
+  <div class="container">
+  <img src="./assets/mennim-mary-hesse.webp"></img>
+  </div>
+  <blockquote>
+</figure>
+
+<style>
+  
+  img {
+    margin: 2rem;
+  }
+
+  .container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+</style>

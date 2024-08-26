@@ -1,5 +1,7 @@
 # Chaos theory
 
+Introducing continuous models opened up the large toolbox of differential equations. This week we look at some of the resulting strengths through direct analysis using the concepts of nullclines and fixed points. We also look at more interesting behaviors by trying to integrate ordinary differential equations (ODEs) numerically. In doing so, we even get a small taste of chaos! This wraps up our Module 1: Dynamics. Next week we start looking at large structured systems.
+
 <div class="reading-box">
   <h3>📚 Week 5 readings</h3>
   <ul class="reading-list">

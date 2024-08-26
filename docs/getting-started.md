@@ -90,18 +90,7 @@ You must look through each week content before coming to class on Tuesdays. The 
 
 
 <style>
-
-    .quote {
-        margin: 0;
-        background: #eee;
-        padding: 1em;
-        border-radius: 1em;
-    }
     
-    .quote figcaption,
-    .quote blockquote {
-        margin: 1em;
-    }
 
     /* Gallery */
 
