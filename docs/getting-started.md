@@ -10,8 +10,9 @@ How is this website organized?
     - We will share some introductory videos and readings on the module's getting started page.
     - We will share fun, interactive content related to the module.
 - You can find additional references on complex systems [here](./refs). Module-specific content is available on each module's main page.
-- You will make jupyter notebooks available throughout the semester [here](./notebooks).
+- We will make jupyter notebooks available throughout the semester [here](./notebooks).
 - You can find extra ressources for computer sciency stuff (Github, Python, Julia, etc) and advanced readings in [here](./extra-ressources). Prianka will be your guide for the computer sciency stuff.
+- We have 
 
 ## Who are we?
 

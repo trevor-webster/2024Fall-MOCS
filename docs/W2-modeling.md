@@ -15,8 +15,8 @@
     <h3>📚 Week 2 readings</h3>
     <ul class="reading-list">
       <li><span>📖</span> <a href="https://math.libretexts.org/Bookshelves/Scientific_Computing_Simulations_and_Modeling/Introduction_to_the_Modeling_and_Analysis_of_Complex_Systems_(Sayama)/02%3A_Fundamentals_of_Modeling" target="_blank">Fundamentals of Modeling  (Ch. 2 Sayama)</a><sup>*</sup></li>
-      <li><span>📖</span> <a href="https://github.com/jstonge/2024Fall-MOCS/blob/main/docs/assets/OttoDay-2007-Ch2.pdf" target="_blank">How to construct a model (Ch. 2 Otto & Day)</a></li>
-      <li><span>📖</span> <a href="https://github.com/jstonge/2024Fall-MOCS/blob/main/docs/assets/Smaldino-2023-ch1.pdf" target="_blank">Doing Violence to Reality (The rest of Ch.1 Smaldino)</a><sup>*</sup></li>
+      <li><span>📖</span> <a href="https://github.com/jstonge/2024Fall-MOCS/blob/main/docs/readings/OttoDay-2007-Ch2.pdf" target="_blank">How to construct a model (Ch. 2 Otto & Day)</a></li>
+      <li><span>📖</span> <a href="https://github.com/jstonge/2024Fall-MOCS/blob/main/docs/readings/Smaldino-2023-ch1.pdf" target="_blank">Doing Violence to Reality (The rest of Ch.1 Smaldino)</a><sup>*</sup></li>
       <li><span>📄</span> <a href="https://www.cs.unm.edu/~joel/cs4all/WhyModel.pdf" target="_blank">Why Model? (Epstein)</a><sup>*</sup></li>
       <li><span>🔍</span> <a href="https://plato.stanford.edu/entries/models-science/" target="_blank">Sections 1-2 of Models in Science (SEP)</a><sup>*</sup></li>
       <li><span>🔍</span> <a href="https://www.jstor.org/stable/27836590" target="_blank">THE STRATEGY OF MODEL BUILDING IN POPULATION BIOLOGY (Levins 1966)</a></li>
@@ -26,17 +26,15 @@
   </div>
 </div>
 
-Last week, we defined models as nouns. We saw that defining models force us to make choice about what is being represented. This week, we start modeling:
+Last week, we defined models as nouns. We saw that defining models forces us to make choices about what is being represented. This week, we start modeling (and philosophizing, just a little):
 
 <iframe src="https://streaming.uvm.edu/embed/49958/" width="560" height="315" frameborder="0" allowfullscreen></iframe>
 
-This clip is really about the different types of models. They are useful distinctions because you might want to choose one over another based on the problem at hand; ngineers don't ignore the same details as mathematicians. In both cases, you are abstracting away details but not in the same way. When you learn to categeorize models, you also are building a shared vocabulary with your peers. This is the basis of effective communication with your peers. 
+This clip is really about the different types of models. They are useful distinctions because you might want to choose one over another based on the problem at hand; engineers don't ignore the same details as mathematicians. In both cases, you are abstracting away details, but not in the same way. When you learn to categorize models, you are also building a shared vocabulary with your peers. This is the basis of effective communication with your peers.
 
 <iframe src="https://streaming.uvm.edu/embed/49959/" width="560" height="315" frameborder="0" allowfullscreen></iframe>
 
-What is LHD's recipe for modeling complex systems
-
-1. Ingredients:
+Here is LHD's recipe for modeling complex systems
   
   - Whole
     - Space ${tex`\rightarrow`} discrete (network) or continuous (2D or 3D)

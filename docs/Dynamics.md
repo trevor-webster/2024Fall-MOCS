@@ -48,7 +48,7 @@ Even though we won't solve that many differential equations by hand, you will en
   - [Section 2.1 : Linear Differential Equations (Paul's Online Notes)](https://tutorial.math.lamar.edu/Classes/DE/Linear.aspx)
   - [1.1 Integrals as solutions](https://web.uvic.ca/~tbazett/diffyqs/integralsols_section.html)
 
-In [Otto and Day (p.24)](https://github.com/jstonge/2024Fall-MOCS/blob/main/docs/assets/OttoDay-2007-Ch2.pdf), they provide that explanation that I don't think I could any better. Here is the box:
+In [Otto and Day (p.24)](https://github.com/jstonge/2024Fall-MOCS/blob/main/docs/readings/OttoDay-2007-Ch2.pdf), they provide that explanation that I don't think I could any better. Here is the box:
 
 <div class="math-box">
 <strong>Box 2.2: Derivatives and Differential Equations</strong>

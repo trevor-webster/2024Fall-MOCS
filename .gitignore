@@ -1,3 +1,4 @@
+etc/
 .DS_Store
 dist/
 docs/.observablehq/cache/
