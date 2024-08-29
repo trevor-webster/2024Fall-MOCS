@@ -15,48 +15,58 @@ macro bind(def, element)
 end
 
 # ╔═╡ 9543a3be-6582-11ef-0ea1-f5be6441657d
-using Plots, PlutoUI
+using Plots, PlutoUI # import pkgs
+
+# ╔═╡ db2ab12e-cbc4-4d28-8ab0-d847786ec200
+md"
+# Getting started
+
+Julia is great for scientific computing in different ways.
+
+Here I want to show of how we can combine basic plotting functions with reactivity to make an amazing graph calculator.
+" # using markdown with the `md` command
+
+# ╔═╡ 84737638-7558-41fc-9c85-0fc3fc518c9c
+md"## Graphing functions"
+
+# ╔═╡ bdd2565e-6cb5-4f03-aef6-e977ac96c6ec
+f(x) = sin(3*x) # shorthand to define a function called f(x)
+
+# ╔═╡ 3a3429d2-98d7-4bf5-bfb9-e9580a9a51bf
+plot(f) # 
+
+# ╔═╡ 4e356ebf-7f71-4000-a0e2-8f43684d194c
+md"Already one can see that Julia cares about science. It is really easy to plot functions!. Originating from [Plots.jl](https://docs.juliaplots.org/stable/), the `plot()` function takes as input a function, and spits out a plot bounded between -5 and 5. But here is the twist, Pluto is reactive.
+
+Below, the `a` variable is now `binded` on a Slider. We say that code is reactive when you have variables that changes as a response to user input. For instance, say that we cos and sin is dependent on λ."
 
 # ╔═╡ 865ee059-b44a-4ec5-a084-a09043a973d8
-@bind power Slider(1:5)
+@bind λ Slider(1:5, default=2, show_value=true) # here we bind value in slider 
+												# to variable λ. You get utf8 
+												# with \lambda, then enter
+
+# ╔═╡ c0c33660-edb9-4729-9c37-58cf660b2f18
+# When there is more than one statement in a cell, 
+# we need to wrap the code between `begin` and `end`
+begin
+	g(x) = sin(λ*x) 
+	h(x) = cos(λ*x) 
+end
 
 # ╔═╡ 1787b3c4-8462-4fcc-a842-3b31f835bdc0
-f(x) = 3 + x^power + 2x
-
-# ╔═╡ febaa746-a17c-45ca-b66c-efc113ef5efe
-plot(f, -10, 10, title="power = $(power)")
-
-# ╔═╡ 990001c0-5fa7-4793-b7d7-cdf7e6a6ab29
 begin
-	a = 1.1
-	x = 1
-	result = []  # Initialize result as an empty array
-	
-	function initialize()
-	    global x, result
-	    result = [x]
-	end
-	
-	function observe()
-	    global x, result
-	    push!(result, x)
-	end
-	
-	function update()
-	    global x
-	    x = a * x
-	end
-	
-	initialize()  # Initialize the variables
-	
-	for t in 1:10
-	    update()
-	    observe()
-	end
-	
-	println(result)  # To display the result
-	
+	plot(g) 
+	plot!(h) # plot!() means we draw on the same plot
 end
+
+# ╔═╡ cf42a7d7-f950-46f9-a3d6-b3ebe2e21c09
+
+
+# ╔═╡ 44762cdb-f778-4540-b455-5eb8ba523b8c
+plotattr("linealpha") # then we can query plotattr to get more details
+
+# ╔═╡ f7f284ea-182f-4ac4-83eb-7c9798c96a5b
+md"---"
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -1160,9 +1170,16 @@ version = "1.4.1+1"
 
 # ╔═╡ Cell order:
 # ╠═9543a3be-6582-11ef-0ea1-f5be6441657d
-# ╠═1787b3c4-8462-4fcc-a842-3b31f835bdc0
-# ╠═febaa746-a17c-45ca-b66c-efc113ef5efe
+# ╟─db2ab12e-cbc4-4d28-8ab0-d847786ec200
+# ╟─84737638-7558-41fc-9c85-0fc3fc518c9c
+# ╠═bdd2565e-6cb5-4f03-aef6-e977ac96c6ec
+# ╠═3a3429d2-98d7-4bf5-bfb9-e9580a9a51bf
+# ╠═4e356ebf-7f71-4000-a0e2-8f43684d194c
+# ╠═c0c33660-edb9-4729-9c37-58cf660b2f18
 # ╠═865ee059-b44a-4ec5-a084-a09043a973d8
-# ╠═990001c0-5fa7-4793-b7d7-cdf7e6a6ab29
+# ╠═1787b3c4-8462-4fcc-a842-3b31f835bdc0
+# ╠═cf42a7d7-f950-46f9-a3d6-b3ebe2e21c09
+# ╠═44762cdb-f778-4540-b455-5eb8ba523b8c
+# ╟─f7f284ea-182f-4ac4-83eb-7c9798c96a5b
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
