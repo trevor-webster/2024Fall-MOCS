@@ -39,7 +39,11 @@ This section is for students looking to refresh their mathematical skills. They 
 
 ## Solving differential equations
 
-Even though we won't solve that many differential equations by hand, you will encounter the idea over and over again. Khan, Brillan, and Paul's online notes offer many exercices if you want to practices solving differential equations.
+<div class="caution">
+Work in progress, there might be mistakes.
+</div>
+
+Even though we won't solve that many differential equations by hand, you will encounter the idea over and over again. Khan, Brillant, and Paul's online notes offer many exercices if you want to practices solving differential equations.
 
   - [Ordinary Differential Equations: Intro To ODEs (Complexity Explorer)](https://www.youtube.com/watch?v=yGdGna_4Gwc)
   - [Math 113B. Lec. 01. Intro to Mathematical Modeling in Biology (UCI)](https://ocw.uci.edu/lectures/math_113b_lec_01_intro_to_mathematical_modeling_in_biology_introduction_to_the_course.html)
@@ -47,8 +51,85 @@ Even though we won't solve that many differential equations by hand, you will en
   - [Exponential models & differential equations (Khan)](https://www.khanacademy.org/math/differential-equations/first-order-differential-equations/exponential-models-diff-eq/v/modeling-population-with-simple-differential-equation)
   - [Section 2.1 : Linear Differential Equations (Paul's Online Notes)](https://tutorial.math.lamar.edu/Classes/DE/Linear.aspx)
   - [1.1 Integrals as solutions](https://web.uvic.ca/~tbazett/diffyqs/integralsols_section.html)
+  - [Exponential growth and decay: a differential equation](https://mathinsight.org/exponential_growth_decay_differential_equation_refresher)
 
-In [Otto and Day (p.24)](https://github.com/jstonge/2024Fall-MOCS/blob/main/docs/readings/OttoDay-2007-Ch2.pdf), they provide that explanation that I don't think I could any better. Here is the box:
+
+Here is my best shot at explaining the meaning of solving differential equations from scratch. Recall what solving mean in elementary school (yes, that far). When you solve for _x_, as in ${tex`2x - 4 = 10`}, you find a number. Here 7. At the risk of saying the obvious, you find the following
+
+```js
+Plot.plot({
+  width: 640,
+  height: 200,
+  grid: true,
+  nice: true,
+  y: { domain: [-15, 15] },
+  marks: [
+    Plot.line(
+      build_samples((x) => 2*x - 4, -15, 15),
+      {
+        strokeWidth: 3,
+        stroke: "steelblue"
+      }
+    ),
+    Plot.dot([[7, 10]], { fill: "black", r: 5 } ),
+    Plot.ruleX([0]),
+    Plot.ruleY([0]),
+    Plot.axisY({ x: 0 })
+  ]
+})
+```
+
+Later on, even if you don't want to remember it, you learn about derivative. For instance, the derivative _f(x) = 2x - 4_ is defined as a limit, or ${tex`\lim_{h\rightarrow 0} = \frac{f(x+h) - f(x)}{h} = 2`}. Plugging in our function, we get ${tex`\lim_{h\rightarrow 0} = \frac{2(x+h)-4-(2x-4)}{h} = 2`}. Later in the same course, you learn a shortcut; ${tex`(f \pm g) = f' \pm g'`} (the sum rule). Using the sum rule, and perhaps the Leibniz notation, you now think of derivatives as ${tex`y = 2x - 4 \Rightarrow dy/dx = 2`}. You think to yourself; yes, I remember that, one unit to the right, two units up.
+
+Now, people say that solving differential equations mean that you solve for _functions_. This is where most people get lost. What does that mean? How is this idea related to modeling? This is best understood with an example. Say that we have the following relationship:
+
+```tex
+\frac{dn(t)}{dt} = b n(t)
+```
+
+where _n(t)_ is often use to talk about population growth at time _t_. Take a second to understand what this equation means. The left hand side is a derivative, that is, the change of _n_ at time _t_. But the right hand side is not a number, but "some function of _n(t)_", here ${tex`bn(t)`}. 
+
+In the context of population growth, we are saying that the change in the population _n_ is proportional to the size of the population. The bigger the population, the bigger the change. This is a modeling choice! As you will see in this module, we will use graph diagrams to represent those choices, e.g.
+
+<div style="display: flex; align-items: center; justify-content: center;">
+  ${mermaid`graph TD 
+      n--b⋅n-->n;`}
+</div>
+
+I think it is worth reiterating; from the example above, you should see that (1) we have an unknown function _n(t)_ and that (2) _n(t)_ and its derivative _dn(t)/d(t)_  ought to satisfy the relation ${tex`dn(t)/dt = b n(t)`}. In this particular case, the educator will tell you something like; "think, what function _do you know_ that is equal to its derivative?" Surprise, this is the exponential function:
+
+
+```tex
+n(t) = a \cdot e^{bt}
+```
+
+Congrats, you just solved the mystery! What? WHY? How are we supposed to know that. Where is the _a_ coming from? Well, they say, you should remember that the exponential function ${tex`n(t) = e^{bt}`} is a function for which the rate of change is equal to itself, that is, the derivative ${tex`dn(t)/dt`} is equal to ${tex`n(t) = a \cdot e^{bt}`}, up to any constant _a_. But it does feel like cheating. 
+
+In a "Differential equations" class, you learn to solve differential equations using various strategies. You learn that the above is a [separable (first-order) differential equation](https://tutorial.math.lamar.edu/Classes/DE/Separable.aspx), which means that you can cast our equation as ${tex`dy/dt = f(y,t)`}, then rewrite as ${tex`N(y) dy/dx = M(x)`}. With that in place, it is known that you can first integrate both sides with respect to _x_, then use substitution. That is
+
+```tex
+\begin{equation}
+  \begin{split}
+  \frac{dn}{dt} &= bn \\
+  \frac{1}{n}\frac{dn}{dt}dt &= bn\frac{1}{n}dt \\
+  \frac{1}{n}dn &= bdt \\
+  \end{split}
+\end{equation}
+```
+
+Now that we have one side in terms of _n_, and the other in terms of _t_, we integrate on both sides:
+
+```tex
+\begin{equation}
+  \begin{split}
+  \int \frac{1}{n}dn &= \int bdt \\
+  \ln |n| &= bt + C_1 \\
+  |n| &= e^{bt + C_1} = C \cdot e^{bt}
+  \end{split}
+\end{equation}
+```
+
+which is the same as above (see [this refresher if you want to keep going](https://mathinsight.org/exponential_growth_decay_differential_equation_refresher)! In [Otto and Day (p.24)](https://github.com/jstonge/2024Fall-MOCS/blob/main/docs/readings/OttoDay-2007-Ch2.pdf), they explain how _derivatives_ and _differential equations_ are related, which I think is often confusing to students:
 
 <div class="math-box">
 <strong>Box 2.2: Derivatives and Differential Equations</strong>
@@ -119,3 +200,103 @@ known as “partial differential equations” (PDE).
 --- 
 
 p.s. Do you have more examples? Click on 'view Source' in the top right corner of the page, and propose your changes on the Git repository by clicking the ✎ icon.
+
+```js
+// The main function
+// This function breaks the initial interval into N subintervals.
+// It then checks the value at the midpoint of each subinterval.
+// If the angle between the two segments formed by approximating
+// the function over the first half and the second half is greater
+// than 0.01 radians, then the interval is subdivided.
+// Proceed recursively up to max_depth.
+
+function build_samples(f, a, b, opts = {}) {
+  let { N = 9, max_depth = 6 } = opts;
+  let dx = (b - a) / N;
+  let root_intervals = Array.from({ length: N }).map(
+    (_, i) => new Interval(a + i * dx, a + (i + 1) * dx, 0)
+  );
+  root_intervals.forEach((I) => {
+    I.fa = f(I.a);
+    I.fb = f(I.b);
+  });
+  root_intervals.reverse();
+
+  let stack = root_intervals;
+  let cnt = 0;
+  let pts = [];
+  let nodeRight, nodeLeft;
+  while (stack.length > 0 && cnt++ < 100000) {
+    let node = stack.pop();
+    if (test(f, node, opts)) {
+      let midpoint = node.midpoint;
+      let new_depth = node.depth + 1;
+      if (new_depth <= max_depth) {
+        let a_left = node.a;
+        let b_left = midpoint;
+        nodeLeft = new Interval(a_left, b_left, new_depth);
+        nodeLeft.fa = f(a_left);
+        nodeLeft.fb = f(b_left);
+        node.left = nodeLeft;
+
+        let a_right = midpoint;
+        let b_right = node.b;
+        nodeRight = new Interval(a_right, b_right, new_depth);
+        nodeRight.fa = f(a_left);
+        nodeRight.fb = f(b_left);
+        node.right = nodeRight;
+
+        stack.push(nodeRight);
+        stack.push(nodeLeft);
+      } else {
+        pts.push(node.a);
+      }
+    } else {
+      pts.push(node.a);
+    }
+  }
+  pts.push(b);
+  //  pts = pts.map(x => ({ x: x, y: f(x) }));
+  pts = pts.map((x) => [x, f(x)]);
+
+  if (opts.show_roots) {
+    let function_roots = [];
+    pts.forEach(function (o, i) {
+      if (i < pts.length - 1 && Math.sign(o.y) != Math.sign(pts[i + 1].y)) {
+        function_roots.push((o.x + pts[i + 1].x) / 2);
+      }
+    });
+    pts.function_roots = function_roots;
+  }
+  return pts;
+}
+```
+
+```js
+function test(f, I, opts = {}) {
+  let { angle_tolerance = 0.01, check_roots = false } = opts;
+  let a = I.a;
+  let b = I.b;
+  let dx2 = (b - a) / 2;
+  let m = (a + b) / 2;
+  let fm = f(m);
+  I.midpoint = m;
+  I.f_mid = fm;
+  if (check_roots && Math.sign(I.fa) != Math.sign(I.fb)) {
+    return true;
+  }
+  let alpha = Math.atan((I.f_mid - I.fa) / dx2);
+  let beta = Math.atan((I.fb - I.f_mid) / dx2);
+  return Math.abs(alpha - beta) > angle_tolerance;
+}
+```
+
+```js
+class Interval {
+  constructor(a, b, depth) {
+    this.a = a;
+    this.b = b;
+    this.depth = depth;
+  }
+}
+```
