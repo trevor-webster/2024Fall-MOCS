@@ -26,6 +26,38 @@ f(x) = 3 + x^power + 2x
 # ╔═╡ febaa746-a17c-45ca-b66c-efc113ef5efe
 plot(f, -10, 10, title="power = $(power)")
 
+# ╔═╡ 990001c0-5fa7-4793-b7d7-cdf7e6a6ab29
+begin
+	a = 1.1
+	x = 1
+	result = []  # Initialize result as an empty array
+	
+	function initialize()
+	    global x, result
+	    result = [x]
+	end
+	
+	function observe()
+	    global x, result
+	    push!(result, x)
+	end
+	
+	function update()
+	    global x
+	    x = a * x
+	end
+	
+	initialize()  # Initialize the variables
+	
+	for t in 1:10
+	    update()
+	    observe()
+	end
+	
+	println(result)  # To display the result
+	
+end
+
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
 [deps]
@@ -1131,5 +1163,6 @@ version = "1.4.1+1"
 # ╠═1787b3c4-8462-4fcc-a842-3b31f835bdc0
 # ╠═febaa746-a17c-45ca-b66c-efc113ef5efe
 # ╠═865ee059-b44a-4ec5-a084-a09043a973d8
+# ╠═990001c0-5fa7-4793-b7d7-cdf7e6a6ab29
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
