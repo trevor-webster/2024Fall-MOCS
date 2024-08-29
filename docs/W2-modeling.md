@@ -60,7 +60,7 @@ Here is LHD's recipe for modeling complex systems
 
 ## Bonus materials
 
-Thinking too much about models can lead to philosophical side effects, such as rejecting the idea of a grandu unified theory (GUT) in science that would explain everything. This is known in philosophy as epistemic pluralism, where multiple, seemingly contradictory views can coexist. 
+Thinking too much about models can lead to philosophical side effects, such as rejecting the idea of a grand unified theory (GUT). This side-effect is known as as epistemic pluralism, where multiple, seemingly contradictory views can coexist. 
 
 A brand of epistemic pluralism is defended at lenght by Scott Page, in his [The Model Thinker](https://www.google.com/url?sa=t&source=web&rct=j&opi=89978449&url=https://www.basicbooks.com/titles/scott-e-page/the-model-thinker/9780465094639/&ved=2ahUKEwiOlZWq3pKIAxVGD1kFHREyFv0QFnoECEUQAQ&usg=AOvVaw3CKVi95uVUxB4dCAJL2SwO) (note that the idea is much older than Page, e.g. [Levins 1966](https://www.jstor.org/stable/27836590). But Page made the idea very sexy). He argues that multiple independent models can be more effective than a single one in addressing complex issues. However, this approach suggests that we may lack a definitive criterion for rejecting models with certainty. What implications does epistemic pluralism have for democracy, especially since we generally expect it to rely on scientific consensus?
 
