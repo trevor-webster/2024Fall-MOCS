@@ -38,29 +38,69 @@ $$\ddot{\theta}(t) = -\mu \dot{\theta}(t) - \frac{g}{L} \sin(\theta(t))$$
 We note that it contains only ordinary derivatives, as there is only a single input (t).
 "
 
+# ╔═╡ 59ec3f13-e022-4441-b631-e281f7dee5d9
+md"Doing phase space, but with time stepping"
+
+# ╔═╡ f3759ec6-e4b1-4b32-9494-501975a1a347
+let
+	# borrowed from 3b1b
+    g = 9.8 
+	L = 2.
+	μ = 0.1
+	
+    θ₀, θ_dot₀ = π/3,  0.1
+	
+    T = 50.
+    δt = 0.01 #timestep
+
+    # Definition of ODE
+	get_θ_dotdot(θ, θ_dot) = -μ * θ_dot - (g / L) * sin(θ)
+
+	# Solution to the differential equation
+    function simulate_pendulum(T, δt, θ₀, θ_dot₀)
+        # initialize value
+		θ = θ₀
+        θ_dot = θ_dot₀
+        res = [(θ, θ_dot)]
+        
+        for _ in 1:((T / δt) - 1)
+            θ_dotdot = get_θ_dotdot(θ, θ_dot)
+            θ += θ_dot * δt
+            θ_dot += θ_dotdot * δt
+            push!(res, (θ, θ_dot))
+        end
+        
+        return res
+    end
+    
+	plot(simulate_pendulum(T, δt, θ₀, θ_dot₀), 
+		 label="Phase Space", xlabel="θ", ylabel="θ_dot",
+		 title="Phase Space Plot")
+	
+end
+
+# ╔═╡ f4227cc1-5b67-447e-81b7-c5e5b58c7def
+md"From `DifferentialEquations.jl` documentation, we can also look at the dynamics with some torque"
+
 # ╔═╡ 3ed7d41f-9fc7-47d9-8fd7-7c8e60b97904
-@bind m Slider(1:3, show_value=true)
+mass_kg = @bind m Slider(1:3, show_value=true)
 
 # ╔═╡ 75eeffe3-78ab-4cc7-9528-89040533ef32
 let
-	l = 1.0                             # length [m]
-	# m = 1.0                             # mass [kg]
+	l = 2.0                             # bob length [m]
 	g = 9.81                            # gravitational acceleration [m/s²]
 
-	
-	function pendulum!(du, u, p, t)
-	    # θ'(t) = ω(t)
-		du[1] = u[2]                    
-		# ω'(t) = -3g/(2l) sin θ(t) + 3/(ml^2)M(t)
-	    du[2] = -3g / (2l) * sin(u[1]) + 3 / (m * l^2) * p(t) 
-	end
-	
 	θ₀ = 0.01                           # initial angular deflection [rad]
 	ω₀ = 0.0                            # initial angular velocity [rad/s]
 	u₀ = [θ₀, ω₀]                       # initial state vector
-	tspan = (0.0, 10.0)                  # time interval
+	tspan = (0.0, 50.0)                 # time interval
 	
-	M = t -> 0.1sin(t)                    # external torque [Nm]
+	function pendulum!(du, u, p, t)
+		du[1] = u[2] # θ'(t) = ω(t)     
+	    du[2] = -3g / (2l) * sin(u[1]) + 3 / (m * l^2) * p(t)  # ω'(t) = -3g/(2l) sin θ(t) + 3/(ml^2)M(t)
+	end
+	
+	M = t -> 0.1sin(t)                  # external torque [Nm]
 	
 	prob = ODEProblem(pendulum!, u₀, tspan, M)
 	sol = solve(prob)
@@ -69,6 +109,62 @@ let
 		 layout = (2, 1))
 end
 
+
+# ╔═╡ b55ac5dd-b878-4fcd-888f-ab73060e5604
+md"## Double pendulum"
+
+# ╔═╡ df5bfe0f-2478-4beb-8fcf-b3efff7b9422
+let
+	# https://docs.juliaplots.org/stable/user_gallery/misc/double_pendulum/#Double-Pendulum-Problem
+	
+	G = 9.8      # acceleration due to gravity, in m/s^2
+	L1 = 1.0     # length of pendulum 1 in m
+	L2 = 1.0     # length of pendulum 2 in m
+	L = L1 + L2  # maximal length of the combined pendulum
+	M1 = 1.0     # mass of pendulum 1 in kg
+	M2 = 1.0     # mass of pendulum 2 in kg
+	t_stop = 5   # how many seconds to simulate
+	
+	function pendulum!(du, u, p, t)
+	    (; M1, M2, L1, L2, G) = p
+	
+	    du[1] = u[2]
+	
+	    delta = u[3] - u[1]
+	    den1 = (M1 + M2) * L1 - M2 * L1 * cos(delta) * cos(delta)
+	    du[2] = (
+	        (
+	            M2 * L1 * u[2] * u[2] * sin(delta) * cos(delta) +
+	            M2 * G * sin(u[3]) * cos(delta) +
+	            M2 * L2 * u[4] * u[4] * sin(delta) - (M1 + M2) * G * sin(u[1])
+	        ) / den1
+	    )
+	
+	    du[3] = u[4]
+	
+	    den2 = (L2 / L1) * den1
+	    du[4] = (
+	        (
+	            -M2 * L2 * u[4] * u[4] * sin(delta) * cos(delta) +
+	            (M1 + M2) * G * sin(u[1]) * cos(delta) -
+	            (M1 + M2) * L1 * u[2] * u[2] * sin(delta) - (M1 + M2) * G * sin(u[3])
+	        ) / den2
+	    )
+	    nothing
+	end
+
+	th1 = 120.0
+	w1 = 0.0
+	th2 = -10.0
+	w2 = 0.0
+	
+	p = (; M1, M2, L1, L2, G)
+	prob = ODEProblem(pendulum!, deg2rad.([th1, w1, th2, w2]), (0.0, t_stop), p)
+	sol = solve(prob)
+
+	plot(sol, linewidth = 2, xaxis = "t", label = ["θ [rad]" "ω [rad/s]"], 
+		 layout = (2,2))
+end
 
 # ╔═╡ 85470136-f58b-4766-9073-aaaed705633b
 md"## Heat equation
@@ -79,6 +175,29 @@ $$\frac{\partial u}{\partial t} = \frac{\partial^2 u}{\partial x^2}$$
 
 It contains time _t_ and space _x_ as independent variables.
 "
+
+# ╔═╡ 76bdf271-cf59-4809-ae21-73cb00d96a68
+md"## Lorenz
+"
+
+# ╔═╡ 55cd4f50-5872-43a5-9f5a-c05794f9cd91
+let
+	function parameterized_lorenz!(du, u, p, t)
+	    x, y, z = u
+	    σ, ρ, β = p
+	    du[1] = dx = σ * (y - x)
+	    du[2] = dy = x * (ρ - z) - y
+	    du[3] = dz = x * y - β * z
+	end
+
+	u0 = [1.0, 0.0, 0.0]
+	tspan = (0.0, 100.0)
+	p = [10.0, 28.0, 8 / 3]
+	prob = ODEProblem(parameterized_lorenz!, u0, tspan, p)
+	sol = solve(prob)
+	plot(sol, idxs = (1, 2, 3))
+	
+end
 
 # ╔═╡ 7560a130-1205-4cc9-a58f-d562dbeca77a
 md"## SIR"
@@ -97,16 +216,121 @@ md"## Lotka Volterra"
 mermaid"""
 graph LR
   S --> S
-  S --> X
+  F --> F
+  F --> S
 """
+
+# ╔═╡ d90a1f6d-94eb-4b0e-a110-6673ba0d713f
+prey_repro_rate = @bind α Slider(0.5:0.01:1.5, default=2/3, show_value=true)
+
+# ╔═╡ 40bca008-09c7-4c90-8270-8756dda676c6
+prey_death_rate = @bind β Slider(0.5:0.01:1.5, default=4/3, show_value=true)
+
+# ╔═╡ 72316988-0e8f-4c88-beb7-9c86203e4a4d
+let
+	function parameterized_RJ!(du, u, p, t)
+	    💚, 💙 = u
+	    α, β = p # prey repro, prey death, fox death, fox repro
+	    du[1] = d💚 = α*💙
+	    du[2] = d💙 = -β*💚
+	end
+
+	tspan = (0.0, 50.0)
+	p = [α, β]
+
+	u0 = [1.4, 2.2]
+	prob = ODEProblem(parameterized_RJ!, u0, tspan, p)
+	sol = solve(prob)
+	
+	# Time plots
+	p1 = plot(sol, label=["Romeo" "Juliet"] )
+	
+	# Phase space
+	p2 = plot(sol, idxs = (1, 2), legend=false, color="grey") 
+	scatter!((u0[1],u0[2])) # plotting i.c.
+	
+	plot(p1, p2, layout=(2,1))
+end
 
 # ╔═╡ 141214db-d870-46e9-b385-f6aa6263baa4
 let
-	function lotka-volterra!(du, u, p, t)
-	    du[1] = 10.0 * (u[2] - u[1])
-	    du[2] = u[1] * (28.0 - u[3]) - u[2]
-	    du[3] = u[1] * u[2] - (8 / 3) * u[3]
+	function parameterized_lv!(du, u, p, t)
+	    🐇, 🦊 = u
+	    α, β, γ, δ = p # prey repro, prey death, fox death, fox repro
+	    du[1] = d🐇 = α*🐇 - β*🐇*🦊 
+	    du[2] = d🦊 = δ*🦊*🐇 -γ*🦊
 	end
+
+	tspan = (0.0, 50.0)
+	p = [α, β, 1., 1.]
+
+	# first i.c.
+	u0a = [1.4, 2.2]
+	prob = ODEProblem(parameterized_lv!, u0a, tspan, p)
+	sol = solve(prob)
+	
+
+	# second i.c.
+	u0b = [0.4, 7.1]
+	probb = ODEProblem(parameterized_lv!, u0b, tspan, p)
+	solb = solve(probb)
+
+	# Time plots
+	p1 = plot(sol, label=["hares" "fox"] )
+	p2 = plot(solb, legend=false)
+
+	# Combined phase space plot
+	p3 = plot(sol, idxs = (1, 2), legend=false, color="grey") # phase space
+	scatter!((u0a[1],u0a[2])) # plotting i.c.
+	plot!(solb, idxs = (1, 2), legend=false, color="green") # phase space
+	scatter!((u0b[1],u0b[2])) # plotting i.c.
+	
+	plot(p1, p2, p3, layout=(3,1))
+end
+
+# ╔═╡ 3ee28a82-1803-400e-8820-4a1c02e09d98
+
+
+# ╔═╡ 95062482-8f26-4620-96f3-a91a54da1076
+md"## Romeo and Juliet (with resistance)
+_recycling lotka volterra params_
+"
+
+# ╔═╡ 043ee371-3502-456a-b8a2-9835cb093e48
+mermaid"""
+graph LR
+  J -- -b ---> R
+  R -- -mu---> R
+  R -- a---> J
+"""
+
+# ╔═╡ eba5a0ea-740f-426c-8396-3e21ecc13a02
+love_friction = @bind μ Slider(0.5:0.01:1.5, default=2/3, show_value=true)
+
+# ╔═╡ b82021b5-9da6-4d49-afb3-2f581a4afdfb
+let
+	function parameterized_RJ!(du, u, p, t)
+	    💚, 💙 = u
+	    α, β, μ = p # prey repro, prey death, fox death, fox repro
+	    du[1] = d💚 = α*💙
+	    du[2] = d💙 = μ*💚 - β*💚
+	end
+
+	tspan = (0.0, 50.0)
+	p = [α, β, μ]
+
+	u0 = [1.4, 2.2]
+	prob = ODEProblem(parameterized_RJ!, u0, tspan, p)
+	sol = solve(prob)
+	
+	# Time plots
+	p1 = plot(sol, label=["Romeo" "Juliet"], color=["green" "blue"] )
+	
+	# Phase space
+	p2 = plot(sol, idxs = (1, 2), legend=false, color="grey") 
+	scatter!((u0[1],u0[2])) # plotting i.c.
+	
+	plot(p1, p2, layout=(2,1))
 end
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
@@ -2769,13 +2993,28 @@ version = "1.4.1+1"
 # ╠═0828dafd-9a61-4346-90fa-0d09b9a2a198
 # ╠═32995dbc-1eab-456e-812e-15e95f3dd184
 # ╟─696782a9-47ac-4401-898c-6cc8556086e0
-# ╠═3ed7d41f-9fc7-47d9-8fd7-7c8e60b97904
+# ╟─59ec3f13-e022-4441-b631-e281f7dee5d9
+# ╠═f3759ec6-e4b1-4b32-9494-501975a1a347
+# ╟─f4227cc1-5b67-447e-81b7-c5e5b58c7def
+# ╟─3ed7d41f-9fc7-47d9-8fd7-7c8e60b97904
 # ╠═75eeffe3-78ab-4cc7-9528-89040533ef32
+# ╟─b55ac5dd-b878-4fcd-888f-ab73060e5604
+# ╠═df5bfe0f-2478-4beb-8fcf-b3efff7b9422
 # ╟─85470136-f58b-4766-9073-aaaed705633b
+# ╠═76bdf271-cf59-4809-ae21-73cb00d96a68
+# ╠═55cd4f50-5872-43a5-9f5a-c05794f9cd91
+# ╠═72316988-0e8f-4c88-beb7-9c86203e4a4d
 # ╟─7560a130-1205-4cc9-a58f-d562dbeca77a
 # ╟─2aec7fd0-4167-4e09-a603-dfe79e70faab
 # ╟─43f5b10a-670d-11ef-1308-5ba25fe852bf
-# ╟─a28b8392-0493-4861-a218-d4ed114511bc
+# ╠═a28b8392-0493-4861-a218-d4ed114511bc
+# ╟─d90a1f6d-94eb-4b0e-a110-6673ba0d713f
+# ╟─40bca008-09c7-4c90-8270-8756dda676c6
 # ╠═141214db-d870-46e9-b385-f6aa6263baa4
+# ╟─3ee28a82-1803-400e-8820-4a1c02e09d98
+# ╟─95062482-8f26-4620-96f3-a91a54da1076
+# ╠═043ee371-3502-456a-b8a2-9835cb093e48
+# ╟─eba5a0ea-740f-426c-8396-3e21ecc13a02
+# ╠═b82021b5-9da6-4d49-afb3-2f581a4afdfb
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
