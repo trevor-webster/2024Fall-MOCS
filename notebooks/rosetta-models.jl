@@ -42,7 +42,7 @@ graph
 # ╔═╡ c1a6c862-16ca-4970-a0d5-09c6c4f6c029
 md"
 
-The exponential growth is the quintessential rosetta (mathematical) model. It is broadly use because it is easily solved. So easy to that often the solving is hidden away, which, arguably, can be misleading. This model originated in population growth; bacterial, rabbits, human population, etc. Obviously, it is an idealized model. If not, the planet would be covered in rabbits.
+The exponential growth is the quintessential rosetta (mathematical) model. It is broadly use because it is easily solved. This model is almost always cast in terms of population growth; bacterial, rabbits, human population, etc. Obviously, it is an idealized model. If not, the planet would be covered in rabbits.
 
 Using discrete time interval
 
@@ -81,7 +81,8 @@ let
 	P_dot = P₀
 	res = [P_dot]
 	for t in 0:dt:(Tmax-dt)
-	    △P = dt * 1.01 * P_dot  # ΔP = dt * f(P)
+								# P(n+1) = P(t) + bP(t)
+	    △P = dt * 1.01 * P_dot  # ΔP = P(t+1) - P(t) = bP(t)
 	    P_dot += △P
 	    push!(res, P_dot)
 	end
@@ -107,13 +108,15 @@ graph LR
 
 # ╔═╡ 45bcdab5-1eb5-4533-9216-ef1581adcd9f
 md"
-As [Roughgarden](https://en.wikipedia.org/wiki/Joan_Roughgarden) says, it got'ta stop somewhere. The logistic growth is the exponential function in disguised, with some dependeny on the $P(t)$ getting closer to a carrying capacity. In contagion, it is when the rate of infection is due to those who are sick infecting those who are not sick. When you run out of sick people, the contagion stops with that model. In ecology, population growth stops when it hits some environmental limits. When average birth/death rates per individual is a function of population size, we say that it is 'density-dependent population growth'. 
+As [Roughgarden](https://en.wikipedia.org/wiki/Joan_Roughgarden) says, it got'ta stop somewhere. The logistic growth is the exponential function in disguised, with some dependeny on the $P(t)$ getting closer to a carrying capacity. In ecology, population growth stops when it hits some environmental limits. When average birth/death rates per individual is a function of population size, we say that it is 'density-dependent population growth'. 
 
-The logistic growth in terms of population size is written
+In contagion, the carrying capacity is when you run out of sick people. When assuming a closed system, and a large enough population, we can get rid of one of the two boxes above. Indeed, the number of, say, susceptible individuals is the total population size minus the infected individuals. See [Smaldino 2023, ch.4.4](https://github.com/jstonge/2024Fall-MOCS/blob/main/docs/readings/Smaldino-2023-ch4.pdf) for a nice walkthrough of the precedure.
+
+The ODE in terms of population size is written
 
 $$\frac{dN(t)}{dt} = r \cdot \textcolor{green}{(1 - \frac{N(t)}{K})} \cdot N(t)$$
 
-One way to write the solution is 
+Where _K_ is often use for carrying capacity (in contagion example, it is our 	total population _N_). One way to write the solution is 
 
 $$N(t) = \frac{k}{1 + (K/N_0 - 1)e^{rt}}$$
 
@@ -164,19 +167,59 @@ end
 
 
 # ╔═╡ f391d1a5-098a-48f2-8e6d-f965d99fe3e4
-md"## Pharmacokinetics
+md"## Birth-death processes
 
-Things flowing in and out of compartments, say molecules of coffee in liver. Similar to birth-death process. THe phenomenon of interest is the concentration of stuff in that compartment. Things are distinguished by whether they are in the compartment or not. Say that here we have an open system, meaning that we don't care where the molecules come from, and where they go next. We get:
+Things flowing in and out of compartments, say molecules of coffee in liver or a given mouse population. The phenomenon of interest is the concentration of stuff in a compartment. Things are distinguished by whether they are in the compartment or not. Say that here we have an open system, meaning that we don't care where the stuff come from, and where they go next, we have:
 "
 
-# ╔═╡ 31197ae1-ab2b-4e55-9375-e04442feca1d
+# ╔═╡ 8c1b8994-81d5-42bf-a8e6-1e73fc369828
 mermaid"""
 graph LR
-  in --a---> N
-  N --bN---> out
+  in --m---> N
+  N --bN---> N
+  N --dN---> out
   style in opacity:0.1,stroke-width:0px,color:#fff, stroke:#fff
   style out opacity:0.1,stroke-width:0px,color:#fff, stroke:#fff;
 """
+
+# ╔═╡ 9b9cf8e1-1eab-45c2-9050-b509c5c60170
+md"We can write the following recursion equation (see [here](https://jstonge.github.io/2024Fall-MOCS/notebooks/all-the-models/reccurence-eqs.jl) for a more detailed derivation):
+
+$$N(t+1) = (1+b)(1-d)n(t) + m \\$$
+
+From this recursion equation, we write the difference equation
+
+$$\Delta N(t) = -dN(t) + b(1-d)N(t) + m \\$$
+
+The continous version can be eyeballed
+
+$$\frac{dN(t)}{dt} = bN(t) - dN(t) + m$$
+"
+
+# ╔═╡ 4a1c661c-a65e-42dc-98eb-4665030986a6
+let 
+	# initial conditions (i.cs)
+	N₀ = 1 / 2
+	Tmax = 50.0
+	tspan = (0.0, Tmax)
+	m = 1/2 # inflow 
+	d = 1/2 # outflow
+	b = 1/2 # repro
+	
+	# TIMESTEPPING
+	
+	dt = 0.01
+	N_dot = N₀
+	res = [N_dot]
+	for t in 0:dt:(Tmax-dt)
+	    △N = dt * ( -d*N_dot + b*(1-d)*N_dot + m ) 
+	    N_dot += △N
+	    push!(res, N_dot)
+	end
+
+	plot(0:dt:Tmax, res)
+end
+
 
 # ╔═╡ 7560a130-1205-4cc9-a58f-d562dbeca77a
 md"## SIR"
@@ -235,21 +278,30 @@ let
 end
 
 # ╔═╡ 43f5b10a-670d-11ef-1308-5ba25fe852bf
-md"## Lotka Volterra
-
-The system of interest here is predator-prey relationship. The arrows are not about individuals being converted from one state to another; they are about converting predator into prey, as we are assuming that the predator birth rates is dependent on number of available prey. As with the exponential model, we are assuming that the the number of predators at the next time step depends on population size at previous time step.
-"
+md"## Lotka Volterra"
 
 # ╔═╡ a28b8392-0493-4861-a218-d4ed114511bc
 mermaid"""
 graph TD
-  F --> F
-  F --> S
-  S --> Sout
-  F --> Fout
-  style Sout opacity:0.1,stroke-width:0px,color:#fff, stroke:#fff
-  style Fout opacity:0.1,stroke-width:0px,color:#fff, stroke:#fff;
+  L --δLH---> H
+  H --αH---> H
+  H --βLH---> Hout
+  L --γL---> Lout
+  style Hout opacity:0.1,stroke-width:0px,color:#fff, stroke:#fff
+  style Lout opacity:0.1,stroke-width:0px,color:#fff, stroke:#fff;
 """
+
+# ╔═╡ 6f79705f-01c4-4580-8a0f-b1a21ec57e77
+md"The system of interest here is predator-prey relationship. The arrows are not about individuals being converted from one state to another; they are about converting predator into prey, as we are assuming that the predator birth rates is dependent on number of available prey. As with the exponential model, we are assuming that the the number of predators at the next time step depends on population size at previous time step.
+
+The system of ODEs is the following:
+
+$$\frac{dH(t)}{dt} = \alpha H(t) - \beta L(t)H(t)$$
+$$\frac{dL(t)}{dt} = -\gamma L(t) + \delta L(t)H(t)$$
+
+_refs_:
+ - Roughgarden 1998, ch. 6
+"
 
 # ╔═╡ d90a1f6d-94eb-4b0e-a110-6673ba0d713f
 prey_repro_rate = @bind α Slider(0.5:0.01:1.5, default=2/3, show_value=true)
@@ -3148,13 +3200,16 @@ version = "1.4.1+1"
 # ╟─45bcdab5-1eb5-4533-9216-ef1581adcd9f
 # ╠═ca611a2c-7b2c-47ba-a481-97c012ae451d
 # ╟─f391d1a5-098a-48f2-8e6d-f965d99fe3e4
-# ╠═31197ae1-ab2b-4e55-9375-e04442feca1d
+# ╟─8c1b8994-81d5-42bf-a8e6-1e73fc369828
+# ╟─9b9cf8e1-1eab-45c2-9050-b509c5c60170
+# ╠═4a1c661c-a65e-42dc-98eb-4665030986a6
 # ╟─7560a130-1205-4cc9-a58f-d562dbeca77a
 # ╟─f445a06d-269b-4977-945f-953f56440600
 # ╟─7dc1eb5b-48f8-4bc0-8c7b-a84706e64b78
 # ╠═1a524fd2-d7c8-48d9-9c23-fac20886669d
 # ╟─43f5b10a-670d-11ef-1308-5ba25fe852bf
 # ╟─a28b8392-0493-4861-a218-d4ed114511bc
+# ╟─6f79705f-01c4-4580-8a0f-b1a21ec57e77
 # ╠═d90a1f6d-94eb-4b0e-a110-6673ba0d713f
 # ╠═40bca008-09c7-4c90-8270-8756dda676c6
 # ╠═a2be6ad3-5ea2-412c-8042-f073ee7b435c
@@ -3163,7 +3218,7 @@ version = "1.4.1+1"
 # ╠═043ee371-3502-456a-b8a2-9835cb093e48
 # ╟─eba5a0ea-740f-426c-8396-3e21ecc13a02
 # ╠═b82021b5-9da6-4d49-afb3-2f581a4afdfb
-# ╟─696782a9-47ac-4401-898c-6cc8556086e0
+# ╠═696782a9-47ac-4401-898c-6cc8556086e0
 # ╠═f3759ec6-e4b1-4b32-9494-501975a1a347
 # ╟─f4227cc1-5b67-447e-81b7-c5e5b58c7def
 # ╠═3ed7d41f-9fc7-47d9-8fd7-7c8e60b97904

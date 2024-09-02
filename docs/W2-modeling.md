@@ -56,6 +56,14 @@ Here is LHD's recipe for modeling complex systems
   </ul>
 </div>
 
+---
+
+### Part II
+
+Following up on the recipe, here is Laurent introducing compartment models:
+
+<iframe src="https://streaming.uvm.edu/embed/49960/" width="560" height="315" frameborder="0" allowfullscreen></iframe>
+
 --- 
 
 ## Bonus materials

@@ -8,7 +8,14 @@
   </ul>
 </div>
 
-🚧 Coming soon 🚧
+<iframe src="https://streaming.uvm.edu/embed/49966/" width="560" height="315" frameborder="0" allowfullscreen></iframe>
+
+<iframe src="https://streaming.uvm.edu/embed/49967/" width="560" height="315" frameborder="0" allowfullscreen></iframe>
+
+<iframe src="https://streaming.uvm.edu/embed/49968/" width="560" height="315" frameborder="0" allowfullscreen></iframe>
+
+<iframe src="https://streaming.uvm.edu/embed/49969/" width="560" height="315" frameborder="0" allowfullscreen></iframe>
+
 
 <div class="callout-box">
   <h3>Things to do by Thursday at noon</h3>
