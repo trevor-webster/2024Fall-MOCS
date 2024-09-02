@@ -31,11 +31,6 @@ For each model, we look at its structure and interpretation. Following Weisberg 
 
 # ╔═╡ 715cb946-521d-4607-b442-ff4b1e55ba85
 md"## Exponential growth
-
-Population growth, reinforced by itself.
-
-- Otto and Day (2009), ch.2
-
 "
 
 # ╔═╡ 2fb8fe54-0585-4ded-b62e-56cfb71630c1
@@ -47,7 +42,7 @@ graph
 # ╔═╡ c1a6c862-16ca-4970-a0d5-09c6c4f6c029
 md"
 
-$$\frac{dP(t)}{dt} = r \cdot P(t) \qquad(\text{ODE})$$
+The exponential growth is the quintessential rosetta (mathematical) model. It is broadly use because it is easily solved. So easy to that often the solving is hidden away, which, arguably, can be misleading. This model originated in population growth; bacterial, rabbits, human population, etc. Obviously, it is an idealized model. If not, the planet would be covered in rabbits.
 
 Using discrete time interval
 
@@ -55,8 +50,16 @@ $$P(t + \triangle t) = P(t) + r \cdot P(t) \qquad (\text{Discrete})$$
 
 OR, as $\triangle t \rightarrow 0$
 
+$$\frac{dP(t)}{dt} = r \cdot P(t) \qquad(\text{ODE})$$
+
+Solving the ODE, we get
+
 $$P(t) = p_0 \cdot e^{rt} \qquad (\text{General Solution})$$
 
+_refs:_
+- Otto and Day (2009), ch.2
+- Roughgarden (1998), pp.55-60
+- [Zobitz (2022) ch.1](https://jmzobitz.github.io/ModelingWithR/intro-01.html#fn1) 
 "
 
 # ╔═╡ a77d35a1-2d48-41d1-9a1a-210133c13674
@@ -93,10 +96,77 @@ let
 end
 
 
+# ╔═╡ 6d3f5c87-226a-45c9-a26b-ec9babeac103
+md"## SI (logistic growth)"
+
+# ╔═╡ 65101a30-3659-45c8-b7d0-e8343dd0ce9a
+mermaid"""
+graph LR
+  S --kS---> I
+"""
+
+# ╔═╡ 45bcdab5-1eb5-4533-9216-ef1581adcd9f
+md"
+As [Roughgarden](https://en.wikipedia.org/wiki/Joan_Roughgarden) says, it got'ta stop somewhere. The logistic growth is the exponential function in disguised, with some dependeny on the $P(t)$ getting closer to a carrying capacity. In contagion, it is when the rate of infection is due to those who are sick infecting those who are not sick. When you run out of sick people, the contagion stops with that model. In ecology, population growth stops when it hits some environmental limits. When average birth/death rates per individual is a function of population size, we say that it is 'density-dependent population growth'. 
+
+The logistic growth in terms of population size is written
+
+$$\frac{dN(t)}{dt} = r \cdot \textcolor{green}{(1 - \frac{N(t)}{K})} \cdot N(t)$$
+
+One way to write the solution is 
+
+$$N(t) = \frac{k}{1 + (K/N_0 - 1)e^{rt}}$$
+
+
+_refs:_
+ - Roughgarden 1998, pp.102-140
+ - [Zobitz (2022) ch.1](https://jmzobitz.github.io/ModelingWithR/intro-01.html#fn1) 
+"
+
+# ╔═╡ ca611a2c-7b2c-47ba-a481-97c012ae451d
+let 
+	I₀ = 250
+	N0 = 13_600
+	k0 = 0.024
+	
+	# trying out modeling toolkit...
+	@mtkmodel L begin
+	    @parameters begin
+			N=N0
+			k=k0
+		end
+		
+		@variables begin
+			I(t)=I₀
+		end
+	    
+	    @equations begin
+	        D(I) ~  k * I * (1 - (I / N)) 
+	    end
+	end
+	
+	@mtkbuild logistic = L()
+	
+	# numerical solution
+	Tmax = 600
+	tspan = (0.0, Tmax)
+	prob = ODEProblem(logistic, [], tspan,  [])
+	sol = solve(prob)
+
+	# analytic solution
+	f(t) = (N0 * I₀) / (I₀ + (N0 - I₀) * exp(-k0 * t))
+	
+	# Plotting both solutions for comparison
+	plot(sol, lw=2, color="orange", label="Numerical Solution (ODE Solver)")	
+	plot!(sol.t, t -> f(t),  lw=2, ls=:dash, color="blue", 
+		  label="Analytical Solution")
+end
+
+
 # ╔═╡ f391d1a5-098a-48f2-8e6d-f965d99fe3e4
 md"## Pharmacokinetics
 
-Things flowing in and out of compartments, say molecules of coffee in liver. THe phenomenon of interest is the concentration of stuff in that compartment. Things are distinguished by whether they are in the compartment or not. Say that here we have an open system, meaning that we don't care where the molecules come from, and where they go next. 
+Things flowing in and out of compartments, say molecules of coffee in liver. Similar to birth-death process. THe phenomenon of interest is the concentration of stuff in that compartment. Things are distinguished by whether they are in the compartment or not. Say that here we have an open system, meaning that we don't care where the molecules come from, and where they go next. We get:
 "
 
 # ╔═╡ 31197ae1-ab2b-4e55-9375-e04442feca1d
@@ -107,56 +177,6 @@ graph LR
   style in opacity:0.1,stroke-width:0px,color:#fff, stroke:#fff
   style out opacity:0.1,stroke-width:0px,color:#fff, stroke:#fff;
 """
-
-# ╔═╡ 6d3f5c87-226a-45c9-a26b-ec9babeac103
-md"## SI (logistic growth)"
-
-# ╔═╡ 65101a30-3659-45c8-b7d0-e8343dd0ce9a
-mermaid"""
-graph LR
-  S --kS---> I
-"""
-
-# ╔═╡ ca611a2c-7b2c-47ba-a481-97c012ae451d
-let 
-	I₀ = 250
-	N0 = 13_600
-	k0 = 0.024
-
-	@mtkmodel L begin
-	    @parameters begin
-			N=N0
-			k=k0
-		end
-		@variables begin
-			I(t)=I₀
-		end
-	    
-	    @equations begin
-	        # D(I) ~  k * I * (N - I)
-	        D(I) ~  k * I * (1 - (I / N)) 
-	    end
-	end
-	
-	@mtkbuild logistic = L()
-	
-	Tmax = 600
-	tspan = (0.0, Tmax)
-	
-	prob = ODEProblem(logistic, [], tspan,  [])
-	
-	# Solve the ODE using an appropriate solver
-	sol = solve(prob)
-
-	# analytic solution
-	f(t) = (N0 * I₀) / (I₀ + (N0 - I₀) * exp(-k0 * t))
-	
-	# Plotting both solutions for comparison
-	plot(sol, lw=2, color="orange", label="Numerical Solution (ODE Solver)")	
-	plot!(sol.t, t -> f(t), 
-		  lw=2, ls=:dash, color="blue", label="Analytical Solution")
-end
-
 
 # ╔═╡ 7560a130-1205-4cc9-a58f-d562dbeca77a
 md"## SIR"
@@ -3123,13 +3143,14 @@ version = "1.4.1+1"
 # ╟─2fb8fe54-0585-4ded-b62e-56cfb71630c1
 # ╟─c1a6c862-16ca-4970-a0d5-09c6c4f6c029
 # ╠═a77d35a1-2d48-41d1-9a1a-210133c13674
-# ╟─f391d1a5-098a-48f2-8e6d-f965d99fe3e4
-# ╟─31197ae1-ab2b-4e55-9375-e04442feca1d
 # ╟─6d3f5c87-226a-45c9-a26b-ec9babeac103
 # ╟─65101a30-3659-45c8-b7d0-e8343dd0ce9a
+# ╟─45bcdab5-1eb5-4533-9216-ef1581adcd9f
 # ╠═ca611a2c-7b2c-47ba-a481-97c012ae451d
+# ╟─f391d1a5-098a-48f2-8e6d-f965d99fe3e4
+# ╠═31197ae1-ab2b-4e55-9375-e04442feca1d
 # ╟─7560a130-1205-4cc9-a58f-d562dbeca77a
-# ╠═f445a06d-269b-4977-945f-953f56440600
+# ╟─f445a06d-269b-4977-945f-953f56440600
 # ╟─7dc1eb5b-48f8-4bc0-8c7b-a84706e64b78
 # ╠═1a524fd2-d7c8-48d9-9c23-fac20886669d
 # ╟─43f5b10a-670d-11ef-1308-5ba25fe852bf
