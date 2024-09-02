@@ -15,88 +15,294 @@ macro bind(def, element)
 end
 
 # ╔═╡ 0828dafd-9a61-4346-90fa-0d09b9a2a198
-using PlutoUI, Plots, ModelingToolkit, Kroki
+using PlutoUI, Plots, ModelingToolkit, Kroki, Symbolics
 
 # ╔═╡ 32995dbc-1eab-456e-812e-15e95f3dd184
 using DifferentialEquations: solve
 
+# ╔═╡ 30de3f34-f983-4c1f-898c-6dea95c4896f
+using ModelingToolkit: t_nounits as t, D_nounits as D
+
+# ╔═╡ bea36c11-da70-4997-98ee-5ffc9f30c528
+md"Some models are taught everywhere. I call them **rosetta models**, as they allow you to translate between notations, formalism, solution strategies, and programming languages. Those models are also the basis for a family of models, e.g. the SI model is the basis for the SIS, SIR, SEIR, etc..
+
+For each model, we look at its structure and interpretation. Following Weisberg (2013), we distinguish between 3 types of structures: (i) physical/concrete, (ii) mathematical, and (iii) computational. For each structure, we briefly mention the original model's construal, that is, how modellers understood the structure in question. We also briefly discuss their intepretation, or how modelers thought the models denoted the truthness of some target phenomenon. This is work in progress, but some subsection headers are link to a notebook containing the model's family.
+"
+
+# ╔═╡ 715cb946-521d-4607-b442-ff4b1e55ba85
+md"## Exponential growth
+
+Population growth, reinforced by itself.
+
+- Otto and Day (2009), ch.2
+
+"
+
+# ╔═╡ 2fb8fe54-0585-4ded-b62e-56cfb71630c1
+mermaid"""
+graph 
+  P --rP---> P
+"""
+
+# ╔═╡ c1a6c862-16ca-4970-a0d5-09c6c4f6c029
+md"
+
+$$\frac{dP(t)}{dt} = r \cdot P(t) \qquad(\text{ODE})$$
+
+Using discrete time interval
+
+$$P(t + \triangle t) = P(t) + r \cdot P(t) \qquad (\text{Discrete})$$
+
+OR, as $\triangle t \rightarrow 0$
+
+$$P(t) = p_0 \cdot e^{rt} \qquad (\text{General Solution})$$
+
+"
+
+# ╔═╡ a77d35a1-2d48-41d1-9a1a-210133c13674
+let 
+	# initial conditions (i.cs)
+	P₀ = 1 / 2
+	Tmax = 5.0
+	tspan = (0.0, Tmax)
+	
+	# NUMERICAL
+	
+	f(u, p, t) = 1.01 * u
+	prob = ODEProblem(f, P₀, tspan)
+	num_sol = solve(prob)
+
+	# TIMESTEPPING
+	
+	dt = 0.01
+	P_dot = P₀
+	res = [P_dot]
+	for t in 0:dt:(Tmax-dt)
+	    △P = dt * 1.01 * P_dot  # ΔP = dt * f(P)
+	    P_dot += △P
+	    push!(res, P_dot)
+	end
+
+	# ANALYTICAL - SPECIFIC SOLUTION
+	
+	p(t) = 0.5 * exp(1.01t)
+	
+	plot(num_sol, lw=2, color="orange", label="ODE Solver")
+	plot!(0:dt:Tmax, res, lw=2, ls=:dot, color="green", label="Euler Approximation")
+	plot!(num_sol.t, t -> p(t), lw = 2, ls =  :dash, label = "Analytical", color = "blue")
+end
+
+
+# ╔═╡ f391d1a5-098a-48f2-8e6d-f965d99fe3e4
+md"## Pharmacokinetics
+
+Things flowing in and out of compartments, say molecules of coffee in liver. THe phenomenon of interest is the concentration of stuff in that compartment. Things are distinguished by whether they are in the compartment or not. Say that here we have an open system, meaning that we don't care where the molecules come from, and where they go next. 
+"
+
+# ╔═╡ 31197ae1-ab2b-4e55-9375-e04442feca1d
+mermaid"""
+graph LR
+  in --a---> N
+  N --bN---> out
+  style in opacity:0.1,stroke-width:0px,color:#fff, stroke:#fff
+  style out opacity:0.1,stroke-width:0px,color:#fff, stroke:#fff;
+"""
+
+# ╔═╡ 6d3f5c87-226a-45c9-a26b-ec9babeac103
+md"## SI (logistic growth)"
+
+# ╔═╡ 65101a30-3659-45c8-b7d0-e8343dd0ce9a
+mermaid"""
+graph LR
+  S --kS---> I
+"""
+
+# ╔═╡ ca611a2c-7b2c-47ba-a481-97c012ae451d
+let 
+	I₀ = 250
+	N0 = 13_600
+	k0 = 0.024
+
+	@mtkmodel L begin
+	    @parameters begin
+			N=N0
+			k=k0
+		end
+		@variables begin
+			I(t)=I₀
+		end
+	    
+	    @equations begin
+	        # D(I) ~  k * I * (N - I)
+	        D(I) ~  k * I * (1 - (I / N)) 
+	    end
+	end
+	
+	@mtkbuild logistic = L()
+	
+	Tmax = 600
+	tspan = (0.0, Tmax)
+	
+	prob = ODEProblem(logistic, [], tspan,  [])
+	
+	# Solve the ODE using an appropriate solver
+	sol = solve(prob)
+
+	# analytic solution
+	f(t) = (N0 * I₀) / (I₀ + (N0 - I₀) * exp(-k0 * t))
+	
+	# Plotting both solutions for comparison
+	plot(sol, lw=2, color="orange", label="Numerical Solution (ODE Solver)")	
+	plot!(sol.t, t -> f(t), 
+		  lw=2, ls=:dash, color="blue", label="Analytical Solution")
+end
+
+
 # ╔═╡ 7560a130-1205-4cc9-a58f-d562dbeca77a
 md"## SIR"
 
-# ╔═╡ 2aec7fd0-4167-4e09-a603-dfe79e70faab
+# ╔═╡ f445a06d-269b-4977-945f-953f56440600
 mermaid"""
 graph LR
-  S --> I
-  I --> R
+  S --β---> I
+  I --α---> R
 """
 
+# ╔═╡ 7dc1eb5b-48f8-4bc0-8c7b-a84706e64b78
+md"
+
+The corresponding system of equations:
+
+$$\dot{S} =  \beta S(t)*I(t)$$
+$$\dot{I} = \beta S I -\alpha I$$
+$$\dot{R} = \alpha I$$
+
+"
+
+# ╔═╡ 1a524fd2-d7c8-48d9-9c23-fac20886669d
+let 
+	# Initial conditions (i.cs)
+	
+	N = 10000.0
+	I₀ = 1. # patient zero
+	S₀ = N - I₀ # conserved quantity
+	R₀ = 0.
+	Tmax = 182
+	β = 1/30*5*1/N # transmission time per contact: 30days. contacts per day: 5
+	α = 1/15 
+
+	# Euler's method
+	
+	dt = 1.
+	S_dot, I_dot, R_dot = S₀, I₀, R₀
+	res = [(S_dot, I_dot, R_dot)]
+	for t in 0:dt:(Tmax-dt)
+	    △S = -S_dot*(1-(1 - β)^I_dot)
+	    S_dot += △S
+		△R = α*I_dot
+		
+		I_dot += -△S - △R
+		R_dot += △R
+		
+	    push!(res, (S_dot, I_dot, R_dot))
+	end
+	
+	S, I, R = map(collect, zip(res...)) # small hack to unpack vars
+	
+	plot(0:dt:Tmax, S, label="Susceptible", xlabel="time")
+	plot!(0:dt:Tmax, I, label="Infected")
+	plot!(0:dt:Tmax, R, label="Recovered")
+end
+
 # ╔═╡ 43f5b10a-670d-11ef-1308-5ba25fe852bf
-md"## Lotka Volterra"
+md"## Lotka Volterra
+
+The system of interest here is predator-prey relationship. The arrows are not about individuals being converted from one state to another; they are about converting predator into prey, as we are assuming that the predator birth rates is dependent on number of available prey. As with the exponential model, we are assuming that the the number of predators at the next time step depends on population size at previous time step.
+"
 
 # ╔═╡ a28b8392-0493-4861-a218-d4ed114511bc
 mermaid"""
-graph LR
-  S --> S
+graph TD
   F --> F
   F --> S
+  S --> Sout
+  F --> Fout
+  style Sout opacity:0.1,stroke-width:0px,color:#fff, stroke:#fff
+  style Fout opacity:0.1,stroke-width:0px,color:#fff, stroke:#fff;
 """
 
 # ╔═╡ d90a1f6d-94eb-4b0e-a110-6673ba0d713f
 prey_repro_rate = @bind α Slider(0.5:0.01:1.5, default=2/3, show_value=true)
 
 # ╔═╡ 40bca008-09c7-4c90-8270-8756dda676c6
-prey_death_rate = @bind β Slider(0.5:0.01:1.5, default=4/3, show_value=true)
+prey_death_rate = @bind β Slider(0.:0.01:1.5, default=4/3, show_value=true)
 
-# ╔═╡ 141214db-d870-46e9-b385-f6aa6263baa4
-let
-	function parameterized_lv!(du, u, p, t)
-	    🐇, 🦊 = u
-	    α, β, γ, δ = p # prey repro, prey death, fox death, fox repro
-	    du[1] = d🐇 = α*🐇 - β*🐇*🦊 
-	    du[2] = d🦊 = δ*🦊*🐇 -γ*🦊
+# ╔═╡ a2be6ad3-5ea2-412c-8042-f073ee7b435c
+let 
+	# trying out modeling toolkit...
+	
+	@mtkmodel LV begin
+		@parameters  begin
+			α=2/3 
+			β=4/3
+			γ=1.0 
+			δ=1.0
+		end
+	
+		@variables  begin 
+			🦊(t)=1.4 
+			🐇(t)=2.2
+		end
+	    
+		@equations begin
+	        D(🐇) ~ α*🐇 - β*🐇*🦊
+			D(🦊) ~ -γ*🦊 + δ*🐇*🦊
+	    end
+
 	end
 
+	@mtkbuild sys = LV(; α=α, β=β)
+	@mtkbuild sys2 = LV(; α=α, β=β, 🐇=0.4, 🦊 = 7.2)
+	
 	tspan = (0.0, 50.0)
-	p = [α, β, 1., 1.]
-
-	# first i.c.
-	u0a = [1.4, 2.2]
-	prob = ODEProblem(parameterized_lv!, u0a, tspan, p)
+	
+	# Simulate
+	prob = ODEProblem(sys, [], tspan)
 	sol = solve(prob)
 	
+	# Simulate w/ different i.c
+	prob2 = ODEProblem(sys2, [], tspan)
+	sol2 = solve(prob2)
 
-	# second i.c.
-	u0b = [0.4, 7.1]
-	probb = ODEProblem(parameterized_lv!, u0b, tspan, p)
-	solb = solve(probb)
-
-	# Time plots
+	# Plotting
+	l = @layout [ [b ; c ] a{0.4w} ]
 	p1 = plot(sol, label=["hares" "fox"] )
-	p2 = plot(solb, legend=false)
-
-	# Combined phase space plot
-	p3 = plot(sol, idxs = (1, 2), legend=false, color="grey") # phase space
-	scatter!((u0a[1],u0a[2])) # plotting i.c.
-	plot!(solb, idxs = (1, 2), legend=false, color="green") # phase space
-	scatter!((u0b[1],u0b[2])) # plotting i.c.
+	p2 = plot(sol2, legend=false )
+	p3 = plot(sol, idxs = (1, 2), legend=false, color="grey")
+	plot!(sol2, idxs = (1, 2), legend=false, color="grey")
 	
-	plot(p1, p2, p3, layout=(3,1))
+	plot(p1, p2, p3, layout=l)
 end
 
-# ╔═╡ 3ee28a82-1803-400e-8820-4a1c02e09d98
-
+# ╔═╡ 22c92187-9e47-489f-9c60-963fdeb47c7e
+md"## Interlude: what are the parts?
+In the SIR model, the parts were the same people transitionning between states. In the Lotka-voltera model, the parts were interdependent populations of prey and predators. In pharmacokinetics, we had molecules coming in and out of an organ. In each case, the point particles within compartments were indistinguishable from each other; all susceptible people were the same, all foxes were the same, and all molecules were the same. 
+"
 
 # ╔═╡ 95062482-8f26-4620-96f3-a91a54da1076
 md"## Romeo and Juliet (with resistance)
-_recycling lotka volterra params_
+
+Romeo and Juliet is yet another way to think about what we mean by parts of a system. Here we have two people, and their love for each other. 
+
+note: _recycling lotka volterra params_
 "
 
 # ╔═╡ 043ee371-3502-456a-b8a2-9835cb093e48
 mermaid"""
 graph LR
-  J -- -b ---> R
-  R -- -mu---> R
-  R -- a---> J
+  J -- -β---> R
+  R -- -μ---> R
+  R -- α---> J
 """
 
 # ╔═╡ eba5a0ea-740f-426c-8396-3e21ecc13a02
@@ -129,8 +335,8 @@ let
 end
 
 # ╔═╡ 696782a9-47ac-4401-898c-6cc8556086e0
-md"## Damped Oscillator
-_see https://observablehq.com/@mocs/double-trouble-phase-space_
+md"## [Pendulum](https://jstonge.github.io/2024Fall-MOCS/notebooks/all-the-models/pendulum.jl)
+_see [Observable notebook](https://observablehq.com/@mocs/double-trouble-phase-space) for real interactivity; click on the subsection for the family_
 
 
 The ODE f or the damped oscillator is:
@@ -258,6 +464,7 @@ Kroki = "b3565e16-c1f2-4fe9-b4ab-221c88942068"
 ModelingToolkit = "961ee093-0014-501f-94e3-6117800e7a78"
 Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
 PlutoUI = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
+Symbolics = "0c5d862f-8b57-4792-8d23-62f2024744c7"
 
 [compat]
 DifferentialEquations = "~7.13.0"
@@ -265,6 +472,7 @@ Kroki = "~1.0.0"
 ModelingToolkit = "~9.34.0"
 Plots = "~1.40.4"
 PlutoUI = "~0.7.60"
+Symbolics = "~6.4.0"
 """
 
 # ╔═╡ 00000000-0000-0000-0000-000000000002
@@ -273,7 +481,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.10.5"
 manifest_format = "2.0"
-project_hash = "65d2d30def853305cec466a0e4afc9f249994e55"
+project_hash = "9186cd631decd8c034062d15915aa32f7546eb1c"
 
 [[deps.ADTypes]]
 git-tree-sha1 = "99a6f5d0ce1c7c6afdb759daa30226f71c54f6b0"
@@ -2909,16 +3117,29 @@ version = "1.4.1+1"
 # ╔═╡ Cell order:
 # ╠═0828dafd-9a61-4346-90fa-0d09b9a2a198
 # ╠═32995dbc-1eab-456e-812e-15e95f3dd184
+# ╠═30de3f34-f983-4c1f-898c-6dea95c4896f
+# ╟─bea36c11-da70-4997-98ee-5ffc9f30c528
+# ╟─715cb946-521d-4607-b442-ff4b1e55ba85
+# ╟─2fb8fe54-0585-4ded-b62e-56cfb71630c1
+# ╟─c1a6c862-16ca-4970-a0d5-09c6c4f6c029
+# ╠═a77d35a1-2d48-41d1-9a1a-210133c13674
+# ╟─f391d1a5-098a-48f2-8e6d-f965d99fe3e4
+# ╟─31197ae1-ab2b-4e55-9375-e04442feca1d
+# ╟─6d3f5c87-226a-45c9-a26b-ec9babeac103
+# ╟─65101a30-3659-45c8-b7d0-e8343dd0ce9a
+# ╠═ca611a2c-7b2c-47ba-a481-97c012ae451d
 # ╟─7560a130-1205-4cc9-a58f-d562dbeca77a
-# ╟─2aec7fd0-4167-4e09-a603-dfe79e70faab
+# ╠═f445a06d-269b-4977-945f-953f56440600
+# ╟─7dc1eb5b-48f8-4bc0-8c7b-a84706e64b78
+# ╠═1a524fd2-d7c8-48d9-9c23-fac20886669d
 # ╟─43f5b10a-670d-11ef-1308-5ba25fe852bf
 # ╟─a28b8392-0493-4861-a218-d4ed114511bc
-# ╟─d90a1f6d-94eb-4b0e-a110-6673ba0d713f
-# ╟─40bca008-09c7-4c90-8270-8756dda676c6
-# ╠═141214db-d870-46e9-b385-f6aa6263baa4
-# ╟─3ee28a82-1803-400e-8820-4a1c02e09d98
-# ╟─95062482-8f26-4620-96f3-a91a54da1076
-# ╟─043ee371-3502-456a-b8a2-9835cb093e48
+# ╠═d90a1f6d-94eb-4b0e-a110-6673ba0d713f
+# ╠═40bca008-09c7-4c90-8270-8756dda676c6
+# ╠═a2be6ad3-5ea2-412c-8042-f073ee7b435c
+# ╟─22c92187-9e47-489f-9c60-963fdeb47c7e
+# ╠═95062482-8f26-4620-96f3-a91a54da1076
+# ╠═043ee371-3502-456a-b8a2-9835cb093e48
 # ╟─eba5a0ea-740f-426c-8396-3e21ecc13a02
 # ╠═b82021b5-9da6-4d49-afb3-2f581a4afdfb
 # ╟─696782a9-47ac-4401-898c-6cc8556086e0
