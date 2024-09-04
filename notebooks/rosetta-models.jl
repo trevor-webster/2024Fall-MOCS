@@ -16,7 +16,7 @@ end
 
 # ╔═╡ 0828dafd-9a61-4346-90fa-0d09b9a2a198
 begin 
-	using PlutoUI, Plots, FileIO, ImageIO, ImageShow
+	using ImageCore, PlutoUI, Plots, FileIO, ImageIO, ImageShow
  	using ModelingToolkit, Symbolics
 	using DifferentialEquations: solve
 	using ModelingToolkit: t_nounits as t, D_nounits as D
@@ -264,10 +264,20 @@ end
 md"## Lotka Volterra"
 
 # ╔═╡ a28b8392-0493-4861-a218-d4ed114511bc
-load("./diagrams/lotka-volterra.png")
+mosaic(
+	load("./diagrams/lotka-volterra-1.png"), 
+	load("./diagrams/lotka-volterra-2.png"), 
+	load("./diagrams/lotka-volterra-3.png"), 
+	nrow=1
+)
 
 # ╔═╡ 6f79705f-01c4-4580-8a0f-b1a21ec57e77
-md"The system of interest here is predator-prey relationship. The arrows are not about individuals being converted from one state to another; they are about converting predator into prey, as we are assuming that the predator birth rates is dependent on number of available prey. As with the exponential model, we are assuming that the the number of predators at the next time step depends on population size at previous time step.
+md"
+The system of interest here is predator-prey relationship. The arrows are not about individuals being converted from one state to another; they are about converting predator into prey, as we are assuming that the predator birth rates is dependent on number of available prey. 
+
+Here we show equivalent ways to draw the diagrams. The leftmost diagram makes it clear that we 'convert' Lynx into Hares by drawing an arrow from L --> H. The middle diagram is more consistent with previous diagrams.  In both diagrams, we assume that rates are proportional to the compartments of origin.  The last one is more verbose, as we draw all the dependencies in the arrows.
+
+As with the exponential model, we are assuming that the the number of predators at the next time step depends on population size at previous time step.
 
 The system of ODEs is the following:
 
@@ -499,6 +509,7 @@ PLUTO_PROJECT_TOML_CONTENTS = """
 [deps]
 DifferentialEquations = "0c46a032-eb83-5123-abaf-570d42b7fbaa"
 FileIO = "5789e2e9-d7fb-5bc7-8068-2c6fae9b9549"
+ImageCore = "a09fc81d-aa75-5fe9-8630-4744c3626534"
 ImageIO = "82e4d734-157c-48bb-816b-45c225c6df19"
 ImageShow = "4e3cecfd-b093-5904-9786-8bbb286a6a31"
 ModelingToolkit = "961ee093-0014-501f-94e3-6117800e7a78"
@@ -509,6 +520,7 @@ Symbolics = "0c5d862f-8b57-4792-8d23-62f2024744c7"
 [compat]
 DifferentialEquations = "~7.13.0"
 FileIO = "~1.16.3"
+ImageCore = "~0.9.4"
 ImageIO = "~0.6.8"
 ImageShow = "~0.3.8"
 ModelingToolkit = "~9.34.0"
@@ -523,7 +535,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.10.5"
 manifest_format = "2.0"
-project_hash = "fcfaf993aaae6118708aca0be271573ea96ffeb0"
+project_hash = "b2944f4a33bc3928dcc9a50c496ed9e0355d1324"
 
 [[deps.ADTypes]]
 git-tree-sha1 = "99a6f5d0ce1c7c6afdb759daa30226f71c54f6b0"
@@ -3386,18 +3398,18 @@ version = "1.4.1+1"
 # ╟─c1a6c862-16ca-4970-a0d5-09c6c4f6c029
 # ╠═a77d35a1-2d48-41d1-9a1a-210133c13674
 # ╟─6d3f5c87-226a-45c9-a26b-ec9babeac103
-# ╠═65101a30-3659-45c8-b7d0-e8343dd0ce9a
+# ╟─65101a30-3659-45c8-b7d0-e8343dd0ce9a
 # ╟─45bcdab5-1eb5-4533-9216-ef1581adcd9f
-# ╟─ca611a2c-7b2c-47ba-a481-97c012ae451d
+# ╠═ca611a2c-7b2c-47ba-a481-97c012ae451d
 # ╟─f391d1a5-098a-48f2-8e6d-f965d99fe3e4
 # ╟─8c1b8994-81d5-42bf-a8e6-1e73fc369828
 # ╟─ae60ba3c-a32d-443a-93c0-00eb9acda8c4
 # ╟─9b9cf8e1-1eab-45c2-9050-b509c5c60170
-# ╟─4a1c661c-a65e-42dc-98eb-4665030986a6
+# ╠═4a1c661c-a65e-42dc-98eb-4665030986a6
 # ╟─7560a130-1205-4cc9-a58f-d562dbeca77a
 # ╟─f445a06d-269b-4977-945f-953f56440600
 # ╟─7dc1eb5b-48f8-4bc0-8c7b-a84706e64b78
-# ╟─1a524fd2-d7c8-48d9-9c23-fac20886669d
+# ╠═1a524fd2-d7c8-48d9-9c23-fac20886669d
 # ╟─43f5b10a-670d-11ef-1308-5ba25fe852bf
 # ╟─a28b8392-0493-4861-a218-d4ed114511bc
 # ╟─6f79705f-01c4-4580-8a0f-b1a21ec57e77
@@ -3409,7 +3421,7 @@ version = "1.4.1+1"
 # ╟─043ee371-3502-456a-b8a2-9835cb093e48
 # ╟─ffa76c36-48a7-4ce5-ace2-a7d874a2fcd9
 # ╠═eba5a0ea-740f-426c-8396-3e21ecc13a02
-# ╟─b82021b5-9da6-4d49-afb3-2f581a4afdfb
+# ╠═b82021b5-9da6-4d49-afb3-2f581a4afdfb
 # ╟─696782a9-47ac-4401-898c-6cc8556086e0
 # ╠═f3759ec6-e4b1-4b32-9494-501975a1a347
 # ╟─f4227cc1-5b67-447e-81b7-c5e5b58c7def

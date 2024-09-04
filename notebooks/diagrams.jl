@@ -35,16 +35,41 @@ I --α---> R
 
 write("notebooks/diagrams/sir.png", render(sir, "png"))
 
-lotka_volterra  = mermaid"""
-graph
+lotka_volterra_1  = mermaid"""
+graph LR
+H --βL---> Hout
+L --γ---> Lout
 H --α---> H
-L --δH---> L
-H --βL---> out
-L --γ---> out
-style out opacity:0.1,stroke-width:0px,color:#fff, stroke:#fff;
+L --δH---> H
+style Hout opacity:0.1,stroke-width:0px,color:#fff, stroke:#fff;
+style Lout opacity:0.1,stroke-width:0px,color:#fff, stroke:#fff;
 """
 
-write("notebooks/diagrams/lotka-volterra.png", render(lotka_volterra, "png"))
+write("notebooks/diagrams/lotka-volterra-1.png", render(lotka_volterra_1, "png"))
+
+lotka_volterra_2  = mermaid"""
+graph
+H --βL---> Hout
+L --γ---> Lout
+H --α---> H
+L --δH---> L
+style Hout opacity:0.1,stroke-width:0px,color:#fff, stroke:#fff;
+style Lout opacity:0.1,stroke-width:0px,color:#fff, stroke:#fff;
+"""
+
+write("notebooks/diagrams/lotka-volterra-2.png", render(lotka_volterra_2, "png"))
+
+lotka_volterra_3  = mermaid"""
+graph
+H --βLH---> Hout
+L --γL---> Lout
+H --αH---> H
+L --δHL---> L
+style Hout opacity:0.1,stroke-width:0px,color:#fff, stroke:#fff;
+style Lout opacity:0.1,stroke-width:0px,color:#fff, stroke:#fff;
+"""
+
+write("notebooks/diagrams/lotka-volterra-3.png", render(lotka_volterra_3, "png"))
 
 romeo_juliet = mermaid"""
 graph LR
