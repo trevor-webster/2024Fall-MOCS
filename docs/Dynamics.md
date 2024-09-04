@@ -129,7 +129,7 @@ Now that we have one side in terms of _n_, and the other in terms of _t_, we int
 \end{equation}
 ```
 
-which is the same as above (see [this refresher if you want to keep going](https://mathinsight.org/exponential_growth_decay_differential_equation_refresher)! In [Otto and Day (p.24)](https://github.com/jstonge/2024Fall-MOCS/blob/main/docs/readings/OttoDay-2007-Ch2.pdf), they explain how _derivatives_ and _differential equations_ are related, which I think is often confusing to students:
+which is the same as above (see [this refresher if you want to keep going](https://mathinsight.org/exponential_growth_decay_differential_equation_refresher))! In [Otto and Day (p.24)](https://github.com/jstonge/2024Fall-MOCS/blob/main/docs/readings/OttoDay-2007-Ch2.pdf), they explain how _derivatives_ and _differential equations_ are related, which I think is often confusing to students:
 
 <div class="math-box">
 <strong>Box 2.2: Derivatives and Differential Equations</strong>

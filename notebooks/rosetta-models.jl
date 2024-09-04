@@ -228,7 +228,7 @@ md"## SIR"
 mermaid"""
 graph LR
   S --β---> I
-  I --α---> R
+  I --γ---> R
 """
 
 # ╔═╡ 7dc1eb5b-48f8-4bc0-8c7b-a84706e64b78
@@ -236,10 +236,15 @@ md"
 
 The corresponding system of equations:
 
-$$\dot{S} =  \beta S(t)*I(t)$$
-$$\dot{I} = \beta S I -\alpha I$$
-$$\dot{R} = \alpha I$$
+$$\dot{S} =  -\beta S(t)*I(t)$$
+$$\dot{I} = \beta S I -\gamma I$$
+$$\dot{R} = \gamma I$$
 
+In discrete time:
+
+$$S(t+1) = S(t) - \beta S(t)I(t)$$
+$$I(t+1) = I(t) + \beta S(t)I(t) - \gamma I(t)$$
+$$R(t+1) = R(t) + \gamma I(t)$$
 "
 
 # ╔═╡ 1a524fd2-d7c8-48d9-9c23-fac20886669d
@@ -252,7 +257,7 @@ let
 	R₀ = 0.
 	Tmax = 182
 	β = 1/30*5*1/N # transmission time per contact: 30days. contacts per day: 5
-	α = 1/15 
+	γ = 1/15 
 
 	# Euler's method
 	
@@ -262,7 +267,7 @@ let
 	for t in 0:dt:(Tmax-dt)
 	    △S = -S_dot*(1-(1 - β)^I_dot)
 	    S_dot += △S
-		△R = α*I_dot
+		△R = γ*I_dot
 		
 		I_dot += -△S - △R
 		R_dot += △R
