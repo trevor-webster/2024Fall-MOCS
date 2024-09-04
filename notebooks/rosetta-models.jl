@@ -341,6 +341,38 @@ let
 	plot(p1, p2, p3, layout=l)
 end
 
+# ╔═╡ 111fd244-22de-4585-9e01-dca011be3f30
+let 
+	# TIMESTEPPING
+	
+	γ=1.0 
+	δ=1.0
+	
+	L₀ = 1.4 
+	H₀ = 2.2
+	
+	Tmax = 50.0
+	dt = .1
+	L_dot = L₀
+	H_dot = H₀
+	
+	res = [(L_dot, H_dot)]
+	
+	for t in 0:dt:(Tmax-dt)
+		# the ordering matter!
+	    △L = dt * ( δ*L_dot*H_dot - γ*L_dot) 
+	    L_dot += △L
+	    △H = dt * ( α*H_dot - β*H_dot*L_dot) 
+	    H_dot += △H
+	    push!(res, (L_dot, H_dot))
+	end
+	
+	L, H = map(collect, zip(res...)) # small hack to unpack vars
+	
+	plot(0:dt:Tmax, H, label="Hares", xlabel="time")
+	plot!(0:dt:Tmax, L, label="Lynx")
+end
+
 # ╔═╡ 22c92187-9e47-489f-9c60-963fdeb47c7e
 md"## Interlude: what are the parts?
 In the SIR model, the parts were the same people transitionning between states. In the Lotka-voltera model, the parts were interdependent populations of prey and predators. In pharmacokinetics, we had molecules coming in and out of an organ. In each case, the point particles within compartments were indistinguishable from each other; all susceptible people were the same, all foxes were the same, and all molecules were the same. 
@@ -3416,6 +3448,7 @@ version = "1.4.1+1"
 # ╠═d90a1f6d-94eb-4b0e-a110-6673ba0d713f
 # ╠═40bca008-09c7-4c90-8270-8756dda676c6
 # ╠═a2be6ad3-5ea2-412c-8042-f073ee7b435c
+# ╠═111fd244-22de-4585-9e01-dca011be3f30
 # ╟─22c92187-9e47-489f-9c60-963fdeb47c7e
 # ╟─95062482-8f26-4620-96f3-a91a54da1076
 # ╟─043ee371-3502-456a-b8a2-9835cb093e48
