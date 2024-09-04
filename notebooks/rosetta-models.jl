@@ -44,17 +44,17 @@ md"
 
 The exponential growth is the quintessential rosetta (mathematical) model. It is broadly use because it is easily solved. This model is almost always cast in terms of population growth; bacterial, rabbits, human population, etc. Obviously, it is an idealized model. If not, the planet would be covered in rabbits.
 
-Using discrete time interval
+Using a discrete time interval $\Delta t$,
 
-$$P(t + \triangle t) = P(t) + r \cdot P(t) \qquad (\text{Discrete})$$
+$$P(t + \Delta t) = P(t) + r \Delta t \cdot P(t) \qquad (\text{Discrete})$$
 
-OR, as $\triangle t \rightarrow 0$
+Or, as $\Delta t \rightarrow 0$,
 
 $$\frac{dP(t)}{dt} = r \cdot P(t) \qquad(\text{ODE})$$
 
 Solving the ODE, we get
 
-$$P(t) = p_0 \cdot e^{rt} \qquad (\text{General Solution})$$
+$$P(t) = P(0) \cdot e^{rt} \qquad (\text{General Solution})$$
 
 _refs:_
 - Otto and Day (2009), ch.2
@@ -102,7 +102,7 @@ md"## SI (logistic growth)"
 
 # ╔═╡ 65101a30-3659-45c8-b7d0-e8343dd0ce9a
 mermaid"""
-graph LR
+graph
   S --kS---> I
 """
 
@@ -114,11 +114,11 @@ In contagion, the carrying capacity is when you run out of sick people. When ass
 
 The ODE in terms of population size is written
 
-$$\frac{dN(t)}{dt} = r \cdot \textcolor{green}{(1 - \frac{N(t)}{K})} \cdot N(t)$$
+$$\frac{dN(t)}{dt} = r \cdot \textcolor{green}{\left(1 - \frac{N(t)}{K}\right)} \cdot N(t)$$
 
 Where _K_ is often use for carrying capacity (in contagion example, it is our 	total population _N_). One way to write the solution is 
 
-$$N(t) = \frac{k}{1 + (K/N_0 - 1)e^{rt}}$$
+$$N(t) = N(0)\frac{K}{N(0) + (K - N_0)e^{-rt}}$$
 
 
 _refs:_
@@ -185,15 +185,11 @@ graph LR
 # ╔═╡ 9b9cf8e1-1eab-45c2-9050-b509c5c60170
 md"We can write the following recursion equation (see [here](https://jstonge.github.io/2024Fall-MOCS/notebooks/all-the-models/reccurence-eqs.jl) for a more detailed derivation):
 
-$$N(t+1) = (1+b)(1-d)n(t) + m \\$$
-
-From this recursion equation, we write the difference equation
-
-$$\Delta N(t) = -dN(t) + b(1-d)N(t) + m \\$$
+$$N(t+1) = N(t) + (b-d)\Delta t N(t) + m\Delta t \\$$
 
 The continous version can be eyeballed
 
-$$\frac{dN(t)}{dt} = bN(t) - dN(t) + m$$
+$$\frac{dN(t)}{dt} = (b-d) N(t) + m$$
 "
 
 # ╔═╡ 4a1c661c-a65e-42dc-98eb-4665030986a6
@@ -204,7 +200,7 @@ let
 	tspan = (0.0, Tmax)
 	m = 1/2 # inflow 
 	d = 1/2 # outflow
-	b = 1/2 # repro
+	b = 1/4 # repro
 	
 	# TIMESTEPPING
 	
@@ -212,7 +208,7 @@ let
 	N_dot = N₀
 	res = [N_dot]
 	for t in 0:dt:(Tmax-dt)
-	    △N = dt * ( -d*N_dot + b*(1-d)*N_dot + m ) 
+	    △N = dt * ( (b-d)*N_dot + m ) 
 	    N_dot += △N
 	    push!(res, N_dot)
 	end
@@ -227,8 +223,8 @@ md"## SIR"
 # ╔═╡ f445a06d-269b-4977-945f-953f56440600
 mermaid"""
 graph LR
-  S --β---> I
-  I --γ---> R
+  S --βI---> I
+  I --α---> R
 """
 
 # ╔═╡ 7dc1eb5b-48f8-4bc0-8c7b-a84706e64b78
@@ -236,9 +232,9 @@ md"
 
 The corresponding system of equations:
 
-$$\dot{S} =  -\beta S(t)*I(t)$$
-$$\dot{I} = \beta S I -\gamma I$$
-$$\dot{R} = \gamma I$$
+$$\frac{dS(t)}{dt} =  \beta S(t)I(t)$$
+$$\frac{dI(t)}{dt} = \beta S(t) I(t) -\alpha I(t)$$
+$$\frac{dR(t)}{dt} = \alpha I(t)$$
 
 In discrete time:
 
@@ -287,13 +283,12 @@ md"## Lotka Volterra"
 
 # ╔═╡ a28b8392-0493-4861-a218-d4ed114511bc
 mermaid"""
-graph TD
-  L --δLH---> H
-  H --αH---> H
-  H --βLH---> Hout
-  L --γL---> Lout
-  style Hout opacity:0.1,stroke-width:0px,color:#fff, stroke:#fff
-  style Lout opacity:0.1,stroke-width:0px,color:#fff, stroke:#fff;
+graph
+  H --α---> H
+  L --δH---> L
+  H --βL---> out
+  L --γ---> out
+  style out opacity:0.1,stroke-width:0px,color:#fff, stroke:#fff;
 """
 
 # ╔═╡ 6f79705f-01c4-4580-8a0f-b1a21ec57e77
@@ -369,40 +364,40 @@ In the SIR model, the parts were the same people transitionning between states. 
 # ╔═╡ 95062482-8f26-4620-96f3-a91a54da1076
 md"## Romeo and Juliet (with resistance)
 
-Romeo and Juliet is yet another way to think about what we mean by parts of a system. Here we have two people, and their love for each other. 
-
-note: _recycling lotka volterra params_
+Romeo and Juliet is yet another way to think about what we mean by parts of a system. Here we have two people, and their love for each other. The more Juliet loves Romeo, the more he runs away and hides. But when Juliet gets discouraged and backs off, Romeo begins to find her strangely attractive. Moreover, Romeo is affected by his own feelings to her. Juliet, on the other hand, warms up when he loves her and grows cold when he does not.
 "
 
 # ╔═╡ 043ee371-3502-456a-b8a2-9835cb093e48
 mermaid"""
 graph LR
-  J -- -β---> R
-  R -- -μ---> R
-  R -- α---> J
+  J --β---> R
+  R --μ---> R
+  R --α---> J
 """
 
 # ╔═╡ eba5a0ea-740f-426c-8396-3e21ecc13a02
-love_friction = @bind μ Slider(0.5:0.01:1.5, default=2/3, show_value=true)
+love_friction = @bind μ Slider(-1:0.01:1, default=0, show_value=true)
 
 # ╔═╡ b82021b5-9da6-4d49-afb3-2f581a4afdfb
 let
 	function parameterized_RJ!(du, u, p, t)
 	    💚, 💙 = u
-	    α, β, μ = p # prey repro, prey death, fox death, fox repro
+	    α, β, μ = p
 	    du[1] = d💚 = α*💙
-	    du[2] = d💙 = μ*💚 - β*💚
+	    du[2] = d💙 = μ*💙 + β*💚
 	end
 
 	tspan = (0.0, 50.0)
+	α, β = 1, -0.5
+0.5
 	p = [α, β, μ]
 
-	u0 = [1.4, 2.2]
+	u0 = [0, 0.5]
 	prob = ODEProblem(parameterized_RJ!, u0, tspan, p)
 	sol = solve(prob)
 	
 	# Time plots
-	p1 = plot(sol, label=["Romeo" "Juliet"], color=["green" "blue"] )
+	p1 = plot(sol, label=["Juliet" "Romeo"], color=["green" "blue"] )
 	
 	# Phase space
 	p2 = plot(sol, idxs = (1, 2), legend=false, color="grey") 
@@ -416,35 +411,32 @@ md"## [Pendulum](https://jstonge.github.io/2024Fall-MOCS/notebooks/all-the-model
 _see [Observable notebook](https://observablehq.com/@mocs/double-trouble-phase-space) for real interactivity; click on the subsection for the family_
 
 
-The ODE f or the damped oscillator is:
+The ODE for the damped pendulum is:
 
-$$\frac{d^2\theta}{dt^2}+\frac{\nu}{m}\frac{d\theta}{dt}-\frac{g}{l}\sin(\theta) = 0$$
+$$\frac{d^2\theta(t)}{dt^2}+\frac{\nu}{m}\frac{d\theta(t)}{dt}+\frac{g}{l}\sin(\theta(t)) = 0$$
 
-more generally, one can get rid of the units, and just focus on the form
+If oscillations are small, then $\sin(\theta) \approx \theta$, and we end up with a second-order ODE of the form
 
-$$m\frac{d^2x}{dt^2} + b\frac{dx}{dt} + kx = 0$$
+$$\frac{d^2x(t)}{dt^2} + a\frac{dx(t)}{dt} + bx(t) = 0$$
 
-Alternatively, people write
-
-$$\ddot{\theta}(t) = -\mu \dot{\theta}(t) - \frac{g}{L} \sin(\theta(t))$$
-
-We note that it contains only ordinary derivatives, as there is only a single input (t). Here is the phase space, using time stepping
+which is the general equation describing the motion of a damped harmonic oscillator ($a = \nu/m$ and $b = g/l$).
 "
 
 # ╔═╡ f3759ec6-e4b1-4b32-9494-501975a1a347
 let
 	# borrowed from 3b1b
-    g = 9.8 
-	L = 2.
-	μ = 0.1
+    l = 2.0                             # bob length [m]
+	m = 1.0                             # bob mass [kg]
+	ν = 0.1                             # friction coefficient [kg/s]
+	g = 9.81                            # gravitational acceleration [m/s²]
 	
-    θ₀, θ_dot₀ = π/3,  0.1
+    θ₀, θ_dot₀ = 0.,  0.1
 	
     T = 50.
     δt = 0.01 #timestep
 
     # Definition of ODE
-	get_θ_dotdot(θ, θ_dot) = -μ * θ_dot - (g / L) * sin(θ)
+	get_θ_dotdot(θ, θ_dot) = -(ν/m) * θ_dot - (g/l) * sin(θ)
 
 	# Solution to the differential equation
     function simulate_pendulum(T, δt, θ₀, θ_dot₀)
@@ -453,7 +445,7 @@ let
         θ_dot = θ_dot₀
         res = [(θ, θ_dot)]
         
-        for _ in 1:((T / δt) - 1)
+        for _ in 1:((T/δt) - 1)
             θ_dotdot = get_θ_dotdot(θ, θ_dot)
             θ += θ_dot * δt
             θ_dot += θ_dotdot * δt
@@ -464,7 +456,7 @@ let
     end
     
 	plot(simulate_pendulum(T, δt, θ₀, θ_dot₀), 
-		 label="Phase Space", xlabel="θ", ylabel="θ_dot",
+		 xlabel="θ", ylabel="dθ/dt", label=:none,
 		 title="Phase Space Plot")
 	
 end
@@ -472,12 +464,11 @@ end
 # ╔═╡ f4227cc1-5b67-447e-81b7-c5e5b58c7def
 md"From `DifferentialEquations.jl` documentation, we can also look at the dynamics with some torque"
 
-# ╔═╡ 3ed7d41f-9fc7-47d9-8fd7-7c8e60b97904
-mass_kg = @bind m Slider(1:3, show_value=true)
-
 # ╔═╡ 75eeffe3-78ab-4cc7-9528-89040533ef32
 let
 	l = 2.0                             # bob length [m]
+	m = 1.0                             # bob mass [kg]
+	ν = 0.5                             # friction coefficient [kg/s]
 	g = 9.81                            # gravitational acceleration [m/s²]
 
 	θ₀ = 0.01                           # initial angular deflection [rad]
@@ -487,10 +478,10 @@ let
 	
 	function pendulum!(du, u, p, t)
 		du[1] = u[2] # θ'(t) = ω(t)     
-	    du[2] = -3g / (2l) * sin(u[1]) + 3 / (m * l^2) * p(t)  # ω'(t) = -3g/(2l) sin θ(t) + 3/(ml^2)M(t)
+	    du[2] = - (ν/m) * u[2] - (g/l) * sin(u[1]) + M(t)  # ω'(t) = - (ν/m)ω'(t) -g/l sin θ(t) + M(t)
 	end
 	
-	M = t -> 0.1sin(t)                  # external torque [Nm]
+	M = t -> 0.01sin(t)                  # external torque [Nm]
 	
 	prob = ODEProblem(pendulum!, u₀, tspan, M)
 	sol = solve(prob)
@@ -556,7 +547,7 @@ Symbolics = "~6.4.0"
 PLUTO_MANIFEST_TOML_CONTENTS = """
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.10.5"
+julia_version = "1.10.2"
 manifest_format = "2.0"
 project_hash = "9186cd631decd8c034062d15915aa32f7546eb1c"
 
@@ -841,7 +832,7 @@ weakdeps = ["Dates", "LinearAlgebra"]
 [[deps.CompilerSupportLibraries_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "e66e0078-7015-5450-92f7-15fbd957f2ae"
-version = "1.1.1+0"
+version = "1.1.0+0"
 
 [[deps.CompositeTypes]]
 git-tree-sha1 = "bce26c3dab336582805503bed209faab1c279768"
@@ -3118,7 +3109,7 @@ version = "0.15.1+0"
 [[deps.libblastrampoline_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "8e850b90-86db-534c-a0d3-1478176c7d93"
-version = "5.11.0+0"
+version = "5.8.0+1"
 
 [[deps.libevdev_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
@@ -3199,34 +3190,33 @@ version = "1.4.1+1"
 # ╟─715cb946-521d-4607-b442-ff4b1e55ba85
 # ╟─2fb8fe54-0585-4ded-b62e-56cfb71630c1
 # ╟─c1a6c862-16ca-4970-a0d5-09c6c4f6c029
-# ╠═a77d35a1-2d48-41d1-9a1a-210133c13674
+# ╟─a77d35a1-2d48-41d1-9a1a-210133c13674
 # ╟─6d3f5c87-226a-45c9-a26b-ec9babeac103
 # ╟─65101a30-3659-45c8-b7d0-e8343dd0ce9a
 # ╟─45bcdab5-1eb5-4533-9216-ef1581adcd9f
-# ╠═ca611a2c-7b2c-47ba-a481-97c012ae451d
+# ╟─ca611a2c-7b2c-47ba-a481-97c012ae451d
 # ╟─f391d1a5-098a-48f2-8e6d-f965d99fe3e4
 # ╟─8c1b8994-81d5-42bf-a8e6-1e73fc369828
 # ╟─9b9cf8e1-1eab-45c2-9050-b509c5c60170
-# ╠═4a1c661c-a65e-42dc-98eb-4665030986a6
+# ╟─4a1c661c-a65e-42dc-98eb-4665030986a6
 # ╟─7560a130-1205-4cc9-a58f-d562dbeca77a
 # ╟─f445a06d-269b-4977-945f-953f56440600
 # ╟─7dc1eb5b-48f8-4bc0-8c7b-a84706e64b78
-# ╠═1a524fd2-d7c8-48d9-9c23-fac20886669d
+# ╟─1a524fd2-d7c8-48d9-9c23-fac20886669d
 # ╟─43f5b10a-670d-11ef-1308-5ba25fe852bf
-# ╟─a28b8392-0493-4861-a218-d4ed114511bc
+# ╠═a28b8392-0493-4861-a218-d4ed114511bc
 # ╟─6f79705f-01c4-4580-8a0f-b1a21ec57e77
 # ╠═d90a1f6d-94eb-4b0e-a110-6673ba0d713f
 # ╠═40bca008-09c7-4c90-8270-8756dda676c6
 # ╠═a2be6ad3-5ea2-412c-8042-f073ee7b435c
 # ╟─22c92187-9e47-489f-9c60-963fdeb47c7e
-# ╠═95062482-8f26-4620-96f3-a91a54da1076
-# ╠═043ee371-3502-456a-b8a2-9835cb093e48
-# ╟─eba5a0ea-740f-426c-8396-3e21ecc13a02
-# ╠═b82021b5-9da6-4d49-afb3-2f581a4afdfb
-# ╠═696782a9-47ac-4401-898c-6cc8556086e0
+# ╟─95062482-8f26-4620-96f3-a91a54da1076
+# ╟─043ee371-3502-456a-b8a2-9835cb093e48
+# ╠═eba5a0ea-740f-426c-8396-3e21ecc13a02
+# ╟─b82021b5-9da6-4d49-afb3-2f581a4afdfb
+# ╟─696782a9-47ac-4401-898c-6cc8556086e0
 # ╠═f3759ec6-e4b1-4b32-9494-501975a1a347
 # ╟─f4227cc1-5b67-447e-81b7-c5e5b58c7def
-# ╠═3ed7d41f-9fc7-47d9-8fd7-7c8e60b97904
 # ╠═75eeffe3-78ab-4cc7-9528-89040533ef32
 # ╟─76bdf271-cf59-4809-ae21-73cb00d96a68
 # ╠═55cd4f50-5872-43a5-9f5a-c05794f9cd91
