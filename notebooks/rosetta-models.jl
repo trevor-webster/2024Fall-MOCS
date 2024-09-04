@@ -102,7 +102,7 @@ md"## SI (logistic growth)"
 
 # ╔═╡ 65101a30-3659-45c8-b7d0-e8343dd0ce9a
 mermaid"""
-graph
+graph LR
   S --kS---> I
 """
 
@@ -3204,7 +3204,7 @@ version = "1.4.1+1"
 # ╟─7dc1eb5b-48f8-4bc0-8c7b-a84706e64b78
 # ╟─1a524fd2-d7c8-48d9-9c23-fac20886669d
 # ╟─43f5b10a-670d-11ef-1308-5ba25fe852bf
-# ╠═a28b8392-0493-4861-a218-d4ed114511bc
+# ╟─a28b8392-0493-4861-a218-d4ed114511bc
 # ╟─6f79705f-01c4-4580-8a0f-b1a21ec57e77
 # ╠═d90a1f6d-94eb-4b0e-a110-6673ba0d713f
 # ╠═40bca008-09c7-4c90-8270-8756dda676c6
