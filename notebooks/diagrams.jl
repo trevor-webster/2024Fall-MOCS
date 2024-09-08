@@ -12,13 +12,15 @@ graph LR
   S --kS---> I
 """
 
+δ
+
 write("notebooks/diagrams/logistic-growth.png", render(logistic_growth, "png"))
 
 birth_death = mermaid"""
 graph LR
-in --m---> N
-N --bN---> N
-N --dN---> out
+in --m---> N(t)
+N("`N(t)`") --bN(t)---> N
+N --dN(t)---> out
 style in opacity:0.1,stroke-width:0px,color:#fff, stroke:#fff
 style out opacity:0.1,stroke-width:0px,color:#fff, stroke:#fff;
 """
@@ -76,6 +78,22 @@ graph LR
   J --β---> R
   R --μ---> R
   R --α---> J
+"""
+
+write("notebooks/diagrams/romeo-juliet.png", render(romeo_juliet, "png"))
+
+
+class_model_1 = mermaid"""
+graph LR
+  I --δI---> Iout
+  I --ρI(t)---> M
+  I --ωI(t)---> I_t
+  M --ζM(t)I(t)---> M_t
+  M --νM(t)I(t)---> I
+  M_t --dtMt(t)---> Mtout
+  M_t --rtMt(t)---> M_t
+  style Iout opacity:0.1,stroke-width:0px,color:#fff, stroke:#fff;
+  style Mtout opacity:0.1,stroke-width:0px,color:#fff, stroke:#fff;
 """
 
 write("notebooks/diagrams/romeo-juliet.png", render(romeo_juliet, "png"))

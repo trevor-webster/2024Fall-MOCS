@@ -19,10 +19,13 @@ Differential equations are the foundation of modern science. In this class, we'l
   - [ A Biologist's Guide to Mathematical Modeling in Ecology and Evolution (Otto and Day 2007)](https://press.princeton.edu/books/hardcover/9780691123448/a-biologists-guide-to-mathematical-modeling-in-ecology-and-evolution?srsltid=AfmBOopJ4i2Ls1pXkGaEJGDc61Vvol-dJADY9XJrU0q3MKIJuJTfg0D6): Great textbook that strikes a good balance between accessibility and the mathematics of dynamical systems in ecology.
   - [Nonlinear Dynamics and Chaos 3rd ed (Strogatz 2024)](https://www.routledge.com/Nonlinear-Dynamics-and-Chaos-With-Applications-to-Physics-Biology-Chemistry-and-Engineering/Strogatz/p/book/9780367026509?srsltid=AfmBOoqrabgNKvlTDyAQiCCuPgrnIIKeCtczqcLkb9AFEFmdWw72l-fA): Go-to textbook for mathematical dynamical systems.
   - [Primer of Ecological Theory 1st Edition (Roughgarden 1998)](https://books.google.ca/books/about/Primer_of_Ecological_Theory.html?id=PmHwAAAAMAAJ&source=kp_book_description&redir_esc=y): Everything you ever wanted to know on modeling prey-predator interactions.
+  - [Modeling Life: The Mathematics of Biological Systems (Garfinkel et al. 2017)](https://link.springer.com/book/10.1007/978-3-319-59731-7): New generation of textbook introducing mathematical modeling after Otto & Day.
+    - [github](https://modelinginbiology.github.io/)
 
 ### Courses
 
  - [Liz Bradley's intro to ODES](https://www.youtube.com/watch?v=aZRqW3XZ_6U&list=PLF0b3ThojznQ9xUDm-EbgFAnzdbeDVuSz&index=24)
+ - [Alan Garfinkel's UCLA modeling class](https://www.youtube.com/@uclamodelingclass3003)
  - [Introduction to Computational Thinking](https://computationalthinking.mit.edu/Fall24/): see modules on epidemic and climate modeling.
  - [differential-equations (khan academy)](https://www.khanacademy.org/math/differential-equations)
  - [Math 113B: Intro to Mathematical Modeling in Biology (UCI)](https://ocw.uci.edu/lectures/math_113b_lec_02_intro_to_mathematical_modeling_in_biology_bacterial_growth.html): I remember first learning about dynamical systems. For some reason, this course by Germán A. Enciso at UC Irvine really stuck with me.
