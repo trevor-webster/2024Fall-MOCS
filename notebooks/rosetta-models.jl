@@ -106,7 +106,7 @@ let
 	plot!(num_sol.t, t -> p(t), lw = 2, ls =  :dash, label = "Analytical", color = "blue")
 	
 	# Bonus (how many times a [year] our species reproduce? )
-	P = [P₀ * (1 + r/(2^n))^t for t in 0:(2^n)*Tmax]
+	P = [P₀ * (1 + r/(2^n))^(t) for t in 0:(2^n)*Tmax]
 	
 	plot!(0:(2.0^(-n)):Tmax, P, marker=:o, alpha=0.5, ms=2, label="$(2^n) times per day")
 
