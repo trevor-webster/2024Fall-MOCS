@@ -108,7 +108,7 @@ let
 	# Bonus (how many times a [year] our species reproduce? )
 	P = [P₀ * (1 + r/(2^n))^t for t in 0:(2^n)*Tmax]
 	
-	plot!(0:(2.0^(-n)):Tmax, P, m=:o, alpha=0.5, ms=2, label="$(2^n) times per day")
+	plot!(0:(2.0^(-n)):Tmax, P, marker=:o, alpha=0.5, ms=2, label="$(2^n) times per day")
 
 end
 
@@ -442,16 +442,6 @@ end
 # ╔═╡ 157f8455-88e1-4d5a-9582-de011e5ebc10
 α = @bind α Slider(0.:0.01:1., show_value=true, default=0.33)
 
-# ╔═╡ d74fdf5d-0b69-4bba-8540-f9429160cbe8
-#=╠═╡
-S_c,I_c,R_c  = run_computational_sir(100, 10_000, β, α)
-  ╠═╡ =#
-
-# ╔═╡ 6c6f3103-5a04-4b01-b8a1-05f64616a847
-#=╠═╡
-S,I, R  = run_math_sir(100, 10_000, β, α)
-  ╠═╡ =#
-
 # ╔═╡ b32c7c4c-45c5-4bcc-a487-53efc3e2a347
 #=╠═╡
 begin
@@ -463,6 +453,16 @@ begin
 	title!("Discrete SIR (Maths vs Simulation)")
 	xlims!(0,β < 0.0001 ? 100 : 25)
 end
+  ╠═╡ =#
+
+# ╔═╡ d74fdf5d-0b69-4bba-8540-f9429160cbe8
+#=╠═╡
+S_c,I_c,R_c  = run_computational_sir(100, 10_000, β, α)
+  ╠═╡ =#
+
+# ╔═╡ 6c6f3103-5a04-4b01-b8a1-05f64616a847
+#=╠═╡
+S,I, R  = run_math_sir(100, 10_000, β, α)
   ╠═╡ =#
 
 # ╔═╡ 43f5b10a-670d-11ef-1308-5ba25fe852bf
