@@ -112,13 +112,12 @@ In a "Differential equations" class, you learn to solve differential equations u
 \begin{equation}
   \begin{split}
   \frac{dn}{dt} &= bn \\
-  \frac{1}{n}\frac{dn}{dt} &= bn\frac{1}{n} \\
-  \Rightarrow \frac{1}{n}dn &= bdt \\
+  \Rightarrow dn &= bn \cdot dt \ \Rightarrow \ \frac{1}{n}dn &= bdt \\
   \end{split}
 \end{equation}
 ```
 
-We first divided both sides by ${tex`n`}. Then, to get to the third line, we used the definition of _differential_ ${tex`dn(t) = (dn/dt) \cdot dt`} and substituted the expression for ${tex`dn/dt`} (that we read from the first line). Now that we have one side in terms of ${tex`n`}, and the other in terms of ${tex`t`}, we integrate (or anti-derivate if you prefer) on both sides:
+To get to the second line, we used the definition of _differential_ (${tex`dn = (dn/dt) \cdot dt`}) and substituted the expression for ${tex`dn/dt`} (that we read from the first line). We then divided both sides by ${tex`n`} to have one side in terms of ${tex`n`} only, and the other in terms of ${tex`t`} only. To get the solution, we finally integrate (or anti-derivate if you prefer) on both sides:
 
 ```tex
 \begin{equation}

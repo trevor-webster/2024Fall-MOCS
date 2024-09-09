@@ -16,11 +16,11 @@
   </div>
 </div>
 
-This week, we convert last week's boxes into discrete dynamical equations that we can do maths and compute. We start by introducing the SIR model, and show how we can make it more heterogenous, e.g. different types of susceptibility, or recovered status (e.g. long lasting sickness, dead, recovered), do people are aware that they are contagious (asymptomatic), age groups, etc.
+This week, we convert last week's boxes into discrete dynamical equations that we can do maths and compute. We start with the SIR model, and show how we can make it more heterogenous by introducing, for instance, different degrees of susceptibility, distinct removal status (e.g., long lasting sickness, dead, recovered), or infection awareness (e.g., asymptomatic).
 
 <iframe src="https://streaming.uvm.edu/embed/49961/" width="560" height="315" frameborder="0" allowfullscreen></iframe>
 
-In this video, Lhd walkthrough the SIS model and introduces the mean-field approximation:
+In this video, LHD walkthroughs the SIS model and introduces the mean-field approximation:
 
 <iframe src="https://streaming.uvm.edu/embed/49962/" width="560" height="315" frameborder="0" allowfullscreen></iframe>
 
@@ -28,7 +28,7 @@ We are now ready to convert the mathematics into code:
 
 <iframe src="https://streaming.uvm.edu/embed/49963/" width="560" height="315" frameborder="0" allowfullscreen></iframe>
 
-In the process, Lhd introduces the idea of cloning factory and poisson processes: 
+In the process, LHD introduces the idea of cloning factory and Poisson processes: 
 
 ${mermaid`graph LR
       cIN --a---> CloneFactory;
