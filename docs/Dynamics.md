@@ -82,7 +82,7 @@ Plot.plot({
 })
 ```
 
-Later on, even if you don't want to remember it, you learn about derivative. For instance, the derivative _f(x) = 2x - 4_ is defined as a limit, or ${tex`\lim_{h\rightarrow 0} = \frac{f(x+h) - f(x)}{h} = 2`}. Plugging in our function, we get ${tex`\lim_{h\rightarrow 0} = \frac{2(x+h)-4-(2x-4)}{h} = 2`}. Later in the same course, you learn a shortcut; ${tex`(f \pm g) = f' \pm g'`} (the sum rule). Using the sum rule, and perhaps the Leibniz notation, you now think of derivatives as ${tex`y = 2x - 4 \Rightarrow dy/dx = 2`}. You think to yourself; yes, I remember that, one unit to the right, two units up.
+Later on, even if you don't want to remember it, you learn about derivative. For instance, the derivative ${tex`f(x) = 2x - 4`} is defined as a limit, or ${tex`f'(x) = \lim_{h\rightarrow 0} = \frac{f(x+h) - f(x)}{h}`}. Plugging in our function, we get ${tex`f'(x) = \lim_{h\rightarrow 0} = \frac{(2(x+h)-4)-(2x-4)}{h} = 2`}. Later in the same course, you learn a shortcut; ${tex`(f + g) = f' + g'`} (the sum rule). Using the sum rule, and perhaps the Leibniz notation, you now think of derivatives as ${tex`df/dx \equiv f'(x) = d(2x)/dx - d(4)/dx = 2 - 0 = 2`}. You think to yourself; yes, I remember that.
 
 Now, people say that solving differential equations mean that you solve for _functions_. This is where most people get lost. What does that mean? How is this idea related to modeling? This is best understood with an example. Say that we have the following relationship:
 
@@ -90,25 +90,25 @@ Now, people say that solving differential equations mean that you solve for _fun
 \frac{dn(t)}{dt} = b n(t)
 ```
 
-where _n(t)_ is often use to talk about population growth at time _t_. Take a second to understand what this equation means. The left hand side is a derivative, that is, the change of _n_ at time _t_. But the right hand side is not a number, but "some function of _n(t)_", here ${tex`bn(t)`}. 
+where ${tex`n(t)`} is often use to talk about the size of a population at time ${tex`t`}. Take a second to understand what this equation means. The left hand side is a derivative, that is, the rate of change of ${tex`n(t)`} at time ${tex`t`}. But the right hand side is not a number, it is "some function of ${tex`n(t)`}", here ${tex`bn(t)`}. 
 
-In the context of population growth, we are saying that the change in the population _n_ is proportional to the size of the population. The bigger the population, the bigger the change. This is a modeling choice! As you will see in this module, we will use graph diagrams to represent those choices, e.g.
+In the context of population growth, we are saying that the change in the population size ${tex`n(t)`} is proportional to the size of the population itself. The parameter ${tex`b`} is the growth rate, i.e., how many offspring an individual produces (on average) per unit of time (notice ${tex`b`} has dimension equal to the inverse of time, say 1/seconds or 1/days). Multiplying by the current number of individuals in the population, namely ${tex`n(t)`}, we get the rate of change of the whole population. Therefore, the bigger the population, the bigger the change. This is a modeling choice! As you will see in this module, we will use graph diagrams to represent those choices, e.g.,
 
 <div style="display: flex; align-items: center; justify-content: center;">
   ${mermaid`graph TD 
       n--b⋅n-->n;`}
 </div>
 
-I think it is worth reiterating; from the example above, you should see that (1) we have an unknown function _n(t)_ and that (2) _n(t)_ and its derivative _dn(t)/d(t)_  ought to satisfy the relation ${tex`dn(t)/dt = b n(t)`}. In this particular case, the educator will tell you something like; "think, what function _do you know_ that is equal to its derivative?" Surprise, this is the exponential function:
+I think it is worth reiterating; from the example above, you should see that (1) we have an unknown function ${tex`n(t)`} and that (2) the latter and its derivative are connected by a relation ${tex`dn(t)/dt = b n(t)`}. In this particular case, the educator will tell you something like; "think, what function _do you know_ that is equal to its derivative?" Surprise, this is the exponential function:
 
 
 ```tex
 n(t) = a \cdot e^{bt}
 ```
 
-Congrats, you just solved the mystery! What? WHY? How are we supposed to know that. Where is the _a_ coming from? Well, they say, you should remember that the exponential function ${tex`n(t) = e^{bt}`} is a function for which the rate of change is equal to itself, that is, the derivative ${tex`dn(t)/dt`} is equal to ${tex`n(t) = a \cdot e^{bt}`}, up to any constant _a_. But it does feel like cheating. 
+Congrats, you just solved the mystery! What? WHY? How are we supposed to know that. Where is the ${tex`a`} coming from and what is its meaning? First, if you take ${tex`t=0`} in the equation above, given that ${tex`e^0 = 1`}, you find ${tex`n(0) = a`}. That is, ${tex`a`} is the initial size of the population (one usually parametrizes time so that ${tex`t=0`} is the instant at which the system comes to exist, but it is just a convention; nothing deep about it), and so we can rewrite the solution explicitly as ${text`n(t) = n(0) \cdot e^{bt}`}. Second, they say, you should remember that the exponential function ${tex`e^{x}`} is a function for which the rate of change at any point (${tex`x`}) is equal to itself, that is, ${tex`de^{x}/dx = e^{x}`} (more generally, using the chain rule for derivatives, ${tex`de^{kx}/dx = d{kx}/x \cdot de^{kx}/d{kx} = k e^{kx}`}). But it does feel like cheating. 
 
-In a "Differential equations" class, you learn to solve differential equations using various strategies. You learn that the above is a [separable (first-order) differential equation](https://tutorial.math.lamar.edu/Classes/DE/Separable.aspx), which means that you can cast our equation as ${tex`dy/dt = f(y,t)`}, then rewrite as ${tex`N(y) dy/dx = M(x)`}. With that in place, it is known that you can first integrate both sides with respect to _x_, then use substitution. That is
+In a "Differential equations" class, you learn to solve differential equations using various strategies. You learn that the above is a [separable (first-order) differential equation](https://tutorial.math.lamar.edu/Classes/DE/Separable.aspx), which means that it can be cast in the form ${tex`dy/dt = g(y)h(t)`}. Our equation is the most trivial of this kind, for we have ${tex`g(y) = by`} and ${tex`h(t) = 1`} (i.e., no explicit dependence on the independent variable, ${tex`t`}). We thus proceed as follows (let us omit the dependence on ${tex`t`} to ease the notation),
 
 ```tex
 \begin{equation}
@@ -120,89 +120,21 @@ In a "Differential equations" class, you learn to solve differential equations u
 \end{equation}
 ```
 
-Now that we have one side in terms of _n_, and the other in terms of _t_, we integrate on both sides:
+In the first step, we divided by ${tex`n`} and multiplied by ${tex`dt`} both sides of the equation. In the second step, we then used the definition of _differential_ ${tex`dn(t) = (dn/dt) \cdot dt`} on the left and simplified on the right. Now that we have one side in terms of ${tex`n`}, and the other in terms of ${tex`t`}, we integrate (or anti-derivate if you prefer) on both sides:
 
 ```tex
 \begin{equation}
   \begin{split}
   \int \frac{1}{n}dn &= \int bdt \\
-  \ln |n| &= bt + C_1 \\
-  |n| &= e^{bt + C_1} = C \cdot e^{bt}
+  \ln |n| &= bt + c \\
+  |n| &= n = e^{bt + c} = e^{c} \cdot e^{bt} = a \cdot e^{bt} \ \ \ \ (n \geq 0)
   \end{split}
 \end{equation}
 ```
 
-which is the same as above (see [this refresher if you want to keep going](https://mathinsight.org/exponential_growth_decay_differential_equation_refresher))! In [Otto and Day (p.24)](https://github.com/jstonge/2024Fall-MOCS/blob/main/docs/readings/OttoDay-2007-Ch2.pdf), they explain how _derivatives_ and _differential equations_ are related, which I think is often confusing to students:
+defined ${tex`a = e^{c}`}, which is the same as above (see [this refresher if you want to keep going](https://mathinsight.org/exponential_growth_decay_differential_equation_refresher))! In [Otto and Day (p.24)](https://github.com/jstonge/2024Fall-MOCS/blob/main/docs/readings/OttoDay-2007-Ch2.pdf), they explain how _derivatives_ and _differential equations_ are related, which I think is often confusing to students:
 
-<div class="math-box">
-<strong>Box 2.2: Derivatives and Differential Equations</strong>
-
-Calculus is the mathematical study of rates of change. The most important concepts and rules
-of calculus are summarized in Appendix 2, including formulas for differentiating and integrating
- a variety of functions. For example, the derivative of the polynomial ${tex`y = ax^2 + bx + c`} with
-respect to x is ${tex`dy/dx = 2ax + b`}. Here, the rate of change of the <em>dependent</em> variable y is a function
-only of the independent variable x. In many biological problems, however, the rate of change of
-the dependent variable is a function of the dependent variable itself, e.g., ${tex`dy/dx = \alpha y + \beta`}. Notice
-that the variable on the right-hand side is y not x. An equation relating the derivative of a vari-
-able to a function of the variable itself is called a differential equation. Equations (2.8)–(2.10) are
-differential equations. For example, in equation (2.8), the derivative of the dependent variable
-describing the number of tree branches, ${tex`n(t)`}, with respect to the independent variable (time t) is
-a function of ${tex`n(t)`}, not t. Differential equations naturally arise in continuous-time biological
-models because we often expect the rate of change of a variable to be a function of its current
-value. For example, large trees can have more new branches, a cat can eat more mice if there are
-more mice available, and more people can catch the flu if there are more susceptible people
-within the population.
-
-A derivative or differential equation describes how a variable changes. But what we usually
-want to know is the value of the dependent variable (e.g., ${tex`n(t)`}) as a function of the independent
-variable (e.g., t). In a typical calculus course, we are taught how to solve for y by taking the anti-
-derivative or integral of both sides. In other words, we could solve the equation ${tex`dy/dx = 2ax + b`}
-for y(x) by integrating both sides with respect to x to obtain its solution, ${tex`y = ax^2 + bx + c`} (see
-Appendix 2), which gives us the value of y for any value of x. A common error that students
-make when they first encounter differential equations is to integrate the left-hand side of an
-equation like ${tex`dn(t)/dt = bn(t)`} with respect to t but the right-hand side with respect to n(t). This
-would give ${tex`n(t) = bn(t)^2/2`}. To see that this is incorrect, take the derivative of both sides with
-respect to t (see Appendix 2). This would give ${tex`dn(t)/dt = bn(t)dn(t)/dt`}, which incorrectly has
-${tex`dn(t)/dt`} on the right-hand side. The error in this procedure crept in when we took the anti-
-derivative of the left-hand side with respect to t, but the antiderivative of the right-hand side
-with respect to a different variable, ${tex`n(t)`}. To solve for ${tex`n(t)`} we would have to take the antideriva-
-tive of both sides with respect to t, i.e.,
-
-```tex
-\int{\frac{dn(t)}{dt}dt} = \int{bn(t)dt}
-```
-
-The left-hand integral is ${tex`n(t)`}, as before, but we cannot evaluate the right-hand integral because
-doing so requires ${tex`n(t)`}, which is what we are trying to find. In Chapter 6, we will see how to
-obtain solutions to certain types of differential equations, like the ones presented in this chap-
-ter. For now, it is enough to recognize the distinction between derivatives and differential equa-
-tions and to remember that care must be taken when integrating differential equations.
-Before leaving the subject, it is worth mentioning that the term “differential equation”
-encompasses several types of equations, all of which arise in biology. Differential equations can
-be written as functions of more than one dependent variable. For example, in our flu model, the
-differential equation (2.10a) for the number of people with the flu, ${tex`dn(t)/dt`}, will depend on both
-the number of people with the flu, ${tex`n(t)`}, and the number of susceptible individuals in the population, 
-${tex`s(t)`}. Differential equations can also be written as functions of both the dependent variable
-${tex`n(t)`} and the independent variable t. Such differential equations arise whenever we expect a variable
- to change as a function both of its current value and of time. For example, in a seasonal
-environment, the budding rate of a tree should depend on the time of year as well as on the
-number of branches on a tree. We can model this by treating b as some function of time, ${tex`b(t)`},
-rather than a constant. In addition, differential equations might depend on the past state of a
-variable as well as (or instead of ) its current state. For example, in the tree branching example,
-the production of new branches at time t might depend on the total number of branches
-days ago, or ${tex`n(t - \tau)`}, as these branches are now large enough to branch again. Revising equation (2.8)
-gives ${tex`dn(t)/dt = bn(t - \tau)`}. Such equations, known as “delay differential equations,” arise naturally
- when describing biological processes involving time lags.
-
-All of the above examples have only one independent variable (time). These fall into the cat-
-egory known as “ordinary differential equations” (ODE). Many biological problems involve more
-than one independent variable (e.g., space as well as time), and such differential equations are
-known as “partial differential equations” (PDE).
-</div>
-
---- 
-
-p.s. Do you have more examples? Click on 'view Source' in the top right corner of the page, and propose your changes on the Git repository by clicking the ✎ icon.
+Do you have more examples? Click on 'view Source' in the top right corner of the page, and propose your changes on the Git repository by clicking the ✎ icon.
 
 ```js
 // The main function
