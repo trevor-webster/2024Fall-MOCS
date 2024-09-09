@@ -20,6 +20,7 @@ begin
  	using ModelingToolkit, Symbolics
 	using DifferentialEquations: solve
 	using ModelingToolkit: t_nounits as t, D_nounits as D
+	using Distributions
 end
 
 # ╔═╡ bea36c11-da70-4997-98ee-5ffc9f30c528
@@ -58,38 +59,57 @@ _refs:_
 - [Zobitz (2022) ch.1](https://jmzobitz.github.io/ModelingWithR/intro-01.html#fn1) 
 "
 
+# ╔═╡ 7015b624-c11b-4e5b-bd8c-155734ebc9ee
+n = @bind n Slider(0:16, default=0, show_value=true)
+
 # ╔═╡ a77d35a1-2d48-41d1-9a1a-210133c13674
 let 
 	# initial conditions (i.cs)
 	P₀ = 1 / 2
 	Tmax = 5.0
 	tspan = (0.0, Tmax)
-	
+	r=1.01
 	# NUMERICAL
 	
-	f(u, p, t) = 1.01 * u
+	f(u, p, t) = r * u
 	prob = ODEProblem(f, P₀, tspan)
 	num_sol = solve(prob)
 
 	# TIMESTEPPING
 	
-	dt = 0.01
 	P_dot = P₀
 	res = [P_dot]
-	for t in 0:dt:(Tmax-dt)
-								# P(n+1) = P(t) + bP(t)
-	    △P = dt * 1.01 * P_dot  # ΔP = P(t+1) - P(t) = bP(t)
+	dt = 0.1
+	for t in 1:Int(Tmax/dt)
+					     # P(n+1) = P(t) + bP(t)
+	    △P = dt*r*P_dot  # ΔP = P(t+1)-P(t) = bP(t)
 	    P_dot += △P
 	    push!(res, P_dot)
 	end
-
+	
+	# Better
+	
+	# P(t+1) = N(t) + r N(t)
+	# P(t+1) = (1 + r) P(t)
+	# P(t) = (1 + r) P(t-1) = (1 + r)^2 P(t-2) = ... 
+	# P(t) = P₀ (1 + r)^t.
+	
+	P = [P₀ * (1 + r)^t for t in 0:Tmax]
+	
 	# ANALYTICAL - SPECIFIC SOLUTION
 	
-	p(t) = 0.5 * exp(1.01t)
+	p(t) = 0.5 * exp(r*t)
 	
-	plot(num_sol, lw=2, color="orange", label="ODE Solver")
-	plot!(0:dt:Tmax, res, lw=2, ls=:dot, color="green", label="Euler Approximation")
+	plot(0:dt:Tmax, res, lw=2, marker=:dot, color="green", label="Euler Approximation (dt=0.1)")
+	plot!(num_sol, lw=2, color="orange", label="ODE Solver")
+	plot!(0:Tmax, P, m=:o, alpha=0.5, ms=3, label="once daily", lw=2)
 	plot!(num_sol.t, t -> p(t), lw = 2, ls =  :dash, label = "Analytical", color = "blue")
+	
+	# Bonus (how many times a [year] our species reproduce? )
+	P = [P₀ * (1 + r/(2^n))^t for t in 0:(2^n)*Tmax]
+	
+	plot!(0:(2.0^(-n)):Tmax, P, m=:o, alpha=0.5, ms=2, label="$(2^n) times per day")
+
 end
 
 
@@ -103,13 +123,17 @@ load("./diagrams/logistic-growth.png")
 md"
 As [Roughgarden](https://en.wikipedia.org/wiki/Joan_Roughgarden) says, it got'ta stop somewhere. The logistic growth is the exponential function in disguised, with some dependeny on the $P(t)$ getting closer to a carrying capacity. In ecology, population growth stops when it hits some environmental limits. When average birth/death rates per individual is a function of population size, we say that it is 'density-dependent population growth'. 
 
-In contagion, the carrying capacity is when you run out of sick people. When assuming a closed system, and a large enough population, we can get rid of one of the two boxes above. Indeed, the number of, say, susceptible individuals is the total population size minus the infected individuals. See [Smaldino 2023, ch.4.4](https://github.com/jstonge/2024Fall-MOCS/blob/main/docs/readings/Smaldino-2023-ch4.pdf) for a nice walkthrough of the precedure.
+In contagion, the carrying capacity is when you run out of sick people. When assuming a closed system, and a large enough population, we can get rid of one of the two boxes above. Indeed, the number of, say, susceptible individuals is the total population size minus the infected individuals. See [Smaldino 2023, ch.4.4](https://github.com/jstonge/2024Fall-MOCS/blob/main/docs/readings/Smaldino-2023-ch4.pdf) for a nice walkthrough of the procedure.
 
 The ODE in terms of population size is written
 
 $$\frac{dN(t)}{dt} = r \cdot \textcolor{green}{\left(1 - \frac{N(t)}{K}\right)} \cdot N(t)$$
 
-Where _K_ is often use for carrying capacity (in contagion example, it is our 	total population _N_). One way to write the solution is 
+Where _K_ is often use for carrying capacity (in contagion example, it is our 	total population _N_). If we think in terms of recursion equation:
+
+$$N(t+1) = N(t) + r (K - N(t)) N(t)$$
+
+One way to write the solution is 
 
 $$N(t) = N(0)\frac{K}{N(0) + (K - N_0)e^{-rt}}$$
 
@@ -125,7 +149,8 @@ let
 	N0 = 13_600
 	k0 = 0.024
 	
-	# trying out modeling toolkit...
+	# trying out modeling toolkit...numerical solution
+	
 	@mtkmodel L begin
 	    @parameters begin
 			N=N0
@@ -142,14 +167,14 @@ let
 	end
 	
 	@mtkbuild logistic = L()
-	
-	# numerical solution
+		
 	Tmax = 600
 	tspan = (0.0, Tmax)
 	prob = ODEProblem(logistic, [], tspan,  [])
 	sol = solve(prob)
 
 	# analytic solution
+	
 	f(t) = (N0 * I₀) / (I₀ + (N0 - I₀) * exp(-k0 * t))
 	
 	# Plotting both solutions for comparison
@@ -158,6 +183,55 @@ let
 		  label="Analytical Solution")
 end
 
+
+# ╔═╡ a5a9a839-d268-4503-8305-1e9c1b3df262
+md"Following the [cosmo-notes](https://cosmo-notes.github.io/sos/chapters/discrete.html), here we look at the discrete composition approach of the logistic growth model. Instead of asking each animal if they are gonna reproducing, we ask _how many animals are reproducing within a generation_? As we are entering in the stochastic simulation realm, we look at multiple realizations of the process:"
+
+# ╔═╡ 60557554-6bf8-4cb6-822a-5bdbf7c12486
+let
+	# about timestepping
+	tmax=20
+	capacity=20
+	growth_rate=0.25
+	dt = 1.0/(growth_rate*capacity)
+	println("nb timesteps:$(Int(tmax/dt)); δt: $(dt)")
+end
+
+# ╔═╡ 03c73af0-cc42-445f-9eaa-6a3ee21120c9
+function logistic_sim(;N0, r, K, nb_sims)
+	
+	p = plot(title="Population Growth Over Time", xlabel="Time", 
+			 ylabel="Population", legend=false)
+
+	tmax = 20
+	dt = 0.1
+	for sim in 1:nb_sims
+	    population = N0
+	    history_comp = [population]
+	
+	    # For each generation (one way to do timestepping)
+	    for _ in 1:Int(tmax / dt)
+	        # Calculate and add the number of reproduction
+	        prob = r * (K - population) * dt
+	        if prob >= 0.0
+	            population += rand(Binomial(population, prob))
+	        end
+	
+	        # Update history
+	        push!(history_comp, population)
+	    end
+	
+	    # Plot time series
+	    plot!(dt .* collect(0:length(history_comp)-1), history_comp, marker=:o, 
+			  linestyle=:dash, color=:blue, alpha=0.5, label="")
+	end
+
+	hline!([K], ls=:dashdot, color=:red, label="Carrying capacity")
+	p
+end
+
+# ╔═╡ b1c84f63-e660-4869-95ef-7e93c68ebe40
+logistic_sim(N0=1, r=0.03, K=20, nb_sims=20.)
 
 # ╔═╡ f391d1a5-098a-48f2-8e6d-f965d99fe3e4
 md"## Birth-death processes"
@@ -182,7 +256,7 @@ $$\frac{dN(t)}{dt} = (b-d) N(t) + m$$
 let 
 	# initial conditions (i.cs)
 	N₀ = 1 / 2
-	Tmax = 50.0
+	Tmax = 30.0
 	tspan = (0.0, Tmax)
 	m = 1/2 # inflow 
 	d = 1/2 # outflow
@@ -190,21 +264,25 @@ let
 	
 	# TIMESTEPPING
 	
-	dt = 0.01
 	N_dot = N₀
 	res = [N_dot]
-	for t in 0:dt:(Tmax-dt)
-	    △N = dt * ( (b-d)*N_dot + m ) 
+	for t in 1:Tmax
+	    △N = (b-d)*N_dot + m
 	    N_dot += △N
 	    push!(res, N_dot)
 	end
 
-	plot(0:dt:Tmax, res)
+	plot(res, label="N")
 end
 
 
 # ╔═╡ 7560a130-1205-4cc9-a58f-d562dbeca77a
-md"## SIR"
+md"## SIR
+
+_Same same, but different_
+
+For the SIR model, we show the myriads of ways that it can be written. We balance the pros and cons of each version.
+"
 
 # ╔═╡ f445a06d-269b-4977-945f-953f56440600
 load("./diagrams/sir.png")
@@ -218,47 +296,174 @@ $$\frac{dS(t)}{dt} =  \beta S(t)I(t)$$
 $$\frac{dI(t)}{dt} = \beta S(t) I(t) -\alpha I(t)$$
 $$\frac{dR(t)}{dt} = \alpha I(t)$$
 
-In discrete time:
+One way to write it in discrete time is with recursion equations:
 
 $$S(t+1) = S(t) - \beta S(t)I(t)$$
-$$I(t+1) = I(t) + \beta S(t)I(t) - \gamma I(t)$$
-$$R(t+1) = R(t) + \gamma I(t)$$
+$$I(t+1) = I(t) + \beta S(t)I(t) - \alpha I$$
+$$R(t+1) = R(t) + \alpha I$$
+
+Note that in the code below, they will magically become difference equations. Here, we are asking about the expected number of interactions between the S-I-R parts of our system. A second way to write the discrete SIR model is as follows:
+
+$$S(t+1) = S(t) - S(t)\Big [ (1-(1-\beta)^{I(t)}\Big ]$$
+$$I(t+1) = I(t) + S(t)\Big [ (1-(1-\beta)^{I(t)}\Big ] - \alpha I(t)$$
+$$R(t+1) = R(t) + \alpha I(t)$$
+
+This version makes simultaneous events impossible, as we are asking about the 'leftover' of the timesteps instead of the expected changes between parts. That is, we ask 'who remains' in, say, the susceptible box after substracting the proportion:
 "
+
+# ╔═╡ 2de1558b-4cf8-4076-97fd-2dd59308c537
+let
+	β = 0.00005
+	S, I = 9999, 1
+	prob_not_infected = (1-β)
+	println("prob not infected: $(prob_not_infected)")
+	println("who remains? $(S - S*(1 - prob_not_infected^I))")
+end
 
 # ╔═╡ 1a524fd2-d7c8-48d9-9c23-fac20886669d
 let 
-	# Initial conditions (i.cs)
-	
-	N = 10000.0
-	I₀ = 1. # patient zero
-	S₀ = N - I₀ # conserved quantity
-	R₀ = 0.
-	Tmax = 182
-	β = 1/30*5*1/N # transmission time per contact: 30days. contacts per day: 5
-	γ = 1/15 
+	# initialize
+	N, I₀, R₀ = 10000.0, 1., 0.
+	S₀ = N - I₀ - R₀
+	β = 1/15*5*1/N # transmission time per contact: 30days. contacts per day: 5
+	γ = 1/15  #recovery period: 15 days 
 
-	# Euler's method
+	# Timestepping
 	
-	dt = 1.
-	S_dot, I_dot, R_dot = S₀, I₀, R₀
-	res = [(S_dot, I_dot, R_dot)]
-	for t in 0:dt:(Tmax-dt)
-	    △S = -S_dot*(1-(1 - β)^I_dot)
-	    S_dot += △S
-		△R = γ*I_dot
+	S, I, R = S₀, I₀, R₀
+	res = [(S, I, R)]
+	for t in 1:182
+	    △S = -S*(1-(1 - β)^I)
+	    S += △S
+		△R = γ*I
 		
-		I_dot += -△S - △R
-		R_dot += △R
+		I += -△S - △R
+		R += △R
 		
-	    push!(res, (S_dot, I_dot, R_dot))
+	    push!(res, (S, I, R))
 	end
 	
-	S, I, R = map(collect, zip(res...)) # small hack to unpack vars
+	St, It, Rt = map(collect, zip(res...)) # small hack to unpack vars
 	
-	plot(0:dt:Tmax, S, label="Susceptible", xlabel="time")
-	plot!(0:dt:Tmax, I, label="Infected")
-	plot!(0:dt:Tmax, R, label="Recovered")
+	plot( St, label="Susceptible", xlabel="time", ylabel="# people", leg=:right, 
+		  marker=:rect, color=:lightgreen, opacity=0.5)
+	plot!(It, label="Infected",  marker=:o, color=:red)
+	plot!(Rt, label="Recovered", marker=:star, color=:blue, opacity=0.5)
 end
+
+# ╔═╡ 92e9bdd4-07e3-45fa-a6eb-906d2b7c2615
+function run_math_sir(steps, N, β, α)
+		I,R = 1, 0
+		S = N-I-R
+
+		history = []
+		for step=1:steps
+			next_S = S
+			next_I = I
+			next_R = R
+
+			# Version 1: what not to do because we overshoot
+			# next_S -= β * S * I
+			# next_I += β * S * I - α*I
+			# next_R += α*I
+
+			# Version 2: better... calc the change in a mathematical model
+			next_S -= S*(1-(1-β)^I)
+			next_I += S*(1-(1-β)^I)- α*I
+			next_R += α*I
+
+			S, I, R = next_S, next_I, next_R
+			push!(history, (S,I,R))
+		end
+		
+	St, It, Rt = map(collect, zip(history...)) # small hack to unpack vars
+	return (St, It, Rt)
+end	
+
+# ╔═╡ 06b8a636-bca6-4741-8a59-05e2e719b9a1
+function run_computational_sir(steps, N, β, α)
+		I,R = 1, 0
+		S = N-I-R
+
+		history = []
+		for step=1:steps
+			next_S = S
+			next_I = I
+			next_R = R
+
+			# simulate the change in a computational model!		
+
+			# Version 3: dummy approach (direct simulation)
+			# throwing a lot of random numbers
+			# for dummy_s=1:S
+			# 	for dummy_i=1:I
+			# 		if rand() < β # did I infected S?
+			# 			next_S -= 1
+			# 			next_I += 1
+			# 			break
+			# 		end
+			# 	end
+			# end
+
+			# for dummy_i=1:I
+			# 	if rand() < α
+			# 		next_I -= 1
+			# 		next_R += 1
+			# 	end
+			# end
+
+			# Cheaper version
+			p_inf = 1-(1-β)^I
+			new_I = rand(Binomial(S, p_inf)) 
+			new_R = rand(Binomial(I, α))		
+			next_S -= new_I
+			next_I += new_I - new_R
+			next_R += new_R
+
+			# update variable
+			S, I, R = next_S, next_I, next_R
+			push!(history, (S,I,R))
+			
+			if I == 0
+				break
+			end
+		end
+		
+	St, It, Rt = map(collect, zip(history...)) # small hack to unpack vars
+	return (St, It, Rt)
+end	
+
+# ╔═╡ 2ecb83fe-d495-48ff-b23d-c2252f138879
+# ╠═╡ disabled = true
+#=╠═╡
+β = @bind β Slider(0.00005:0.00001:1.1, show_value=true)
+  ╠═╡ =#
+
+# ╔═╡ 157f8455-88e1-4d5a-9582-de011e5ebc10
+α = @bind α Slider(0.:0.01:1., show_value=true, default=0.33)
+
+# ╔═╡ d74fdf5d-0b69-4bba-8540-f9429160cbe8
+#=╠═╡
+S_c,I_c,R_c  = run_computational_sir(100, 10_000, β, α)
+  ╠═╡ =#
+
+# ╔═╡ 6c6f3103-5a04-4b01-b8a1-05f64616a847
+#=╠═╡
+S,I, R  = run_math_sir(100, 10_000, β, α)
+  ╠═╡ =#
+
+# ╔═╡ b32c7c4c-45c5-4bcc-a487-53efc3e2a347
+#=╠═╡
+begin
+	plot( I,  label="infected", xlabel="time", ylabel="# people", 
+		  marker=:o, color=:red, leg = β < 0.0001 ? :left : :right)
+	plot!(I_c, label="simulations", marker=:hexagon)
+	plot!(S, label="suceptible", marker=:rect, color=:lightgreen, opacity=0.5)
+	plot!(R, label="recovered", marker=:star, color=:blue, opacity=0.5)
+	title!("Discrete SIR (Maths vs Simulation)")
+	xlims!(0,β < 0.0001 ? 100 : 25)
+end
+  ╠═╡ =#
 
 # ╔═╡ 43f5b10a-670d-11ef-1308-5ba25fe852bf
 md"## Lotka Volterra"
@@ -289,10 +494,10 @@ _refs_:
 "
 
 # ╔═╡ d90a1f6d-94eb-4b0e-a110-6673ba0d713f
-prey_repro_rate = @bind α Slider(0.5:0.01:1.5, default=2/3, show_value=true)
+prey_repro_rate = @bind αlv Slider(0.5:0.01:1.5, default=2/3, show_value=true)
 
 # ╔═╡ 40bca008-09c7-4c90-8270-8756dda676c6
-prey_death_rate = @bind β Slider(0.:0.01:1.5, default=4/3, show_value=true)
+prey_death_rate = @bind βlv Slider(0.:0.01:1.5, default=4/3, show_value=true)
 
 # ╔═╡ a2be6ad3-5ea2-412c-8042-f073ee7b435c
 let 
@@ -318,8 +523,8 @@ let
 
 	end
 
-	@mtkbuild sys = LV(; α=α, β=β)
-	@mtkbuild sys2 = LV(; α=α, β=β, 🐇=0.4, 🦊 = 7.2)
+	@mtkbuild sys = LV(; α=αlv, β=βlv)
+	@mtkbuild sys2 = LV(; α=αlv, β=βlv, 🐇=0.4, 🦊 = 7.2)
 	
 	tspan = (0.0, 50.0)
 	
@@ -359,10 +564,10 @@ let
 	res = [(L_dot, H_dot)]
 	
 	for t in 0:dt:(Tmax-dt)
-		# the ordering matter!
+		# Ordering matter!
 	    △L = dt * ( δ*L_dot*H_dot - γ*L_dot) 
 	    L_dot += △L
-	    △H = dt * ( α*H_dot - β*H_dot*L_dot) 
+	    △H = dt * ( αlv*H_dot - βlv*H_dot*L_dot) 
 	    H_dot += △H
 	    push!(res, (L_dot, H_dot))
 	end
@@ -373,9 +578,13 @@ let
 	plot!(0:dt:Tmax, L, label="Lynx")
 end
 
+# ╔═╡ 776f7ecc-61ef-4c57-8a6d-5648e867422a
+md"---"
+
 # ╔═╡ 22c92187-9e47-489f-9c60-963fdeb47c7e
-md"## Interlude: what are the parts?
-In the SIR model, the parts were the same people transitionning between states. In the Lotka-voltera model, the parts were interdependent populations of prey and predators. In pharmacokinetics, we had molecules coming in and out of an organ. In each case, the point particles within compartments were indistinguishable from each other; all susceptible people were the same, all foxes were the same, and all molecules were the same. 
+md"
+> #### Interlude: what are the parts? 
+> In the SIR model, the parts were the same people transitionning between states. In the Lotka-voltera model, the parts were interdependent populations of prey and predators. In pharmacokinetics, we had molecules coming in and out of an organ. In each case, the point particles within compartments were indistinguishable from each other; all susceptible people were the same, all foxes were the same, and all molecules were the same. 
 "
 
 # ╔═╡ 95062482-8f26-4620-96f3-a91a54da1076
@@ -540,6 +749,7 @@ It contains time _t_ and space _x_ as independent variables.
 PLUTO_PROJECT_TOML_CONTENTS = """
 [deps]
 DifferentialEquations = "0c46a032-eb83-5123-abaf-570d42b7fbaa"
+Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
 FileIO = "5789e2e9-d7fb-5bc7-8068-2c6fae9b9549"
 ImageCore = "a09fc81d-aa75-5fe9-8630-4744c3626534"
 ImageIO = "82e4d734-157c-48bb-816b-45c225c6df19"
@@ -551,6 +761,7 @@ Symbolics = "0c5d862f-8b57-4792-8d23-62f2024744c7"
 
 [compat]
 DifferentialEquations = "~7.13.0"
+Distributions = "~0.25.111"
 FileIO = "~1.16.3"
 ImageCore = "~0.9.4"
 ImageIO = "~0.6.8"
@@ -567,7 +778,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.10.5"
 manifest_format = "2.0"
-project_hash = "b2944f4a33bc3928dcc9a50c496ed9e0355d1324"
+project_hash = "08d54b51791030ca37140fe778add162d42f4a62"
 
 [[deps.ADTypes]]
 git-tree-sha1 = "99a6f5d0ce1c7c6afdb759daa30226f71c54f6b0"
@@ -3428,11 +3639,16 @@ version = "1.4.1+1"
 # ╟─715cb946-521d-4607-b442-ff4b1e55ba85
 # ╟─44243aa8-3e3d-46fd-b23f-d5ed6a0a1af2
 # ╟─c1a6c862-16ca-4970-a0d5-09c6c4f6c029
+# ╟─7015b624-c11b-4e5b-bd8c-155734ebc9ee
 # ╠═a77d35a1-2d48-41d1-9a1a-210133c13674
 # ╟─6d3f5c87-226a-45c9-a26b-ec9babeac103
 # ╟─65101a30-3659-45c8-b7d0-e8343dd0ce9a
 # ╟─45bcdab5-1eb5-4533-9216-ef1581adcd9f
 # ╠═ca611a2c-7b2c-47ba-a481-97c012ae451d
+# ╟─a5a9a839-d268-4503-8305-1e9c1b3df262
+# ╠═b1c84f63-e660-4869-95ef-7e93c68ebe40
+# ╠═60557554-6bf8-4cb6-822a-5bdbf7c12486
+# ╠═03c73af0-cc42-445f-9eaa-6a3ee21120c9
 # ╟─f391d1a5-098a-48f2-8e6d-f965d99fe3e4
 # ╟─8c1b8994-81d5-42bf-a8e6-1e73fc369828
 # ╟─ae60ba3c-a32d-443a-93c0-00eb9acda8c4
@@ -3440,8 +3656,16 @@ version = "1.4.1+1"
 # ╠═4a1c661c-a65e-42dc-98eb-4665030986a6
 # ╟─7560a130-1205-4cc9-a58f-d562dbeca77a
 # ╟─f445a06d-269b-4977-945f-953f56440600
-# ╟─7dc1eb5b-48f8-4bc0-8c7b-a84706e64b78
+# ╠═7dc1eb5b-48f8-4bc0-8c7b-a84706e64b78
+# ╠═2de1558b-4cf8-4076-97fd-2dd59308c537
 # ╠═1a524fd2-d7c8-48d9-9c23-fac20886669d
+# ╠═92e9bdd4-07e3-45fa-a6eb-906d2b7c2615
+# ╠═06b8a636-bca6-4741-8a59-05e2e719b9a1
+# ╟─2ecb83fe-d495-48ff-b23d-c2252f138879
+# ╟─157f8455-88e1-4d5a-9582-de011e5ebc10
+# ╠═b32c7c4c-45c5-4bcc-a487-53efc3e2a347
+# ╠═d74fdf5d-0b69-4bba-8540-f9429160cbe8
+# ╠═6c6f3103-5a04-4b01-b8a1-05f64616a847
 # ╟─43f5b10a-670d-11ef-1308-5ba25fe852bf
 # ╟─a28b8392-0493-4861-a218-d4ed114511bc
 # ╟─6f79705f-01c4-4580-8a0f-b1a21ec57e77
@@ -3449,6 +3673,7 @@ version = "1.4.1+1"
 # ╠═40bca008-09c7-4c90-8270-8756dda676c6
 # ╠═a2be6ad3-5ea2-412c-8042-f073ee7b435c
 # ╠═111fd244-22de-4585-9e01-dca011be3f30
+# ╟─776f7ecc-61ef-4c57-8a6d-5648e867422a
 # ╟─22c92187-9e47-489f-9c60-963fdeb47c7e
 # ╟─95062482-8f26-4620-96f3-a91a54da1076
 # ╟─043ee371-3502-456a-b8a2-9835cb093e48

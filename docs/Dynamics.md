@@ -94,10 +94,8 @@ where _n(t)_ is often use to talk about population growth at time _t_. Take a se
 
 In the context of population growth, we are saying that the change in the population _n_ is proportional to the size of the population. The bigger the population, the bigger the change. This is a modeling choice! As you will see in this module, we will use graph diagrams to represent those choices, e.g.
 
-<div style="display: flex; align-items: center; justify-content: center;">
-  ${mermaid`graph TD 
+${mermaid`graph TD 
       n--b⋅n-->n;`}
-</div>
 
 I think it is worth reiterating; from the example above, you should see that (1) we have an unknown function _n(t)_ and that (2) _n(t)_ and its derivative _dn(t)/d(t)_  ought to satisfy the relation ${tex`dn(t)/dt = b n(t)`}. In this particular case, the educator will tell you something like; "think, what function _do you know_ that is equal to its derivative?" Surprise, this is the exponential function:
 
@@ -199,6 +197,12 @@ egory known as “ordinary differential equations” (ODE). Many biological prob
 than one independent variable (e.g., space as well as time), and such differential equations are
 known as “partial differential equations” (PDE).
 </div>
+
+## Mean-field theory
+
+When drawing box and arrows, we often times assume a flow in between boxes; susceptible individuals flowing into the susceptible compartment. In doing so, we assume our individuals are "connected" to the average, or the mean-field, of all possible states for the future. 
+
+[TODO]
 
 --- 
 
