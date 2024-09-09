@@ -102,7 +102,7 @@ let
 	
 	plot(0:dt:Tmax, res, lw=2, marker=:dot, color="green", label="Euler Approximation (dt=0.1)")
 	plot!(num_sol, lw=2, color="orange", label="ODE Solver")
-	plot!(0:Tmax, P, m=:o, alpha=0.5, ms=3, label="once daily", lw=2)
+	plot!(0:Tmax, P, marker=:o, alpha=0.5, ms=3, label="once daily", lw=2)
 	plot!(num_sol.t, t -> p(t), lw = 2, ls =  :dash, label = "Analytical", color = "blue")
 	
 	# Bonus (how many times a [year] our species reproduce? )
