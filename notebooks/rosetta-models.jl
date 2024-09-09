@@ -102,13 +102,13 @@ let
 	
 	plot(0:dt:Tmax, res, lw=2, marker=:dot, color="green", label="Euler Approximation (dt=0.1)")
 	plot!(num_sol, lw=2, color="orange", label="ODE Solver")
-	plot!(0:Tmax, P, marker=:o, alpha=0.5, ms=3, label="once daily", lw=2)
-	plot!(num_sol.t, t -> p(t), lw = 2, ls =  :dash, label = "Analytical", color = "blue")
+	plot!(0:Tmax, P, marker=:o, alpha=0.5, label="once daily", lw=2)
+	plot!(num_sol.t, t -> p(t), lw = 2, ls=:dash, label = "Analytical", color=:blue)
 	
 	# Bonus (how many times a [year] our species reproduce? )
-	# P = [P₀ * (1 + r/(2^n))^(t) for t in 0:(2^n)*Tmax]
+	P = map(t -> P₀ * (1 + r/(2^n))^t, 0:(2^n)*Tmax)
 	
-	# plot!(0:(2.0^(-n)):Tmax, P, marker=:o, alpha=0.5, ms=2, label="$(2^n) times per day")
+	plot!(0:(2.0^(-n)):Tmax, P, marker=:o, alpha=0.5, ms=2, label="$(2^n) times per day")
 
 end
 
