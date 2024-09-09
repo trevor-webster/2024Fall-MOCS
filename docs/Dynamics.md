@@ -104,7 +104,7 @@ I think it is worth reiterating; from the example above, you should see that (1)
 n(t) = a \cdot e^{bt}
 ```
 
-Congrats, you just solved the mystery! What? WHY? How are we supposed to know that. Where is the ${tex`a`} coming from and what is its meaning? First, if you take ${tex`t=0`} in the equation above, given that ${tex`e^0 = 1`}, you find ${tex`n(0) = a`}. That is, ${tex`a`} is the initial size of the population (one usually parametrizes time so that ${tex`t=0`} is the instant at which the system comes to exist, but it is just a convention; nothing deep about it), and so we can rewrite the solution explicitly as ${tex`n(t) = n(0) \cdot e^{bt}`}. Second, they say, you should remember that the exponential function ${tex`e^{x}`} is a function for which the rate of change at any point (${tex`x`}) is equal to itself, that is, ${tex`de^{x}/dx = e^{x}`} (more generally, using the chain rule for derivatives, ${tex`de^{kx}/dx = d{kx}/x \cdot de^{kx}/d{kx} = k e^{kx}`}). But it does feel like cheating. 
+Congrats, you just solved the mystery! What? WHY? How are we supposed to know that. Where is the ${tex`a`} coming from and what is its meaning? First, if you take ${tex`t=0`} in the equation above, given that ${tex`e^0 = 1`}, you find ${tex`n(0) = a`}. That is, ${tex`a`} is the initial size of the population (one usually parametrizes time so that ${tex`t=0`} is the instant at which the system comes to exist, but it is just a convention; nothing deep about it), and so we can rewrite the solution explicitly as ${tex`n(t) = n(0) \cdot e^{bt}`}. Second, they say, you should remember that the exponential function ${tex`e^{x}`} is a function for which the rate of change at any point (${tex`x`}) is equal to itself, that is, ${tex`de^{x}/dx = e^{x}`} (more generally, using the chain rule for derivatives, ${tex`de^{kx}/dx = d(kx)/x \cdot de^{kx}/d(kx) = k e^{kx}`}). But it does feel like cheating. 
 
 In a "Differential equations" class, you learn to solve differential equations using various strategies. You learn that the above is a [separable (first-order) differential equation](https://tutorial.math.lamar.edu/Classes/DE/Separable.aspx), which means that it can be cast in the form ${tex`dy/dt = g(y)h(t)`}. Our equation is the most trivial of this kind, for we have ${tex`g(y) = by`} and ${tex`h(t) = 1`} (i.e., no explicit dependence on the independent variable, ${tex`t`}). We thus proceed as follows (let us omit the dependence on ${tex`t`} to ease the notation),
 
@@ -112,13 +112,13 @@ In a "Differential equations" class, you learn to solve differential equations u
 \begin{equation}
   \begin{split}
   \frac{dn}{dt} &= bn \\
-  \frac{1}{n}\frac{dn}{dt}dt &= bn\frac{1}{n}dt \\
-  \frac{1}{n}dn &= bdt \\
+  \frac{1}{n}\frac{dn}{dt} &= bn\frac{1}{n} \\
+  \Rightarrow \frac{1}{n}dn &= bdt \\
   \end{split}
 \end{equation}
 ```
 
-In the first step, we divided by ${tex`n`} and multiplied by ${tex`dt`} both sides of the equation. In the second step, we then used the definition of _differential_ ${tex`dn(t) = (dn/dt) \cdot dt`} on the left and simplified on the right. Now that we have one side in terms of ${tex`n`}, and the other in terms of ${tex`t`}, we integrate (or anti-derivate if you prefer) on both sides:
+We first divided both sides by ${tex`n`}. Then, to get to the third line, we used the definition of _differential_ ${tex`dn(t) = (dn/dt) \cdot dt`} and substituted the expression for ${tex`dn/dt`} (that we read from the first line). Now that we have one side in terms of ${tex`n`}, and the other in terms of ${tex`t`}, we integrate (or anti-derivate if you prefer) on both sides:
 
 ```tex
 \begin{equation}
