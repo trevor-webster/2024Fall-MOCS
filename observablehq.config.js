@@ -51,6 +51,7 @@ export default {
     { name: "Evaluation", path: "/eval" },
     { name: "References", path: "/refs" },
     { name: "Computational ressources", path: "/comp-ressources" },
+    { name: "Pluto ↗", path: "https://jstonge.github.io/2024Fall-MOCS/"},
     { name: "Notebooks ↗", path: "https://github.com/jstonge/2024Fall-MOCS/tree/main/notebooks"},
   ],
   // Content to add to the head of the page, e.g. for a favicon:
