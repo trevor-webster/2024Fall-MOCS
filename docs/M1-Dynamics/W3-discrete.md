@@ -58,9 +58,9 @@ for t=1:Δt:T
 end
 ```
 
-What if any of those transition probabilities (e.g., ${tex`a\cdot Δt`}) gets larger than 1? That means the ${tex`Δt`} you are using is too large and you need to take it smaller. For instance, if there are, on average, three people entering the building in a week and ${tex`Δt`} stands for _one week_, then ${tex`a\cdot Δt = 3/\textrm{week} \cdot \textrm{week} = 3 > 1`}. To solve the problem, take for example ${tex`Δt = 1\textrm{day}`}, so that now ${tex`a = (3/7)/\textrm{day}`} and ${tex`a\cdot Δt = (3/7)/\textrm{day} \cdot \textrm{day} = 3/7 < 1`}.
+What if a transition rate, say ${tex`a`}, is too high so to make the associated transition probability ${tex`a\cdot Δt`} larger than 1? This occurs because the duration ${tex`Δt`} of the time step you are considering is too large. For instance, if there are, on average, three people entering the building in a week and ${tex`Δt`} stands for _one week_, then ${tex`a\cdot Δt = 3/\textrm{week} \cdot \textrm{week} = 3 > 1`}. To solve the problem, take for example ${tex`Δt = 1\textrm{day}`}, so that now ${tex`a = (3/7)/\textrm{day}`} and ${tex`a\cdot Δt = (3/7)/\textrm{day} \cdot \textrm{day} = 3/7 < 1`}.
 
-Also, order matters. We are testing departure first, assuming that people can replicate only if they didn't decided to leave the building. One could think of alternative situations where, during the same time step (which, remember, being finite allows for multiple processes along its duration), people first try to clone themselves and then consider to leave; or, where recently arrived people can replicate or leave only during the next time step (which would mean moving the `arrivals' code block at the end). 
+Also, order matters. We are testing departure first, assuming that people can replicate only if they have not decided to leave the building. One could think of alternative situations where, during the same time step (which, remember, being finite allows for multiple processes to take place within it), people first try to clone themselves and then consider to leave; or, where recently arrived people are not allow to replicate or leave immediately after arrival (which would mean moving the `arrivals' code block to the end). 
 
 There are more issues, that can be addressed by poisson processes 
 
