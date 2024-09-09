@@ -75,19 +75,20 @@ let
 	prob = ODEProblem(f, P₀, tspan)
 	num_sol = solve(prob)
 
-	# TIMESTEPPING
-	
+	# TIMESTEPPING 1: using difference equation as is
+
 	P_dot = P₀
 	res = [P_dot]
 	dt = 0.1
 	for t in 1:Int(Tmax/dt)
-					     # P(n+1) = P(t) + bP(t)
-	    △P = dt*r*P_dot  # ΔP = P(t+1)-P(t) = bP(t)
+		# P(n+1) = P(t) + rP(t)
+		# ΔP = P(t+1)-P(t) = rP(t)
+	    △P = dt*r*P_dot 
 	    P_dot += △P
 	    push!(res, P_dot)
 	end
 	
-	# Better
+	# TIMESTEPPING 2: solving reccurence equation
 	
 	# P(t+1) = N(t) + r N(t)
 	# P(t+1) = (1 + r) P(t)
@@ -99,16 +100,18 @@ let
 	# ANALYTICAL - SPECIFIC SOLUTION
 	
 	p(t) = 0.5 * exp(r*t)
+
+	# Plotting
 	
 	plot(0:dt:Tmax, res, lw=2, marker=:dot, color="green", label="Euler Approximation (dt=0.1)")
 	plot!(num_sol, lw=2, color="orange", label="ODE Solver")
-	plot!(0:Tmax, P, marker=:o, alpha=0.5, label="once daily", lw=2)
+	plot!(0:Tmax, P, marker=:circle, alpha=0.5, label="once daily", lw=2)
 	plot!(num_sol.t, t -> p(t), lw = 2, ls=:dash, label = "Analytical", color=:blue)
 	
 	# Bonus (how many times a [year] our species reproduce? )
-	P = map(t -> P₀ * (1 + r/(2^n))^t, 0:Int((2^n)*Tmax))
 	
-	plot!(0:(2.0^(-n)):Tmax, P, marker=:o, alpha=0.5, label="$(2^n) times per day")
+	P = map(t -> P₀ * (1 + r/(2^n))^(t), 0:Int((2^n)*Tmax))
+	plot!(0:(2.0^(-n)):Tmax, P, marker=:circle, alpha=0.5, label="$(2^n) times per day")
 
 end
 
@@ -262,8 +265,9 @@ let
 	d = 1/2 # outflow
 	b = 1/4 # repro
 	
-	# TIMESTEPPING
-	
+	# TIMESTEPPING (Back to v1)
+
+	# no dt because we implcitly assume dt=1.
 	N_dot = N₀
 	res = [N_dot]
 	for t in 1:Tmax
@@ -328,7 +332,7 @@ let
 	β = 1/15*5*1/N # transmission time per contact: 30days. contacts per day: 5
 	γ = 1/15  #recovery period: 15 days 
 
-	# Timestepping
+	# Timestepping (again v1)
 	
 	S, I, R = S₀, I₀, R₀
 	res = [(S, I, R)]
@@ -353,28 +357,32 @@ end
 
 # ╔═╡ 92e9bdd4-07e3-45fa-a6eb-906d2b7c2615
 function run_math_sir(steps, N, β, α)
-		I,R = 1, 0
-		S = N-I-R
+	# Initialization
+	I,R = 1, 0
+	S = N-I-R
 
-		history = []
-		for step=1:steps
-			next_S = S
-			next_I = I
-			next_R = R
+	# Observe
+	history = []
+	
+	# Update
+	for step=1:steps
+		next_S = S
+		next_I = I
+		next_R = R
 
-			# Version 1: what not to do because we overshoot
-			# next_S -= β * S * I
-			# next_I += β * S * I - α*I
-			# next_R += α*I
+		# Version 1: what not to do because we overshoot
+		# next_S -= β * S * I
+		# next_I += β * S * I - α*I
+		# next_R += α*I
 
-			# Version 2: better... calc the change in a mathematical model
-			next_S -= S*(1-(1-β)^I)
-			next_I += S*(1-(1-β)^I)- α*I
-			next_R += α*I
+		# Version 2: better... calc the change in a mathematical model
+		next_S -= S*(1-(1-β)^I)
+		next_I += S*(1-(1-β)^I)- α*I
+		next_R += α*I
 
-			S, I, R = next_S, next_I, next_R
-			push!(history, (S,I,R))
-		end
+		S, I, R = next_S, next_I, next_R
+		push!(history, (S,I,R))
+	end
 		
 	St, It, Rt = map(collect, zip(history...)) # small hack to unpack vars
 	return (St, It, Rt)
@@ -434,16 +442,18 @@ function run_computational_sir(steps, N, β, α)
 end	
 
 # ╔═╡ 2ecb83fe-d495-48ff-b23d-c2252f138879
-# ╠═╡ disabled = true
-#=╠═╡
 β = @bind β Slider(0.00005:0.00001:1.1, show_value=true)
-  ╠═╡ =#
 
 # ╔═╡ 157f8455-88e1-4d5a-9582-de011e5ebc10
 α = @bind α Slider(0.:0.01:1., show_value=true, default=0.33)
 
+# ╔═╡ d74fdf5d-0b69-4bba-8540-f9429160cbe8
+S_c,I_c,R_c  = run_computational_sir(100, 10_000, β, α)
+
+# ╔═╡ 6c6f3103-5a04-4b01-b8a1-05f64616a847
+S,I, R  = run_math_sir(100, 10_000, β, α)
+
 # ╔═╡ b32c7c4c-45c5-4bcc-a487-53efc3e2a347
-#=╠═╡
 begin
 	plot( I,  label="infected", xlabel="time", ylabel="# people", 
 		  marker=:o, color=:red, leg = β < 0.0001 ? :left : :right)
@@ -453,17 +463,6 @@ begin
 	title!("Discrete SIR (Maths vs Simulation)")
 	xlims!(0,β < 0.0001 ? 100 : 25)
 end
-  ╠═╡ =#
-
-# ╔═╡ d74fdf5d-0b69-4bba-8540-f9429160cbe8
-#=╠═╡
-S_c,I_c,R_c  = run_computational_sir(100, 10_000, β, α)
-  ╠═╡ =#
-
-# ╔═╡ 6c6f3103-5a04-4b01-b8a1-05f64616a847
-#=╠═╡
-S,I, R  = run_math_sir(100, 10_000, β, α)
-  ╠═╡ =#
 
 # ╔═╡ 43f5b10a-670d-11ef-1308-5ba25fe852bf
 md"## Lotka Volterra"
@@ -3656,13 +3655,13 @@ version = "1.4.1+1"
 # ╠═4a1c661c-a65e-42dc-98eb-4665030986a6
 # ╟─7560a130-1205-4cc9-a58f-d562dbeca77a
 # ╟─f445a06d-269b-4977-945f-953f56440600
-# ╠═7dc1eb5b-48f8-4bc0-8c7b-a84706e64b78
+# ╟─7dc1eb5b-48f8-4bc0-8c7b-a84706e64b78
 # ╠═2de1558b-4cf8-4076-97fd-2dd59308c537
 # ╠═1a524fd2-d7c8-48d9-9c23-fac20886669d
 # ╠═92e9bdd4-07e3-45fa-a6eb-906d2b7c2615
 # ╠═06b8a636-bca6-4741-8a59-05e2e719b9a1
-# ╟─2ecb83fe-d495-48ff-b23d-c2252f138879
-# ╟─157f8455-88e1-4d5a-9582-de011e5ebc10
+# ╠═2ecb83fe-d495-48ff-b23d-c2252f138879
+# ╠═157f8455-88e1-4d5a-9582-de011e5ebc10
 # ╠═b32c7c4c-45c5-4bcc-a487-53efc3e2a347
 # ╠═d74fdf5d-0b69-4bba-8540-f9429160cbe8
 # ╠═6c6f3103-5a04-4b01-b8a1-05f64616a847
