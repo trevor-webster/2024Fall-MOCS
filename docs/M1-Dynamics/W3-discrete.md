@@ -28,47 +28,40 @@ We are now ready to convert the mathematics into code:
 
 <iframe src="https://streaming.uvm.edu/embed/49963/" width="560" height="315" frameborder="0" allowfullscreen></iframe>
 
-In the process, LHD introduces the idea of cloning factory and Poisson processes: 
+As an example, LHD imagines a cloning factory as idealized through the diagram below: 
 
 ${mermaid`graph LR
-      cIN --a---> CloneFactory;
-      CloneFactory --c(N->2N)---> CloneFactory;
-      CloneFactory --l---> cOUT;
+      cIN --a (N->N+1)---> CloneFactory;
+      CloneFactory --c (N->2N)---> CloneFactory;
+      CloneFactory --l (N->N-1)---> cOUT;
       style cIN fill:#fff,stroke:#fff,color:#fff
       style cOUT fill:#fff,stroke:#fff,color:#fff
 `}
 
-where the rate ${tex`c`} is the rate at which people clone themselves. Everyday, this factory ask you (weirdly enough) to follow this procedure:
+where ${tex`c`} is the rate at which people clone themselves. Everyday, this factory ask you (weirdly enough) to follow this procedure:
 
 ```julia
-for t=1Δt:T
-  if rand() < a⋅Δt
-    N_t += 1         # 'arrivals'
+# Julia code
+for t=1:Δt:T
+  if rand() < a*Δt
+    N_t += 1         # 'arrivals' (people getting into the building)
   end
   for n=1:N_t 
-    if rand() < lΔt
-      N_t -= N_t     # 'departures'
-    end
-    if rand() < cΔt
-      N_t += 1       # 'cloning'
+    if rand() < l*Δt
+      N_t -= 1     # 'departures'  (people leaving it)
+    else
+      if rand() < c*Δt
+        N_t += 1       # 'cloning' (people cloning themselves)
+      end
     end
   end
 end
 ```
 
-What if ${tex`a\cdot Δt > 1`} ? Also, order matters. We are testing departure first. These people shouldn't be allowed to clone themselves.
+What if any of those transition probabilities (e.g., ${tex`a\cdot Δt`}) gets larger than 1? That means the ${tex`Δt`} you are using is too large and you need to take it smaller. For instance, if there are, on average, three people entering the building in a week and ${tex`Δt`} stands for _one week_, then ${tex`a\cdot Δt = 3/\textrm{week} \cdot \textrm{week} = 3 > 1`}. To solve the problem, take for example ${tex`Δt = 1\textrm{day}`}, so that now ${tex`a = (3/7)/\textrm{day}`} and ${tex`a\cdot Δt = (3/7)/\textrm{day} \cdot \textrm{day} = 3/7 < 1`}.
 
-```julia
-[...]
-    if rand() < lΔt
-      N_t -= N_t  
-    else  # <---- if you didn't leave, you get to clone yourself...
-      if rand() < cΔt
-        N_t += 1
-    end
-  end
-end
-```
+Also, order matters. We are testing departure first, assuming that people can replicate only if they didn't decided to leave the building. One could think of alternative situations where, during the same time step (which, remember, being finite allows for multiple processes along its duration), people first try to clone themselves and then consider to leave; or, where recently arrived people can replicate or leave only during the next time step (which would mean moving the `arrivals' code block at the end). 
+
 There are more issues, that can be addressed by poisson processes 
 
 <div class="def">
