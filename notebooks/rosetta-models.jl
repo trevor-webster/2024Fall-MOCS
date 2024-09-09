@@ -103,7 +103,7 @@ let
 
 	# Plotting
 	
-	plot(0:dt:Tmax, res, lw=2, marker=:dot, color="green", label="Euler Approximation (dt=0.1)")
+	plot(0:dt:Tmax, res, lw=2, marker=:circle, color="green", label="Euler Approximation (dt=0.1)")
 	plot!(num_sol, lw=2, color="orange", label="ODE Solver")
 	plot!(0:Tmax, P, marker=:circle, alpha=0.5, label="once daily", lw=2)
 	plot!(num_sol.t, t -> p(t), lw = 2, ls=:dash, label = "Analytical", color=:blue)
