@@ -108,6 +108,16 @@ Now, for the chance of leaving on the second step
 \end{equation*}
 ```
 
+...
+
+> Rate of a sum of poisson processes is the sum of rates!
+
+Probability of poisson process ${tex`\lambda_1`} occuring before poisson process ${tex`{\lambda_2}`}
+
+```tex
+\frac{\lambda_1}{\lambda_1 + \lambda_2}
+```
+
 <div class="callout-box">
   <h3>Things to do by Thursday at noon</h3>
   <ul class="checklist">
