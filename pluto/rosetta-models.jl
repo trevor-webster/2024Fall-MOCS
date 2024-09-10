@@ -17,10 +17,10 @@ end
 # ╔═╡ 0828dafd-9a61-4346-90fa-0d09b9a2a198
 begin 
 	using ImageCore, PlutoUI, Plots, FileIO, ImageIO, ImageShow
- 	using ModelingToolkit, Symbolics
+ 	using ModelingToolkit
 	using DifferentialEquations: solve
 	using ModelingToolkit: t_nounits as t, D_nounits as D
-	using Distributions
+	using Distributions: Binomial
 end
 
 # ╔═╡ bea36c11-da70-4997-98ee-5ffc9f30c528
@@ -60,7 +60,7 @@ _refs:_
 "
 
 # ╔═╡ 7015b624-c11b-4e5b-bd8c-155734ebc9ee
-# n = @bind n Slider(0:16, default=0, show_value=true)
+n = @bind n Slider(0:16, default=0, show_value=true)
 
 # ╔═╡ a77d35a1-2d48-41d1-9a1a-210133c13674
 let 
@@ -111,11 +111,7 @@ let
 	
 	# Bonus (how many times a [year] our species reproduce? )
 	
-	P = []
-	for t in 0:Int((2.0^n)*Tmax)
-    	push!(P, P₀ * (1 + r/(2.0^n))^t)
-	end
-	
+	P = [P₀ * (1 + r/(2.0^n))^t for t in 0:Int((2.0^n)*Tmax)]
 	plot!(0:(2.0^(-n)):Tmax, P, marker=:circle, alpha=0.5, label="$(2^n) times per day")
 
 end
@@ -761,7 +757,6 @@ ImageShow = "4e3cecfd-b093-5904-9786-8bbb286a6a31"
 ModelingToolkit = "961ee093-0014-501f-94e3-6117800e7a78"
 Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
 PlutoUI = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
-Symbolics = "0c5d862f-8b57-4792-8d23-62f2024744c7"
 
 [compat]
 DifferentialEquations = "~7.13.0"
@@ -773,7 +768,6 @@ ImageShow = "~0.3.8"
 ModelingToolkit = "~9.34.0"
 Plots = "~1.40.8"
 PlutoUI = "~0.7.60"
-Symbolics = "~6.4.0"
 """
 
 # ╔═╡ 00000000-0000-0000-0000-000000000002
@@ -782,7 +776,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.10.5"
 manifest_format = "2.0"
-project_hash = "08d54b51791030ca37140fe778add162d42f4a62"
+project_hash = "ac3ea38543d9a931c94ab985218d74c98bb4e98d"
 
 [[deps.ADTypes]]
 git-tree-sha1 = "99a6f5d0ce1c7c6afdb759daa30226f71c54f6b0"
@@ -3643,7 +3637,7 @@ version = "1.4.1+1"
 # ╟─715cb946-521d-4607-b442-ff4b1e55ba85
 # ╟─44243aa8-3e3d-46fd-b23f-d5ed6a0a1af2
 # ╟─c1a6c862-16ca-4970-a0d5-09c6c4f6c029
-# ╠═7015b624-c11b-4e5b-bd8c-155734ebc9ee
+# ╟─7015b624-c11b-4e5b-bd8c-155734ebc9ee
 # ╠═a77d35a1-2d48-41d1-9a1a-210133c13674
 # ╟─6d3f5c87-226a-45c9-a26b-ec9babeac103
 # ╟─65101a30-3659-45c8-b7d0-e8343dd0ce9a
