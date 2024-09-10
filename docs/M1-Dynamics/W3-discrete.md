@@ -38,7 +38,15 @@ ${mermaid`graph LR
       style cOUT fill:#fff,stroke:#fff,color:#fff
 `}
 
-where ${tex`c`} is the rate at which people clone themselves. Everyday, this factory ask you (weirdly enough) to follow this procedure:
+where ${tex`c`} is the rate at which people clone themselves, and ${tex`a`} and ${tex`l`} are the rates at which people arrive and leave the factory, respectively. Events within each of these three processes occur at a fixed rate, hence independently from each other. These are Poisson processes, perhaps the simplest type of random process.
+
+<div class="def">
+<h3>Poisson Processes</h3>
+  Something happens at a given (fixed) rate, regardless of what happen beforehand.
+</div>
+
+
+Back to example, every now and then (e.g., everyday if we assume ${tex`Δt = 1\textrm{day}`}) the factory – weirdly enough – thus ask you to follow this procedure:
 
 ```julia
 # Julia code
@@ -58,48 +66,13 @@ for t=1:Δt:T
 end
 ```
 
-What if a transition rate, say ${tex`a`}, is too high so to make the associated transition probability ${tex`a\cdot Δt`} larger than 1? This occurs because the duration ${tex`Δt`} of the time step you are considering is too large. For instance, if there are, on average, three people entering the building in a week and ${tex`Δt`} stands for _one week_, then ${tex`a\cdot Δt = 3/\textrm{week} \cdot \textrm{week} = 3 > 1`}. To solve the problem, take for example ${tex`Δt = 1\textrm{day}`}, so that now ${tex`a = (3/7)/\textrm{day}`} and ${tex`a\cdot Δt = (3/7)/\textrm{day} \cdot \textrm{day} = 3/7 < 1`}.
+What if a transition rate, say ${tex`a`}, is too high so to make the associated transition probability ${tex`a\cdot Δt`} larger than 1? This occurs because the duration ${tex`Δt`} of the time step you are considering is too large. For instance, if there are, on average, three people entering the building in a day and ${tex`Δt`} stands for _one day_, then ${tex`a\cdot Δt = 3/\textrm{day} \cdot \textrm{day} = 3 > 1`}. To solve the problem, take for example ${tex`Δt = 1\textrm{hour}`}, so that now ${tex`a = (3/24)/\textrm{day}`} and ${tex`a\cdot Δt = (3/24)/\textrm{hour} \cdot \textrm{hour} = 1/8 < 1`}.
 
-Also, order matters. We are testing departure first, assuming that people can replicate only if they have not decided to leave the building. One could think of alternative situations where, during the same time step (which, remember, being finite allows for multiple processes to take place within it), people first try to clone themselves and then consider to leave; or, where recently arrived people are not allow to replicate or leave immediately after arrival (which would mean moving the `arrivals' code block to the end). 
+Also, order matters. We are testing departure first, assuming that people can replicate only if they have not decided to leave the building. One could think of alternative situations where, during the same time step (which, remember, being finite allows for multiple processes to take place within it), people first try to clone themselves and then consider to leave; or, where recently arrived people are not allow to replicate or leave immediately after arrival (which would mean moving the `arrivals' code block to the end). In all cases, two events involving the same individual can never be simultaneous (in the factory, e.g., you can't leave while arriving or cloning yourself while leaving). Time discreteness forces us to hardwire the order of events.
 
-There are more issues, that can be addressed by poisson processes 
-
-<div class="def">
-<h3>Poisson Processes</h3>
-  Something happens at a given (fixed) rate, regardless of what happen beforehand.
-</div>
+In the clip below, LHD shows how both these issues – transition probabilities larger than one and time orderiong of competing events – are solved by considering small enough (eventually infinitesimal) time steps. 
 
 <iframe src="https://streaming.uvm.edu/embed/49964/" width="560" height="315" frameborder="0" allowfullscreen></iframe>
-
-Poisson processes can help fix two related problems, both happening when rates are high; (i) probability in any given step of something happening is smaller than one and (ii) when events happen at the same time (recovering and getting infected at the same time...).
-
-The key idea from that video is that of renormalizing rates to make sure we handle correctly competing poisson processes. Say people can clone themselves every day:
-
-```tex
-\ell \Delta t \quad \text{(leaving first step)}\\ 
-(1-\ell \Delta t)\ell \Delta t \quad \text{(leaving second step)}
-```
-
-We renormalize by ${tex`\Delta \tilde{t} = \Delta t / 2`}, or cutting the day in half.
-
-```tex
-\Delta t = \ell \frac{\Delta t}{2} + (1-\ell \frac{\Delta t}{2})\ell \frac{\Delta t}{2} = \ell \Delta t - \Big(\frac{\ell \Delta T}{2}\Big )^2 \quad \text{(leaving first step)} 
-```
-
-Now, for the chance of leaving on the second step
-
-```tex
-\begin{equation*}
-  \begin{split}
-    \Delta t &= \Big(1 - \ell \frac{\Delta t}{2} \Big)^2 \cdot \ell \frac{\Delta t}{2} +
-                  \Big(1 - \ell \frac{\Delta t}{2} \Big)^3 \cdot \ell \frac{\Delta t}{2} \\ 
-            &= \ell \frac{\Delta t}{2} + 
-                \ell \frac{\Delta t}{2}\quad -
-                \Big(\ell \frac{\Delta t}{2} \Big)^2 -
-                \Big(\ell \frac{\Delta t}{2} \Big)^2 + O(\ell \Delta t^3)
-  \end{split}
-\end{equation*}
-```
 
 ...
 
