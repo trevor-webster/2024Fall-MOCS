@@ -443,7 +443,7 @@ function run_computational_sir(steps, N, β, α)
 end	
 
 # ╔═╡ 2ecb83fe-d495-48ff-b23d-c2252f138879
-β = @bind β Slider(0.00005:0.00001:1.1, show_value=true)
+β = @bind β Slider(0.00005:0.00001:1.1, show_value=true, default=0.00005)
 
 # ╔═╡ 157f8455-88e1-4d5a-9582-de011e5ebc10
 α = @bind α Slider(0.:0.01:1., show_value=true, default=0.33)
