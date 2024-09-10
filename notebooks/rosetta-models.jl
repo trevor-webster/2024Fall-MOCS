@@ -60,7 +60,7 @@ _refs:_
 "
 
 # ╔═╡ 7015b624-c11b-4e5b-bd8c-155734ebc9ee
-n = @bind n Slider(0:16, default=0, show_value=true)
+# n = @bind n Slider(0:16, default=0, show_value=true)
 
 # ╔═╡ a77d35a1-2d48-41d1-9a1a-210133c13674
 let 
@@ -69,6 +69,7 @@ let
 	Tmax = 5.0
 	tspan = (0.0, Tmax)
 	r=1.01
+	n=4
 	# NUMERICAL
 	
 	f(u, p, t) = r * u
@@ -3642,7 +3643,7 @@ version = "1.4.1+1"
 # ╟─715cb946-521d-4607-b442-ff4b1e55ba85
 # ╟─44243aa8-3e3d-46fd-b23f-d5ed6a0a1af2
 # ╟─c1a6c862-16ca-4970-a0d5-09c6c4f6c029
-# ╟─7015b624-c11b-4e5b-bd8c-155734ebc9ee
+# ╠═7015b624-c11b-4e5b-bd8c-155734ebc9ee
 # ╠═a77d35a1-2d48-41d1-9a1a-210133c13674
 # ╟─6d3f5c87-226a-45c9-a26b-ec9babeac103
 # ╟─65101a30-3659-45c8-b7d0-e8343dd0ce9a
