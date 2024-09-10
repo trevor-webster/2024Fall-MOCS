@@ -109,9 +109,16 @@ let
 	plot!(0:Tmax, P, marker=:circle, alpha=0.5, label="once daily", lw=2)
 	plot!(num_sol.t, t -> p(t), lw = 2, ls=:dash, label = "Analytical", color=:blue)
 	
-	# Bonus (how many times a [year] our species reproduce? )
-	
-	P = [P₀ * (1 + r/(2.0^n))^t for t in 0:Int((2.0^n)*Tmax)]
+	# Bonus
+	# What if we have reproduction more than once a year, say n times as many times
+    # P(t + 1/n) = (1 + r/n) P(t)
+
+    # P(t + 1) = P(t) (1 + r/n)^n
+    # Hence
+    # P(t) = P₀ (1 + r/n)^{nt}
+
+	# In code
+	P = [P₀ * (1 + r/(2^n))^t for t in 0:(2^n)*Tmax]
 	plot!(0:(2.0^(-n)):Tmax, P, marker=:circle, alpha=0.5, label="$(2^n) times per day")
 
 end
@@ -443,10 +450,12 @@ function run_computational_sir(steps, N, β, α)
 end	
 
 # ╔═╡ 2ecb83fe-d495-48ff-b23d-c2252f138879
-β = @bind β Slider(0.00005:0.00001:1.1, show_value=true, default=0.00005)
+# β = @bind β Slider(0.00005:0.00001:1.1, show_value=true, default=0.00005)
+β = 0.00005
 
 # ╔═╡ 157f8455-88e1-4d5a-9582-de011e5ebc10
-α = @bind α Slider(0.:0.01:1., show_value=true, default=0.33)
+# α = @bind α Slider(0.:0.01:1., show_value=true, default=0.33)
+α = 0.33
 
 # ╔═╡ d74fdf5d-0b69-4bba-8540-f9429160cbe8
 S_c,I_c,R_c  = run_computational_sir(100, 10_000, β, α)
@@ -3658,8 +3667,8 @@ version = "1.4.1+1"
 # ╠═1a524fd2-d7c8-48d9-9c23-fac20886669d
 # ╠═92e9bdd4-07e3-45fa-a6eb-906d2b7c2615
 # ╠═06b8a636-bca6-4741-8a59-05e2e719b9a1
-# ╟─2ecb83fe-d495-48ff-b23d-c2252f138879
-# ╟─157f8455-88e1-4d5a-9582-de011e5ebc10
+# ╠═2ecb83fe-d495-48ff-b23d-c2252f138879
+# ╠═157f8455-88e1-4d5a-9582-de011e5ebc10
 # ╠═b32c7c4c-45c5-4bcc-a487-53efc3e2a347
 # ╠═d74fdf5d-0b69-4bba-8540-f9429160cbe8
 # ╠═6c6f3103-5a04-4b01-b8a1-05f64616a847
