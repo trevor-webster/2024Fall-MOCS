@@ -457,12 +457,11 @@ S,I, R  = run_math_sir(100, 10_000, β, α)
 # ╔═╡ b32c7c4c-45c5-4bcc-a487-53efc3e2a347
 begin
 	plot( I,  label="infected", xlabel="time", ylabel="# people", 
-		  marker=:o, color=:red, leg = β < 0.0001 ? :left : :right)
+		  marker=:o, color=:red)
 	plot!(I_c, label="simulations", marker=:hexagon)
 	plot!(S, label="suceptible", marker=:rect, color=:lightgreen, opacity=0.5)
 	plot!(R, label="recovered", marker=:star, color=:blue, opacity=0.5)
 	title!("Discrete SIR (Maths vs Simulation)")
-	xlims!(0,β < 0.0001 ? 100 : 25)
 end
 
 # ╔═╡ 43f5b10a-670d-11ef-1308-5ba25fe852bf
@@ -3659,8 +3658,8 @@ version = "1.4.1+1"
 # ╠═1a524fd2-d7c8-48d9-9c23-fac20886669d
 # ╠═92e9bdd4-07e3-45fa-a6eb-906d2b7c2615
 # ╠═06b8a636-bca6-4741-8a59-05e2e719b9a1
-# ╠═2ecb83fe-d495-48ff-b23d-c2252f138879
-# ╠═157f8455-88e1-4d5a-9582-de011e5ebc10
+# ╟─2ecb83fe-d495-48ff-b23d-c2252f138879
+# ╟─157f8455-88e1-4d5a-9582-de011e5ebc10
 # ╠═b32c7c4c-45c5-4bcc-a487-53efc3e2a347
 # ╠═d74fdf5d-0b69-4bba-8540-f9429160cbe8
 # ╠═6c6f3103-5a04-4b01-b8a1-05f64616a847
