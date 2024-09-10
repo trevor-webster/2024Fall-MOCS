@@ -111,8 +111,8 @@ let
 	# Bonus (how many times a [year] our species reproduce? )
 	
 	P = []
-	for t in 0:Int((2^n)*Tmax)
-    	push!(P, P₀ * (1 + r/(2^n))^t)
+	for t in 0:Int((2.0^n)*Tmax)
+    	push!(P, P₀ * (1 + r/(2.0^n))^t)
 	end
 	
 	plot!(0:(2.0^(-n)):Tmax, P, marker=:circle, alpha=0.5, label="$(2^n) times per day")
