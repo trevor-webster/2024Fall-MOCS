@@ -18,6 +18,7 @@ end
 begin
 	using Plots, Statistics, PlutoUI
 	using Distributions: Binomial
+	using LaTeXStrings
 	using StatsBase: countmap
 end
 
@@ -74,15 +75,21 @@ S,I,R = run_computational_sir(1_000, 10_000, 0.00005, 0.33)
 # ╔═╡ 945a0bac-7ec3-443f-bca1-948992837060
 plot_sir(S,I,R)
 
+# ╔═╡ 3b7483a7-ff38-47a1-8f26-cce0ff55a92f
+α, N =0.05, 10_000
+
 # ╔═╡ c7595f3a-a937-4f92-bb37-33a90d378a30
-md"## Sweeps"
+md"## Sweeps and stability analysis
+
+$\Delta I = \beta SI - \alpha I \rightarrow \Delta I > 0\quad \text{if}\ \beta_c \gt \frac{\alpha}{N}$
+
+Or, if you push a little bit above $(α/N),  you get phase transition where a little change in number of infected person can engenders an epidemic.
+"
 
 # ╔═╡ a2d1ee6e-fe69-4720-990b-4b0709ca708c
 let
 	# Parameters
-	N = 10_000
 	steps = 1000
-	α = 0.05
 	repetitions = 100
 	
 	# Run model
@@ -100,33 +107,15 @@ let
 	
 	# Plot
 	plot(β_values, outbreak_sizes, marker=:circle, color=:black,
-	     xlabel="Transmission probability", ylabel="Outbreak size")
+	     xlabel="Transmission probability", ylabel="Outbreak size", label=false)
+	vline!([α/N], color=:blue, ls=:dash, label="critical point")
 end
 
 # ╔═╡ dbb4aa33-9924-4cd8-87b6-4a63909b91b0
 md"## Fat tails"
 
-# ╔═╡ a04e6e68-6715-420e-b962-efb14c9154d3
-md"
-Assume P(s) here means probability of outbreak of size S. We have
-
-$$P(s) \sim C \cdot s^{-\gamma} \rightarrow \log P(s) = \log(C) -\gamma \log(s)$$
-
-This is related to the above critical points.
-
-"
-
-# ╔═╡ aba0b7bd-224b-451a-a058-03bc769c753a
-β=@bind β Slider(0:0.000001:0.00005, show_value=true, default=0.000002)
-
-# ╔═╡ c4f897d0-92d7-4a9b-9e1a-33b6f16cff09
-let
-	# Parameters
-	N = 20_000
-	steps = 1000
-	# β = 0.000001
-	α = 0.05
-	repetitions = 49987
+# ╔═╡ 510b16ec-13f3-4048-b715-9d207a5fc847
+function run_reps(steps, N, β, α, repetitions)
 	results = zeros(Float64, repetitions)
 	
 	# Run the model
@@ -146,20 +135,54 @@ let
 	non_zero_indices = findall(k -> k > 0, sorted_keys)
 	outbreak_size = sorted_keys[non_zero_indices]
 	nb_outbreaks = sorted_counts[non_zero_indices]
-	max_outbreak = maximum(outbreak_size)
+	return outbreak_size, nb_outbreaks
+end
+
+# ╔═╡ a04e6e68-6715-420e-b962-efb14c9154d3
+md"
+Assume P(s) here means probability of outbreak of size S. We have
+
+$$P(s) \sim C \cdot s^{-\gamma} \rightarrow \log P(s) = \log(C) -\gamma \log(s)$$
+
+This is related to the above critical points.
+
+"
+
+# ╔═╡ 8c6d4984-0fde-496a-850e-578480228c72
+# play with slider
+# @bind β Slider(0:0.000001:0.00005, show_value=true, default=0.000002)
+
+# ╔═╡ c4f897d0-92d7-4a9b-9e1a-33b6f16cff09
+let
+	# Parameters
 	
-	# Generate power-law data
-	γ = 1.6 
-	C = 1e4     	
-	xs = 1:(max_outbreak/100):max_outbreak
-	prob_outbreak_of_size_s = C * (xs .^ (-γ))
+	N = 20_000
+	steps = 1000
+	α = 0.05
+	repetitions = 50_000
+	
+	outbreak_size, nb_outbreaks = run_reps(steps, N, 2.0e-6, α, repetitions)
+	outbreak_size2, nb_outbreaks2 = run_reps(steps, N, 1.0e-6, α, repetitions)
+	outbreak_size3, nb_outbreaks3 = run_reps(steps, N, 3.0e-6, α, repetitions)
 
 	# Plot
+	
 	plot(outbreak_size, nb_outbreaks, marker=:circle,
 		 color=:black, xscale=:log10, yscale=:log10, minorgrid=true,
-	     xlabel="Outbreak size", ylabel="Number of outbreaks", legend=false)
-
-	plot!(xs, prob_outbreak_of_size_s, color=:red, label="Power-Law Fit")
+	     xlabel="Outbreak size", ylabel="Number of outbreaks", label="β=2.0e-6")
+	
+	scatter!(outbreak_size2, nb_outbreaks2, markerstrokecolor=:red, color=:red, opacity=0.2, label="β=3.0e-6")
+	
+	scatter!(outbreak_size3, nb_outbreaks3, markerstrokecolor=:green, color=:green, opacity=0.2, label="β=1.0e-6")
+	
+	# Plot power law
+	
+	max_outbreak = maximum(outbreak_size)
+	γ = 1.6 
+	C = 1e4     	
+	xs = 1:(max_outbreak/100):(max_outbreak-100)
+	prob_outbreak_of_size_s = C * (xs .^ (-γ))
+	plot!(xs, prob_outbreak_of_size_s, color=:blue, ls=:dash, label=L"P(s) \sim 10,000   * s^{-1.6}")
 
 end
 
@@ -167,6 +190,7 @@ end
 PLUTO_PROJECT_TOML_CONTENTS = """
 [deps]
 Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
+LaTeXStrings = "b964fa9f-0449-5b57-a5c2-d3ea65f4040f"
 Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
 PlutoUI = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
 Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
@@ -174,6 +198,7 @@ StatsBase = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
 
 [compat]
 Distributions = "~0.25.111"
+LaTeXStrings = "~1.3.1"
 Plots = "~1.40.8"
 PlutoUI = "~0.7.60"
 StatsBase = "~0.34.3"
@@ -185,7 +210,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.10.5"
 manifest_format = "2.0"
-project_hash = "c564bc91ac54667c4ff242605d3554ef67b1b0a1"
+project_hash = "47345a94a634500f78536495329ed767f5cff9e2"
 
 [[deps.AbstractPlutoDingetjes]]
 deps = ["Pkg"]
@@ -1422,11 +1447,13 @@ version = "1.4.1+1"
 # ╠═b2779457-8297-4a0d-a121-3b67df4169d9
 # ╠═4e051086-1daf-45a8-8b68-fd6e163ada65
 # ╠═945a0bac-7ec3-443f-bca1-948992837060
-# ╟─c7595f3a-a937-4f92-bb37-33a90d378a30
+# ╠═c7595f3a-a937-4f92-bb37-33a90d378a30
+# ╠═3b7483a7-ff38-47a1-8f26-cce0ff55a92f
 # ╠═a2d1ee6e-fe69-4720-990b-4b0709ca708c
 # ╟─dbb4aa33-9924-4cd8-87b6-4a63909b91b0
-# ╠═a04e6e68-6715-420e-b962-efb14c9154d3
-# ╠═aba0b7bd-224b-451a-a058-03bc769c753a
+# ╠═510b16ec-13f3-4048-b715-9d207a5fc847
+# ╟─a04e6e68-6715-420e-b962-efb14c9154d3
+# ╠═8c6d4984-0fde-496a-850e-578480228c72
 # ╠═c4f897d0-92d7-4a9b-9e1a-33b6f16cff09
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
