@@ -23,7 +23,10 @@ begin
 end
 
 # ╔═╡ 36185860-7054-11ef-2cd4-37ff43d203c8
-md"# Computational simulations, sweeping, and fat tails"
+md"# Computational simulations, sweeping, and fat tails
+
+In this notebook, we sweep the parameters of the discrete SIR model using computational simulations. We’ll use stability analysis to identify the phase transition where an epidemic takes off. And we’ll explore a log-log plot to see the relationship between outbreak size and the number of outbreaks, based on the critical points we've identified.
+"
 
 # ╔═╡ b2779457-8297-4a0d-a121-3b67df4169d9
 function run_computational_sir(steps, N, β, α)
@@ -78,23 +81,24 @@ md"## Sweeps and stability analysis"
 
 # ╔═╡ a7dd4d46-4885-468e-9f3d-dea71c2330b8
 md"
-There are multiple critical points in the (discrete) SIR model. If $R=N$, nothing can happen anymore. Same for $I=0$. A more interesting critical point is that of the contagion taking of, given some transmission probability. If transmission is too smal, we get stochastic extinctions; patient zero is unable to infect enough people for the contagion to happen. At some point, call it $\beta_c$, there is a point where patient zero will almost certainly cause outbreak. 
+In the discrete SIR model, several critical points can be identified. First, when $R = N$, no further infections can occur. Similarly, when $I = 0$, the epidemic ends. However, a more interesting critical point is related to the outbreak of the contagion, determined by the transmission probability. If the transmission rate is too low, stochastic extinctions occur, meaning patient zero cannot infect enough individuals to sustain the outbreak. At a certain threshold, denoted as $\beta_c$, the transmission rate becomes high enough that patient zero will almost certainly trigger an epidemic.
 
 Sensitivity analysis is the art of nudging a little our system around a given point to determine the stability of critical points. What do we mean by nudging? Let
 
 $$\Delta I \gt 0$$
 
-It is a small nudge. Alternatively, what we are looking for
-
+That’s the nudge. Now, what we’re really interested in is whether this nudge leads to more infections. We can describe this as:
 $$\Delta I = \beta SI - \alpha I > 0$$
 
-Doing some algebra
+A little algebra gives us:
 
 $$\beta S - \alpha \gt 0 \Rightarrow \beta \gt \frac{\alpha}{S}$$ 
 
-If we are asking about patient zero, we assume that $S \approx N$, giving us
+Now, if we're thinking about patient zero, where almost everyone is still susceptible, we can assume $S \approx N$. This gives us the critical transmission rate:
 
 $\beta_c \gt \frac{\alpha}{N}$
+
+So, for the outbreak to take off, the transmission rate has to be greater than this threshold.
 
 
 "
@@ -103,7 +107,7 @@ $\beta_c \gt \frac{\alpha}{N}$
 α, N = (5/100), 10_000 # # 5 / 1 Million, or 5.0e-6
 
 # ╔═╡ cd935924-4b8c-4610-8227-f60bbefacb48
-md"If you push a little bit above $(α/N),  you get phase transition where a little change in number of infected person engender an epidemic."
+md"If you increase the transmission rate just above 5.0e-6, you hit a phase transition. At this point, even a small increase in the number of infected people can trigger a full-blown epidemic."
 
 # ╔═╡ a2d1ee6e-fe69-4720-990b-4b0709ca708c
 let
@@ -191,9 +195,10 @@ let
 end
 
 # ╔═╡ 12df7687-d7ea-4a93-9a26-ffa17eb8dc90
-md"When $\beta$ is small, there are more chances of stochastic extinctions. With $\beta = 2.0e-6$, we see that oubtreak sizes often get from 100 people to a few hundreds. Increasing $\beta$ to $3.0e-6$, we can see that a good chunk of the population get infected. When $\beta$ is above the critical treshold of $(α/N), then we see the contagions taking off. 
+md"
+When $\beta$ is small, there's a higher chance of stochastic extinctions. For example, with $\beta = 2.0e-6$, the outbreak sizes usually range from around 100 people to a few hundred. But once you increase $\beta$ to $3.0e-6$, you start seeing a larger chunk of the population getting infected. When $\beta$ crosses the critical threshold, which is roughly $\alpha/N$, that’s when the contagion really takes off.
 
-Bonus: say that we want to visualize power law relationship, eyeballing the exponent. Assume P(s) here means probability of outbreak of size S. We have
+Bonus: If you want to visualize a power-law relationship and estimate the exponent, you can do it like this. Let’s say $P(s)$ is the probability of an outbreak of size $S$. Then, the relationship looks like:
 
 $$P(s) \sim C \cdot s^{-\gamma} \rightarrow \log P(s) = \log(C) -\gamma \log(s)$$
 
@@ -1475,20 +1480,20 @@ version = "1.4.1+1"
 """
 
 # ╔═╡ Cell order:
-# ╟─36185860-7054-11ef-2cd4-37ff43d203c8
 # ╠═ff4ca66a-b060-4659-8101-57d116e3e2cb
+# ╟─36185860-7054-11ef-2cd4-37ff43d203c8
 # ╠═b2779457-8297-4a0d-a121-3b67df4169d9
 # ╠═4e051086-1daf-45a8-8b68-fd6e163ada65
 # ╟─c7595f3a-a937-4f92-bb37-33a90d378a30
 # ╟─a7dd4d46-4885-468e-9f3d-dea71c2330b8
 # ╠═3b7483a7-ff38-47a1-8f26-cce0ff55a92f
-# ╠═cd935924-4b8c-4610-8227-f60bbefacb48
+# ╟─cd935924-4b8c-4610-8227-f60bbefacb48
 # ╠═a2d1ee6e-fe69-4720-990b-4b0709ca708c
-# ╠═dbb4aa33-9924-4cd8-87b6-4a63909b91b0
+# ╟─dbb4aa33-9924-4cd8-87b6-4a63909b91b0
 # ╠═510b16ec-13f3-4048-b715-9d207a5fc847
 # ╠═8c6d4984-0fde-496a-850e-578480228c72
 # ╟─c4f897d0-92d7-4a9b-9e1a-33b6f16cff09
-# ╟─12df7687-d7ea-4a93-9a26-ffa17eb8dc90
+# ╠═12df7687-d7ea-4a93-9a26-ffa17eb8dc90
 # ╠═89494a15-e203-42c0-85aa-55b28ef5f7ca
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
