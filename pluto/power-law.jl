@@ -76,15 +76,34 @@ end
 # ╔═╡ c7595f3a-a937-4f92-bb37-33a90d378a30
 md"## Sweeps and stability analysis"
 
+# ╔═╡ a7dd4d46-4885-468e-9f3d-dea71c2330b8
+md"
+There are multiple critical points in the (discrete) SIR model. If $R=N$, nothing can happen anymore. Same for $I=0$. A more interesting critical point is that of the contagion taking of, given some transmission probability. If transmission is too smal, we get stochastic extinctions; patient zero is unable to infect enough people for the contagion to happen. At some point, call it $\beta_c$, there is a point where patient zero will almost certainly cause outbreak. 
+
+Sensitivity analysis is the art of nudging a little our system around a given point to determine the stability of critical points. What do we mean by nudging? Let
+
+$$\Delta I \gt 0$$
+
+It is a small nudge. Alternatively, what we are looking for
+
+$$\Delta I = \beta SI - \alpha I > 0$$
+
+Doing some algebra
+
+$$\beta S - \alpha \gt 0 \Rightarrow \beta \gt \frac{\alpha}{S}$$ 
+
+If we are asking about patient zero, we assume that $S \approx N$, giving us
+
+$\beta_c \gt \frac{\alpha}{N}$
+
+
+"
+
 # ╔═╡ 3b7483a7-ff38-47a1-8f26-cce0ff55a92f
 α, N = (5/100), 10_000 # # 5 / 1 Million, or 5.0e-6
 
-# ╔═╡ a7dd4d46-4885-468e-9f3d-dea71c2330b8
-md"
-$\Delta I = \beta SI - \alpha I \rightarrow \Delta I > 0\quad \text{if}\ \beta_c \gt \frac{\alpha}{N}$
-
-Or, if you push a little bit above $(α/N),  you get phase transition where a little change in number of infected person engender an epidemic.
-"
+# ╔═╡ cd935924-4b8c-4610-8227-f60bbefacb48
+md"If you push a little bit above $(α/N),  you get phase transition where a little change in number of infected person engender an epidemic."
 
 # ╔═╡ a2d1ee6e-fe69-4720-990b-4b0709ca708c
 let
@@ -95,12 +114,13 @@ let
 	# Run model
 	β_values = 0:(0.005/N):(0.5/N)
 	outbreak_sizes = Float64[]
-	
+
+	# we loop over increasing values of βs
 	for β in β_values
 	    results = Float64[]
 	    for _ in 1:repetitions
 	        (St, It, Rt) = run_computational_sir(steps, N, β, α)
-	        push!(results, Rt[end])
+	        push!(results, Rt[end]) # taking last entry of the Rt array
 	    end
 	    push!(outbreak_sizes, mean(results))
 	end
@@ -137,16 +157,6 @@ function run_reps(steps, N, β, α, repetitions)
 	return outbreak_size, nb_outbreaks
 end
 
-# ╔═╡ a04e6e68-6715-420e-b962-efb14c9154d3
-md"
-Assume P(s) here means probability of outbreak of size S. We have
-
-$$P(s) \sim C \cdot s^{-\gamma} \rightarrow \log P(s) = \log(C) -\gamma \log(s)$$
-
-This is related to the above critical point in that if $\alpha/N = 1$, then patient zero on average infect one other people. If $\alpha/N \gt 1$ the contagion is taking of. If $\alpha/N \lt 1$, it doesn't take of. [TODO]
-
-"
-
 # ╔═╡ 8c6d4984-0fde-496a-850e-578480228c72
 # play with slider
 # @bind β Slider(0:0.000001:0.00005, show_value=true, default=0.000002)
@@ -159,25 +169,36 @@ let
 	steps = 1000
 	repetitions = 50_000
 	
-	outbreak_size, nb_outbreaks = run_reps(steps, N, 7.0e-6, α, repetitions)
-	outbreak_size2, nb_outbreaks2 = run_reps(steps, N, 3.0e-6, α, repetitions)
-	outbreak_size3, nb_outbreaks3 = run_reps(steps, N, 5.0e-6, α, repetitions)
+	outbreak_size, nb_outbreaks = run_reps(steps, N, 2.0e-6, α, repetitions)
+	outbreak_size4, nb_outbreaks4 = run_reps(steps, N, 3.0e-6, α, repetitions)
+	outbreak_size2, nb_outbreaks2 = run_reps(steps, N, 5.0e-6, α, repetitions)
+	outbreak_size3, nb_outbreaks3 = run_reps(steps, N, 7.0e-6, α, repetitions)
 
 	# Plot
 	
 	plot(outbreak_size, nb_outbreaks, marker=:circle,
 		 color=:black, xscale=:log10, yscale=:log10, minorgrid=true,
-	     xlabel="Outbreak size", ylabel="Number of outbreaks", label="β=7.0e-6")
+	     xlabel="Outbreak size", ylabel="Number of outbreaks", label="β=2.0e-6")
 	
-	scatter!(outbreak_size2, nb_outbreaks2, markerstrokecolor=:red, color=:red, opacity=0.2, label="β=5.0e-6")
+	scatter!(outbreak_size4, nb_outbreaks4, markerstrokecolor=:teal, color=:teal, opacity=0.2, label="β=3.0e-6")
+
+	scatter!(outbreak_size2, nb_outbreaks2, markerstrokecolor=:darkred, color=:darkred, opacity=0.2, label="β=5.0e-6")
 	
-	scatter!(outbreak_size3, nb_outbreaks3, markerstrokecolor=:green, color=:green, opacity=0.2, label="β=3.0e-6")
+	scatter!(outbreak_size3, nb_outbreaks3, markerstrokecolor=:orange, color=:orange, opacity=0.2, label="β=7.0e-6")
+	
 
-
+	title!("log-log plot")
 end
 
 # ╔═╡ 12df7687-d7ea-4a93-9a26-ffa17eb8dc90
-md"Say that we want to visualize power law relationship, eyeballing the exponent:"
+md"When $\beta$ is small, there are more chances of stochastic extinctions. With $\beta = 2.0e-6$, we see that oubtreak sizes often get from 100 people to a few hundreds. Increasing $\beta$ to $3.0e-6$, we can see that a good chunk of the population get infected. When $\beta$ is above the critical treshold of $(α/N), then we see the contagions taking off. 
+
+Bonus: say that we want to visualize power law relationship, eyeballing the exponent. Assume P(s) here means probability of outbreak of size S. We have
+
+$$P(s) \sim C \cdot s^{-\gamma} \rightarrow \log P(s) = \log(C) -\gamma \log(s)$$
+
+In code"
+
 
 # ╔═╡ 89494a15-e203-42c0-85aa-55b28ef5f7ca
 let
@@ -1459,15 +1480,15 @@ version = "1.4.1+1"
 # ╠═b2779457-8297-4a0d-a121-3b67df4169d9
 # ╠═4e051086-1daf-45a8-8b68-fd6e163ada65
 # ╟─c7595f3a-a937-4f92-bb37-33a90d378a30
-# ╠═3b7483a7-ff38-47a1-8f26-cce0ff55a92f
 # ╟─a7dd4d46-4885-468e-9f3d-dea71c2330b8
+# ╠═3b7483a7-ff38-47a1-8f26-cce0ff55a92f
+# ╠═cd935924-4b8c-4610-8227-f60bbefacb48
 # ╠═a2d1ee6e-fe69-4720-990b-4b0709ca708c
 # ╠═dbb4aa33-9924-4cd8-87b6-4a63909b91b0
 # ╠═510b16ec-13f3-4048-b715-9d207a5fc847
-# ╠═a04e6e68-6715-420e-b962-efb14c9154d3
 # ╠═8c6d4984-0fde-496a-850e-578480228c72
-# ╠═c4f897d0-92d7-4a9b-9e1a-33b6f16cff09
-# ╠═12df7687-d7ea-4a93-9a26-ffa17eb8dc90
+# ╟─c4f897d0-92d7-4a9b-9e1a-33b6f16cff09
+# ╟─12df7687-d7ea-4a93-9a26-ffa17eb8dc90
 # ╠═89494a15-e203-42c0-85aa-55b28ef5f7ca
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
