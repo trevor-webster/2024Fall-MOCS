@@ -25,20 +25,12 @@ end
 # ╔═╡ 36185860-7054-11ef-2cd4-37ff43d203c8
 md"# Computational simulations, sweeping, and fat tails"
 
-# ╔═╡ 1323d6a9-497d-4870-a416-31b3ff75edeb
-function plot_sir(S,I,R)
-	plot( S, label="Susceptible", xlabel="time", ylabel="# people", leg=:right, 
-		  marker=:rect, color=:lightgreen, opacity=0.5)
-	plot!(I, label="Infected",  marker=:o, color=:red)
-	plot!(R, label="Recovered", marker=:star, color=:blue, opacity=0.5)
-end
-
 # ╔═╡ b2779457-8297-4a0d-a121-3b67df4169d9
 function run_computational_sir(steps, N, β, α)
     I, R = 1, 0
     S = N - I - R
 
-	# Pre-allocated arrays
+	# Pre-allocated arrays (faster)
     St = Vector{Int}(undef, steps)
     It = Vector{Int}(undef, steps)
     Rt = Vector{Int}(undef, steps)
@@ -56,7 +48,7 @@ function run_computational_sir(steps, N, β, α)
         I += new_I - new_R
         R += new_R
 
-        #  If the infected population reaches 0, 
+        # If the infected population reaches 0, 
 		# the arrays are truncated to the actual length
         if I == 0
             St = St[1:step]
@@ -81,15 +73,17 @@ begin
 	ylabel!("# people")
 end
 
-# ╔═╡ 3b7483a7-ff38-47a1-8f26-cce0ff55a92f
-α, N =0.05, 10_000 
-
 # ╔═╡ c7595f3a-a937-4f92-bb37-33a90d378a30
-md"## Sweeps and stability analysis
+md"## Sweeps and stability analysis"
 
+# ╔═╡ 3b7483a7-ff38-47a1-8f26-cce0ff55a92f
+α, N = (5/100), 10_000 # # 5 / 1 Million, or 5.0e-6
+
+# ╔═╡ a7dd4d46-4885-468e-9f3d-dea71c2330b8
+md"
 $\Delta I = \beta SI - \alpha I \rightarrow \Delta I > 0\quad \text{if}\ \beta_c \gt \frac{\alpha}{N}$
 
-Or, if you push a little bit above $(α/N),  you get phase transition where a little change in number of infected person can engenders an epidemic.
+Or, if you push a little bit above $(α/N),  you get phase transition where a little change in number of infected person engender an epidemic.
 "
 
 # ╔═╡ a2d1ee6e-fe69-4720-990b-4b0709ca708c
@@ -118,26 +112,25 @@ let
 end
 
 # ╔═╡ dbb4aa33-9924-4cd8-87b6-4a63909b91b0
-md"## Fat tails"
+md"## Fat tail"
 
 # ╔═╡ 510b16ec-13f3-4048-b715-9d207a5fc847
 function run_reps(steps, N, β, α, repetitions)
 	results = zeros(Float64, repetitions)
 	
-	# Run the model
+	# Run the model, many times
 	for reps in 1:repetitions
 	    (S, I, R) = run_computational_sir(steps, N, β, α)
 	    results[reps] = R[end]
 	end
 	
-	# Statistical analysis
 	counts = countmap(results)
 	
 	# Sorting and filtering out zeros/negative values
 	sorted_keys = sort(collect(keys(counts)))
 	sorted_counts = [counts[k] for k in sorted_keys]
 	
-	# Filter out zero or negative values (important for log-log scale)
+	# Filter out zero or negative values
 	non_zero_indices = findall(k -> k > 0, sorted_keys)
 	outbreak_size = sorted_keys[non_zero_indices]
 	nb_outbreaks = sorted_counts[non_zero_indices]
@@ -150,7 +143,7 @@ Assume P(s) here means probability of outbreak of size S. We have
 
 $$P(s) \sim C \cdot s^{-\gamma} \rightarrow \log P(s) = \log(C) -\gamma \log(s)$$
 
-This is related to the above critical points.
+This is related to the above critical point in that if $\alpha/N = 1$, then patient zero on average infect one other people. If $\alpha/N \gt 1$ the contagion is taking of. If $\alpha/N \lt 1$, it doesn't take of. [TODO]
 
 "
 
@@ -164,32 +157,46 @@ let
 	
 	N = 20_000
 	steps = 1000
-	α = 0.05
 	repetitions = 50_000
 	
-	outbreak_size, nb_outbreaks = run_reps(steps, N, 2.0e-6, α, repetitions)
-	outbreak_size2, nb_outbreaks2 = run_reps(steps, N, 1.0e-6, α, repetitions)
-	outbreak_size3, nb_outbreaks3 = run_reps(steps, N, 3.0e-6, α, repetitions)
+	outbreak_size, nb_outbreaks = run_reps(steps, N, 7.0e-6, α, repetitions)
+	outbreak_size2, nb_outbreaks2 = run_reps(steps, N, 3.0e-6, α, repetitions)
+	outbreak_size3, nb_outbreaks3 = run_reps(steps, N, 5.0e-6, α, repetitions)
 
 	# Plot
 	
 	plot(outbreak_size, nb_outbreaks, marker=:circle,
 		 color=:black, xscale=:log10, yscale=:log10, minorgrid=true,
+	     xlabel="Outbreak size", ylabel="Number of outbreaks", label="β=7.0e-6")
+	
+	scatter!(outbreak_size2, nb_outbreaks2, markerstrokecolor=:red, color=:red, opacity=0.2, label="β=5.0e-6")
+	
+	scatter!(outbreak_size3, nb_outbreaks3, markerstrokecolor=:green, color=:green, opacity=0.2, label="β=3.0e-6")
+
+
+end
+
+# ╔═╡ 12df7687-d7ea-4a93-9a26-ffa17eb8dc90
+md"Say that we want to visualize power law relationship, eyeballing the exponent:"
+
+# ╔═╡ 89494a15-e203-42c0-85aa-55b28ef5f7ca
+let
+	# Plot power law	
+	N = 20_000
+	steps = 1000
+	repetitions = 50_000
+	
+	outbreak_size, nb_outbreaks = run_reps(steps, N, 2.0e-6, α, repetitions)
+	max_outbreak = maximum(outbreak_size)
+	
+	plot(outbreak_size, nb_outbreaks, marker=:circle,
+		 color=:black, xscale=:log10, yscale=:log10, minorgrid=true,
 	     xlabel="Outbreak size", ylabel="Number of outbreaks", label="β=2.0e-6")
 	
-	scatter!(outbreak_size2, nb_outbreaks2, markerstrokecolor=:red, color=:red, opacity=0.2, label="β=3.0e-6")
-	
-	scatter!(outbreak_size3, nb_outbreaks3, markerstrokecolor=:green, color=:green, opacity=0.2, label="β=1.0e-6")
-	
-	# Plot power law
-	
-	max_outbreak = maximum(outbreak_size)
-	γ = 1.6 
-	C = 1e4     	
+	γ, C = 1.6, 1e4
 	xs = 1:(max_outbreak/100):(max_outbreak-100)
 	prob_outbreak_of_size_s = C * (xs .^ (-γ))
 	plot!(xs, prob_outbreak_of_size_s, color=:blue, ls=:dash, label=L"P(s) \sim 10,000   * s^{-1.6}")
-
 end
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
@@ -1449,16 +1456,18 @@ version = "1.4.1+1"
 # ╔═╡ Cell order:
 # ╟─36185860-7054-11ef-2cd4-37ff43d203c8
 # ╠═ff4ca66a-b060-4659-8101-57d116e3e2cb
-# ╠═1323d6a9-497d-4870-a416-31b3ff75edeb
 # ╠═b2779457-8297-4a0d-a121-3b67df4169d9
 # ╠═4e051086-1daf-45a8-8b68-fd6e163ada65
-# ╠═c7595f3a-a937-4f92-bb37-33a90d378a30
+# ╟─c7595f3a-a937-4f92-bb37-33a90d378a30
 # ╠═3b7483a7-ff38-47a1-8f26-cce0ff55a92f
+# ╟─a7dd4d46-4885-468e-9f3d-dea71c2330b8
 # ╠═a2d1ee6e-fe69-4720-990b-4b0709ca708c
-# ╟─dbb4aa33-9924-4cd8-87b6-4a63909b91b0
+# ╠═dbb4aa33-9924-4cd8-87b6-4a63909b91b0
 # ╠═510b16ec-13f3-4048-b715-9d207a5fc847
-# ╟─a04e6e68-6715-420e-b962-efb14c9154d3
+# ╠═a04e6e68-6715-420e-b962-efb14c9154d3
 # ╠═8c6d4984-0fde-496a-850e-578480228c72
 # ╠═c4f897d0-92d7-4a9b-9e1a-33b6f16cff09
+# ╠═12df7687-d7ea-4a93-9a26-ffa17eb8dc90
+# ╠═89494a15-e203-42c0-85aa-55b28ef5f7ca
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
