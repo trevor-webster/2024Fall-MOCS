@@ -70,13 +70,13 @@ function run_computational_sir(steps, N, β, α)
 end
 
 # ╔═╡ 4e051086-1daf-45a8-8b68-fd6e163ada65
-S,I,R = run_computational_sir(1_000, 10_000, 0.00005, 0.33)
+S,I,R = run_computational_sir(1_000, 10_000, 0.0001, 0.33)
 
 # ╔═╡ 945a0bac-7ec3-443f-bca1-948992837060
 plot_sir(S,I,R)
 
 # ╔═╡ 3b7483a7-ff38-47a1-8f26-cce0ff55a92f
-α, N =0.05, 10_000
+α, N =0.05, 10_000 
 
 # ╔═╡ c7595f3a-a937-4f92-bb37-33a90d378a30
 md"## Sweeps and stability analysis
