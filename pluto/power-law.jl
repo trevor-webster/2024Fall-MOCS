@@ -70,10 +70,16 @@ function run_computational_sir(steps, N, β, α)
 end
 
 # ╔═╡ 4e051086-1daf-45a8-8b68-fd6e163ada65
-S,I,R = run_computational_sir(1_000, 10_000, 0.0001, 0.33)
-
-# ╔═╡ 945a0bac-7ec3-443f-bca1-948992837060
-plot_sir(S,I,R)
+begin
+	S,I,R = run_computational_sir(1_000, 10_000, 0.0001, 0.33)
+	
+	plot( S, label="Susceptible", marker=:o,    color=:lightgreen, leg=:right)
+	plot!(I, label="Infected",    marker=:rect, color=:red)
+	plot!(R, label="Recovered",   marker=:star, color=:blue, opacity=0.5)
+	
+	xlabel!("time")
+	ylabel!("# people")
+end
 
 # ╔═╡ 3b7483a7-ff38-47a1-8f26-cce0ff55a92f
 α, N =0.05, 10_000 
@@ -1446,7 +1452,6 @@ version = "1.4.1+1"
 # ╠═1323d6a9-497d-4870-a416-31b3ff75edeb
 # ╠═b2779457-8297-4a0d-a121-3b67df4169d9
 # ╠═4e051086-1daf-45a8-8b68-fd6e163ada65
-# ╠═945a0bac-7ec3-443f-bca1-948992837060
 # ╠═c7595f3a-a937-4f92-bb37-33a90d378a30
 # ╠═3b7483a7-ff38-47a1-8f26-cce0ff55a92f
 # ╠═a2d1ee6e-fe69-4720-990b-4b0709ca708c
