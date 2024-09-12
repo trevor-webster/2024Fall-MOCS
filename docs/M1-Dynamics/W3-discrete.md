@@ -42,11 +42,11 @@ where ${tex`c`} is the rate at which people clone themselves, and ${tex`a`} and 
 
 <div class="def">
 <h3>Poisson Processes</h3>
-  Something happens at a given (fixed) rate, regardless of what happen beforehand.
+  Something happens at a given (fixed) rate, regardless of what happens beforehand.
 </div>
 
 
-Back to example, every now and then (e.g., everyday if we assume ${tex`Δt = 1\textrm{day}`}) the factory – weirdly enough – thus ask you to follow this procedure:
+Back to example above, every now and then (e.g., everyday if we assume ${tex`Δt = 1\textrm{day}`}) the factory (weirdly enough) thus ask you to follow this procedure:
 
 ```julia
 # Julia code
@@ -66,11 +66,11 @@ for t=1:Δt:T
 end
 ```
 
-What if a transition rate, say ${tex`a`}, is too high so to make the associated transition probability ${tex`a\cdot Δt`} larger than 1? This occurs because the duration ${tex`Δt`} of the time step you are considering is too large. For instance, if there are, on average, three people entering the building in a day and ${tex`Δt`} stands for _one day_, then ${tex`a\cdot Δt = 3/\textrm{day} \cdot \textrm{day} = 3 > 1`}. To solve the problem, take for example ${tex`Δt = 1\textrm{hour}`}, so that now ${tex`a = (3/24)/\textrm{day}`} and ${tex`a\cdot Δt = (3/24)/\textrm{hour} \cdot \textrm{hour} = 1/8 < 1`}.
+A couple of observations here. What if a transition rate, say ${tex`a`}, is too high so to make the associated transition probability ${tex`a\cdot Δt`} larger than 1? This occurs because the duration ${tex`Δt`} of the time step you are considering is too large. For instance, if there are, on average, three people entering the building in a day and ${tex`Δt`} stands for _one day_, then ${tex`a\cdot Δt = 3/\textrm{day} \cdot \textrm{day} = 3 > 1`}. To solve the problem, take for example ${tex`Δt = 1\textrm{hour}`}, so that now ${tex`a = (3/24)/\textrm{day}`} and ${tex`a\cdot Δt = (3/24)/\textrm{hour} \cdot \textrm{hour} = 1/8 < 1`}.
 
-Also, order matters. We are testing departure first, assuming that people can replicate only if they have not decided to leave the building. One could think of alternative situations where, during the same time step (which, remember, being finite allows for multiple processes to take place within it), people first try to clone themselves and then consider to leave; or, where recently arrived people are not allow to replicate or leave immediately after arrival (which would mean moving the `arrivals' code block to the end). In all cases, two events involving the same individual can never be simultaneous (in the factory, e.g., you can't leave while arriving or cloning yourself while leaving). Time discreteness forces us to hardwire the order of events.
+Also, order matters. We are testing departure first, assuming that people can replicate only if they have not decided to leave the building. One could think of alternative situations where, during the same time step (which, remember, being finite allows for multiple processes to take place within it), people first try to clone themselves and then consider to leave; or, where recently arrived people are not allow to replicate or leave immediately after arrival (which would mean moving the `arrivals' code block to the end). In all cases, two events involving the same individual can never be simultaneous (in the factory, e.g., you can't leave while arriving or cloning yourself while leaving). Time discreteness forces us to hardwire the order of the potential events.
 
-In the clip below, LHD shows how both these issues – transition probabilities larger than one and time orderiong of competing events – are solved by considering small enough (eventually infinitesimal) time steps. 
+In the clip below, LHD shows how both these issues – transition probabilities larger than one and time ordering of competing events – are solved by considering small enough (eventually infinitesimal) time steps. 
 
 <iframe src="https://streaming.uvm.edu/embed/49964/" width="560" height="315" frameborder="0" allowfullscreen></iframe>
 
@@ -78,7 +78,7 @@ In the clip below, LHD shows how both these issues – transition probabilities 
 
 > Rate of a sum of poisson processes is the sum of rates!
 
-Probability of poisson process ${tex`\lambda_1`} occuring before poisson process ${tex`{\lambda_2}`}
+__Property__: Given two competing Poisson processes, the probability of Poisson process of rate ${tex`\lambda_1`} occuring before Poisson process of rate ${tex`{\lambda_2}`} is
 
 ```tex
 \frac{\lambda_1}{\lambda_1 + \lambda_2}
