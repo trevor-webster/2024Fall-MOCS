@@ -409,25 +409,6 @@ function run_computational_sir(steps, N, β, α)
 
 			# simulate the change in a computational model!		
 
-			# Version 3: dummy approach (direct simulation)
-			# throwing a lot of random numbers
-			# for dummy_s=1:S
-			# 	for dummy_i=1:I
-			# 		if rand() < β # did I infected S?
-			# 			next_S -= 1
-			# 			next_I += 1
-			# 			break
-			# 		end
-			# 	end
-			# end
-
-			# for dummy_i=1:I
-			# 	if rand() < α
-			# 		next_I -= 1
-			# 		next_R += 1
-			# 	end
-			# end
-
 			# Cheaper version
 			p_inf = 1-(1-β)^I
 			new_I = rand(Binomial(S, p_inf)) 
