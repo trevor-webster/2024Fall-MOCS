@@ -136,10 +136,7 @@ let
 end
 
 # ╔═╡ dbb4aa33-9924-4cd8-87b6-4a63909b91b0
-md"## Fat tail
-
-Heavy tail distributions is when you have systems that are non-normally distributed. That is, most of the times you get small values, but once in a life time you get a black swan events that screw everything up.
-"
+md"## Fat tail"
 
 # ╔═╡ 510b16ec-13f3-4048-b715-9d207a5fc847
 function run_reps(steps, N, β, α, repetitions)
@@ -1487,12 +1484,12 @@ version = "1.4.1+1"
 # ╟─36185860-7054-11ef-2cd4-37ff43d203c8
 # ╠═b2779457-8297-4a0d-a121-3b67df4169d9
 # ╠═4e051086-1daf-45a8-8b68-fd6e163ada65
-# ╠═c7595f3a-a937-4f92-bb37-33a90d378a30
-# ╠═a7dd4d46-4885-468e-9f3d-dea71c2330b8
+# ╟─c7595f3a-a937-4f92-bb37-33a90d378a30
+# ╟─a7dd4d46-4885-468e-9f3d-dea71c2330b8
 # ╠═3b7483a7-ff38-47a1-8f26-cce0ff55a92f
 # ╟─cd935924-4b8c-4610-8227-f60bbefacb48
 # ╠═a2d1ee6e-fe69-4720-990b-4b0709ca708c
-# ╠═dbb4aa33-9924-4cd8-87b6-4a63909b91b0
+# ╟─dbb4aa33-9924-4cd8-87b6-4a63909b91b0
 # ╠═510b16ec-13f3-4048-b715-9d207a5fc847
 # ╠═8c6d4984-0fde-496a-850e-578480228c72
 # ╠═c4f897d0-92d7-4a9b-9e1a-33b6f16cff09
