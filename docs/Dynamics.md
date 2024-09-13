@@ -112,7 +112,8 @@ In a "Differential equations" class, you learn to solve differential equations u
 \begin{equation}
   \begin{split}
   \frac{dn}{dt} &= bn \\
-  \Rightarrow dn &= bn \cdot dt \ \Rightarrow \ \frac{1}{n}dn &= bdt \\
+  \Rightarrow dn &= bn \cdot dt \ \Rightarrow \\
+  \frac{1}{n}dn &= bdt \\
   \end{split}
 \end{equation}
 ```

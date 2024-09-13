@@ -1,3 +1,7 @@
+---
+toc: true
+---
+
 # Discrete models
 <div class="flex-container">
   <div class="left-div callback">
@@ -93,7 +97,228 @@ __Property__: Given two competing Poisson processes, the probability of Poisson 
 
 ---
 
-Bonus: Taylor Series and L'Hospital rule
+## Case study: discrete SIR
+
+<div class="math-box">
+Work in progress, there might be mistakes.
+</div>
+
+We review this week's key concepts by way of analyzing the discrete SIR model. First, we sketch our assumptions about the model using a flow diagram:
+
+```mermaid
+graph LR
+S("S(t)") --βS(t)I(t)---> I("I(t)")
+I("I(t)") --αI(t)---> R("R(t)")
+```
+
+There are different ways to translate this sketch into mathematics and code. If we focus on the change in infected individuals, we could write
+
+
+```tex
+I(t+1) = \beta S(t)I(t) - \alpha I(t)
+```
+
+This is perhaps the most popular way to write the change in infection in the SIR model. But in the discrete world, it has two issues. First, what if we assume a relatively high ${tex`\beta`}? What is a relatively high parameter anyway? Say that, naively, we assume that each infected individiual is infecting 5\% of its contact. That each individual stays infectious on average 3 days (${tex`\alpha=0.33`}). And that the population starts with 1 infected individuals, in a population of 10,000. We get the following:
+
+
+```js
+Inputs.table(naive_approach(), {header: ["suceptible", "infected"], maxWidth: 400})
+```
+
+This is nonsense. What is happening? Recall that the above version the parameters represent _transmission rate_.  The issue is that in a [fully-connected]() world, infecting 5\% of 10,000 leads to a lot of transmission. Using the number of transmission by contact rate you can end up with more transmission than there are susceptible individuals. But you can only get infected once! 
+
+One way around this problem is to have a very small transmission probability, say 5 in a million (or ${5/1_000_000}). This approach is hinting at the second issue; that of simultaneous events. By assuming a very small ${tex`\beta`}, we are assuming that there is very little chance than two infection event happen at the same time. 
+
+What we can do instead is to change the units of our model, going from counting contacts to counting people switching from susceptible to infected. How? In plain english, we want the probability of _not having a transmission_. In the second clip, we saw that ${tex`(1-\beta)^{I(t)}`} is the probability of susceptibel people of not being infected (aka, say 5\% transmission probability, with 4 infected individuals, you get (${(Math.pow(1-0.05, 5)*100).toFixed(2)}\% of chance of not being infected). Then, ${tex`1 - \text{(prob not infected)}`} is the probability of not having a transmission event, which is normalized between 0 and 1. Hence, we write
+
+
+```tex
+\begin{equation*}
+  \begin{split}
+    S(t+1) &= S(t) (1 - ( 1 - \beta)^{I(t)})\\
+    I(t+1) &= S(t) (1 - ( 1 - \beta)^{I(t)}) - \alpha I(t)\\
+    R(t+1) &= \alpha I(t)
+  \end{split}
+\end{equation*}
+```
+
+In code, we write
+
+```js echo
+function runMathematicalSIR(steps, N, β, α) {
+    // Initialize
+    let I = 1, R = 0
+    let S = N - I - R;
+    
+    // Pre-allocated arrays (faster)
+    let St = new Array(steps);
+    let It = new Array(steps);
+    let Rt = new Array(steps);
+    
+    // Observe
+    for (let step = 0; step < steps; step++) {
+      St[step] = S;
+      It[step] = I;
+      Rt[step] = R;
+
+      // Update
+      // (1-(1-beta)^(t)) OR beta*I, based on toggle's value
+      let delta_I = toggle ? (1 - Math.pow(1 - β, I)) :  β*I
+      let delta_R = α*I  
+
+      S -= S*delta_I;
+      I += S*delta_I - delta_R;
+      R += delta_R;
+
+    }
+    return [St, It, Rt];
+}
+```
+
+```js
+let toggle = view(Inputs.toggle({label: "use ( 1 - (1-β)^I(t) )"}))
+let beta = view(Inputs.range([0.00005, 1.1], {label: "beta", step: 0.00001, value:  0.00005}))
+let alpha = view(Inputs.range([0.01, 1.], {label: "alpha", step: 0.001, value:  0.05}))
+```
+
+```js
+let [S, I, R] = runMathematicalSIR(100, 10000, beta, alpha);
+```
+```js
+Plot.plot({
+  x: {label: "time"},
+  y: {label: "# people", grid:true},
+  color: {
+    type: "categorical", 
+    domain: ["susceptible", "infected", "recovered"], 
+    range: ["green", "red", "blue"], 
+    legend:true
+  },
+  marks: [
+    Plot.frame(),
+    Plot.lineY(S, {stroke: "green"}),
+    Plot.lineY(I, {stroke: "red"}),
+    Plot.lineY(R, {stroke: "blue"}),
+    ]
+  })
+```
+
+The rates of changes are still going fast, but at least with the corrected mathematical version we don't get nonsensical values.
+
+In some cases, we don't have the mathemetical version at hand. But we can always simulate the system. One way to draw one realization of the mathematical model is to use the [Binomial](https://en.wikipedia.org/wiki/Binomial_distribution). That is, how many successes that we have in, say, infecting _S_ individuals, with probability of infection determined by the expected rate of changes. The code will be mostly similar, but we change how we update our quantities: 
+
+```echo
+function runComputationalSIR(steps, N, β, α) {
+    
+    [...]
+    
+    for (let step = 0; step < steps; step++) {
+    
+      [...]
+      
+      // We use our previously defined math as probability of infection in the Binomial distribution
+      let p_inf = 1 - Math.pow(1 - β, I); 
+      let new_I = Binomial(S, p_inf); 
+      let new_R = Binomial(I, α);
+      
+      // Update
+      S -= new_I;
+      I += new_I - new_R;
+      R += new_R;
+
+      // If the infected population reaches 0, truncate arrays
+      if (I === 0) {
+        St = St.slice(0, step + 1);
+        It = It.slice(0, step + 1);
+        Rt = Rt.slice(0, step + 1);
+        break;
+      }
+    }
+    return [St, It, Rt];
+}
+```
+
+Here we plot the simulation of infections against the mathematical version: 
+
+```js
+const replay = view(Inputs.button("New contagion"));
+```
+
+```js
+replay;
+let [Sc, Ic, Rc] = runComputationalSIR(100, 10000, beta, alpha);
+```
+
+```js
+Plot.plot({
+  x: {label: "time"},
+  y: {label: "# infected", grid:true},
+  color: {
+    type: "categorical", domain: ["infected"],  range: ["red"],  legend:true
+  },
+  nice:true,
+  marks: [
+    Plot.frame(),
+    Plot.dot(Ic.map((i,t) => [t, i]), {fill: "red", stroke: "white", symbol: "square"}),
+    Plot.lineY(I, {stroke: "red"}),
+    ]
+  })
+```
+
+Note that there are variation in draws. When the contagion takeoff, it is very similar to the mathematically defined version. But sometimes there we witness stochastic extinctions.
+
+In the discrete SIR model, several fixed points can be identified. First, when $R = N$, no further infections can occur. Similarly, when {tex`I = 0`}, the epidemic ends. However, a more interesting case is whether fixed points are stable? What if we have no infected individual in the system, then we nudge the system by injecting an infected individual. If the transmission rate is too low, stochastic extinctions occur, meaning patient zero cannot infect enough individuals to sustain the outbreak. At a certain threshold, denoted as ${tex`\beta_c`}, the transmission rate becomes high enough that patient zero will almost certainly trigger an epidemic.
+
+### Stability analysis
+
+Stability analysis is the art of nudging a little our system around a given point to determine the (local) stability of fixed points. What do we mean by nudging? Let
+
+```tex
+\Delta I \gt 0
+```
+That’s the nudge. Technically, a nudge is a pertubation of a fixed point, of a inifinitely small change. Now, what we’re really interested in is whether this nudge leads to more infections. We can describe this as:
+
+```tex
+\Delta I = \beta SI - \alpha I > 0
+```
+
+A little algebra gives us:
+
+```tex
+\beta S - \alpha \gt 0 \Rightarrow \beta \gt \frac{\alpha}{S}
+```
+
+Now, if we're thinking about patient zero, where almost everyone is still susceptible, we can assume ${tex`S \approx N`}. This gives us the critical transmission rate:
+
+```tex
+\beta_c \gt \frac{\alpha}{N}
+```
+
+So, for the outbreak to take off, the transmission rate has to be greater than this threshold.
+
+```js
+manySIRs()
+```
+
+If you increase the transmission rate just above 5.0e-6, you hit a phase transition. At this point, even a small increase in the number of infected people can trigger a full-blown epidemic.
+
+Another way to look at this phase transition is by looking at the log-log of number of outbreaks with respect to outbreak size. By varying ${tex`\beta`} around the critical threshold, we can see intensity and frequency of outbreak size change drastically. This is characteristic of heavy tail distributions, that is, distributions that decay slower than any exponential. That is, most of the times you get small values, but once in a life time you get a black swan events that screw everything up.
+
+```js
+const beta2 = view(Inputs.range([2.0e-6, 2.0e-5], {value: 4.0e-6, label:"β"}))
+```
+
+```js
+loglog_outbreaks()
+```
+
+When ${tex`\beta`} is small, there's a higher chance of stochastic extinctions. For example, with ${tex`\beta=2e-6`} , the outbreak sizes range from around 100 people to at most a few hundreds. But once you increase ${tex`\beta`} to ${tex`3e-6`}, you start to see large outbreaks become more often (the chunk on the right becomes higher and higher). When crosses the critical threshold, which is roughly , that’s when the contagion really takes off.
+
+---
+
+## Bonus content
+
+Lhd introducing Taylor Series and L'Hospital rule
 
 <iframe src="https://streaming.uvm.edu/embed/49965/" width="560" height="315" frameborder="0" allowfullscreen></iframe>
 
@@ -104,3 +329,176 @@ Obligatory reference to 3b1b on L'Hôpital's rule
 And Taylor Series
 
 <iframe width="560" height="315" src="https://www.youtube.com/embed/3d6DsjIBzJ4?si=JmVHNmaA07YDjOxb" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
+
+```js
+function runComputationalSIR(steps, N, β, α) {
+    // Initialize
+    let I = 1;
+    let R = 0;
+    let S = N - I - R;
+    
+    // Pre-allocated arrays (faster)
+    let St = new Array(steps);
+    let It = new Array(steps);
+    let Rt = new Array(steps);
+    
+    // Observe
+    for (let step = 0; step < steps; step++) {
+      St[step] = S;
+      It[step] = I;
+      Rt[step] = R;
+
+      let p_inf = 1 - Math.pow(1 - β, I); // 1 - (1-β)^I(t)
+      let new_I = Binomial(S,p_inf);
+      let new_R = Binomial(I,α);
+
+      // Update
+      S -= new_I;
+      I += new_I - new_R;
+      R += new_R;
+
+      // If the infected population reaches 0, truncate arrays
+      if (I === 0) {
+        St = St.slice(0, step + 1);
+        It = It.slice(0, step + 1);
+        Rt = Rt.slice(0, step + 1);
+        break;
+      }
+    }
+
+    return [St, It, Rt];
+}
+
+function naive_approach() {
+  let steps = 9;
+  let beta = 0.05, alpha = 0.33
+  let I = 1, S = 9999
+
+  let St = new Array(steps);
+  let It = new Array(steps);
+
+  let res = [[S,I]]
+  for (let step = 0; step < steps; step++) {
+
+  // Observe
+    St[step] = S;
+    It[step] = I;
+
+    // Update
+    S -= beta*I*S
+    I += beta*I*S - alpha*I
+    res.push([S,I])
+  }
+
+  return res
+}
+
+function Binomial(n,p) {
+  return Array.from({length: 1}, d3.randomBinomial(n,p))[0];
+}
+
+function manySIRs() {
+  const steps = 1000;
+  const repetitions = 100;
+
+  const N = 10_000; // Assuming N is defined
+  const α = 5/100;
+
+  // Array of β values from 0 to 0.5/N
+  const β_values = Array.from({ 
+    length: Math.floor(0.5 / N / (0.005 / N)) + 1 }, 
+    (_, i) => i * (0.005 / N)
+  );
+
+  const outbreak_sizes = [];
+  for (const β of β_values) {
+      let results = [];
+      for (let i = 0; i < repetitions; i++) {
+          const [St, It, Rt] = runComputationalSIR(steps, N, β, α);
+          results.push(Rt[Rt.length - 1]); // Taking the last value of Rt array
+      }
+      const averageOutbreakSize = d3.mean(results);
+      outbreak_sizes.push(averageOutbreakSize);
+  }
+
+  let data = β_values.map((β, i) => ({ β, outbreak_size: outbreak_sizes[i] }))
+
+  return Plot.plot({
+    nice:true,
+    marginLeft: 50,
+    marginRight: 30,
+    y: {
+      label: "Outbreak size",
+      grid:true
+      },
+    x: {
+        label: "Transmission probability (β)"
+    },
+    marks: [
+      Plot.frame(),
+      Plot.dot(data, {
+          x: "β",
+          y: "outbreak_size",
+          fill: "black", stroke: "white"
+      }),
+      Plot.lineY(data, {
+          x: "β",
+          y: "outbreak_size"
+      }),
+      Plot.ruleX([α / N], {
+          stroke: "blue",
+          strokeDasharray: "4,4",
+          label: "Critical point"
+      })
+    ]
+});
+}
+
+function runReps(steps, N, β, α, repetitions) {
+  let results = new Array(repetitions).fill(0);
+
+  // Run the model, many times
+  for (let reps = 0; reps < repetitions; reps++) {
+    let [S, I, R] = runComputationalSIR(steps, N, β, α);
+    results[reps] = R[R.length - 1];
+  }
+
+  // Count occurrences of each result (similar to countmap)
+  let counts = results.reduce((acc, val) => {
+    acc[val] = (acc[val] || 0) + 1;
+    return acc;
+  }, {});
+
+  // Sorting the keys and filtering out zeros/negative values
+  let sortedKeys = Object.keys(counts)
+    .map(Number)
+    .sort((a, b) => a - b);
+
+  // Filter out zero or negative values and create pairs
+  let pairs = sortedKeys
+    .filter(k => k > 0)
+    .map(k => [k, counts[k]]);
+
+  return pairs;
+}
+ 
+function loglog_outbreaks() {
+  let N = 20_000
+	let steps = 1000
+	let repetitions = 10_000
+ 
+ let pairs = runReps(steps, N, beta2, 0.05, repetitions)
+
+ return Plot.plot({
+    x: {label: "Outbreak size", type: "log"},
+    y: {label: "Number of outbreaks", type: "log"},
+    grid: true,
+    marks: [
+      Plot.dot(pairs, { fill: "black", stroke: "white"}),
+      Plot.line(pairs)
+  ],
+})
+
+}
+```
