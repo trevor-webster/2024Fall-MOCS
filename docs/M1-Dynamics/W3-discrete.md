@@ -122,19 +122,15 @@ There are different ways to translate this sketch into mathematics and code. If 
 I(t+1) = \beta S(t)I(t) - \alpha I(t)
 ```
 
-This is perhaps the most popular way to write the change in infection in the SIR model. But in the discrete world, it has two issues. First, what if we assume a relatively high ${tex`\beta`}? What is a relatively high parameter anyway? Say that, naively, we assume that each infected individiual is infecting 5\% of its contact. That each individual stays infectious on average 3 days (${tex`\alpha=0.33`}). And that the population starts with 1 infected individuals, in a population of 10,000. We get the following:
-
+In the discrete realm, this version has two issues. First, what if we assume a relatively high ${tex`\beta`}? What is a relatively high parameter anyway? Say that, naively, we assume that each infected individiual is infecting 5\% of its contact. That each individual stays infectious on average 3 days (${tex`\alpha=0.33`}). And that the population starts with 1 infected individuals, in a population of 10,000. We get the following:
 
 ```js
 Inputs.table(naive_approach(), {header: ["suceptible", "infected"], maxWidth: 400})
 ```
 
-This is nonsense. What is happening? Recall that the above version the parameters represent _transmission rate_.  The issue is that in a [fully-connected]() world, infecting 5\% of 10,000 leads to a lot of transmission. Using the number of transmission by contact rate you can end up with more transmission than there are susceptible individuals. But you can only get infected once! 
+This is nonsense. What is happening? The issue is that in a [fully-connected]() world, infecting 5\% of 10,000 leads to a lot of transmission. Using the number of transmission by contact rate you can end up with more transmission than there are susceptible individuals. But you can't get infected more than once! One way around this problem is to have a very small transmission probability, say 5 in a million (or ${5/1_000_000}). This approach is hinting at the second issue; that of simultaneous events. By assuming a very small ${tex`\beta`}, we are assuming that there is very little chance than two infection event happen at the same time. 
 
-One way around this problem is to have a very small transmission probability, say 5 in a million (or ${5/1_000_000}). This approach is hinting at the second issue; that of simultaneous events. By assuming a very small ${tex`\beta`}, we are assuming that there is very little chance than two infection event happen at the same time. 
-
-What we can do instead is to change the units of our model, going from counting contacts to counting people switching from susceptible to infected. How? In plain english, we want the probability of _not having a transmission_. In the second clip, we saw that ${tex`(1-\beta)^{I(t)}`} is the probability of susceptibel people of not being infected (aka, say 5\% transmission probability, with 4 infected individuals, you get (${(Math.pow(1-0.05, 5)*100).toFixed(2)}\% of chance of not being infected). Then, ${tex`1 - \text{(prob not infected)}`} is the probability of not having a transmission event, which is normalized between 0 and 1. Hence, we write
-
+What we can do instead is to change the units of our model, going from counting contacts to counting people switching from susceptible to infected. How? In plain english, we want the probability of _not having a transmission_. In this week's second clip, we saw that ${tex`(1-\beta)^{I(t)}`} is the probability of susceptible people of not being infected (aka, say 5\% transmission probability, with 4 infected individuals, you get (${(Math.pow(1-0.05, 5)*100).toFixed(2)}\% of chance of not being infected). Then, ${tex`1 - \text{(prob not infected)}`} is the probability of not having a transmission event, which is normalized between 0 and 1. Hence, we write
 
 ```tex
 \begin{equation*}
@@ -207,9 +203,9 @@ Plot.plot({
   })
 ```
 
-The rates of changes are still going fast, but at least with the corrected mathematical version we don't get nonsensical values.
+The rates of changes are still going fast, but at least we don't get nonsensical values.
 
-In some cases, we don't have the mathemetical version at hand. But we can always simulate the system. One way to draw one realization of the mathematical model is to use the [Binomial](https://en.wikipedia.org/wiki/Binomial_distribution). That is, how many successes that we have in, say, infecting _S_ individuals, with probability of infection determined by the expected rate of changes. The code will be mostly similar, but we change how we update our quantities: 
+Computational simulations are powerful in part due to their flexibility. Instead of tracking expected rate of changes, we simulate a single realization of the model using random variables. In this case, we rely on the Binomial distribution, which helps us determine how many successful events occur—such as how many _S_ individuals become infected—based on the probability of infection derived from the expected rate of change. The code remains largely the same, but we adjust how we update key quantities. 
 
 ```echo
 function runComputationalSIR(steps, N, β, α) {
@@ -222,23 +218,15 @@ function runComputationalSIR(steps, N, β, α) {
       
       // We use our previously defined math as probability of infection in the Binomial distribution
       let p_inf = 1 - Math.pow(1 - β, I); 
-      let new_I = Binomial(S, p_inf); 
-      let new_R = Binomial(I, α);
+      let delta_I = Binomial(S, p_inf); 
+      let delta_R = Binomial(I, α);
       
       // Update
-      S -= new_I;
-      I += new_I - new_R;
-      R += new_R;
+      S -= S*delta_I;
+      I += S*delta_I - delta_R;
+      R += delta_R;
 
-      // If the infected population reaches 0, truncate arrays
-      if (I === 0) {
-        St = St.slice(0, step + 1);
-        It = It.slice(0, step + 1);
-        Rt = Rt.slice(0, step + 1);
-        break;
-      }
-    }
-    return [St, It, Rt];
+      [...]
 }
 ```
 
@@ -271,7 +259,7 @@ Plot.plot({
 
 Note that there are variation in draws. When the contagion takeoff, it is very similar to the mathematically defined version. But sometimes there we witness stochastic extinctions.
 
-In the discrete SIR model, several fixed points can be identified. First, when $R = N$, no further infections can occur. Similarly, when {tex`I = 0`}, the epidemic ends. However, a more interesting case is whether fixed points are stable? What if we have no infected individual in the system, then we nudge the system by injecting an infected individual. If the transmission rate is too low, stochastic extinctions occur, meaning patient zero cannot infect enough individuals to sustain the outbreak. At a certain threshold, denoted as ${tex`\beta_c`}, the transmission rate becomes high enough that patient zero will almost certainly trigger an epidemic.
+In the discrete SIR model, several fixed points can be identified. First, when $R = N$, no further infections can occur. Similarly, when ${tex`I = 0`}, the epidemic ends. However, a more interesting case is whether fixed points are stable? What if we have no infected individual in the system, then we nudge the system by injecting an infected individual. If the transmission rate is too low, stochastic extinctions occur, meaning patient zero cannot infect enough individuals to sustain the outbreak. At a certain threshold, denoted as ${tex`\beta_c`}, the transmission rate becomes high enough that patient zero will almost certainly trigger an epidemic.
 
 ### Stability analysis
 
@@ -309,7 +297,7 @@ If you increase the transmission rate just above 5.0e-6, you hit a phase transit
 Another way to look at this phase transition is by looking at the log-log of number of outbreaks with respect to outbreak size. By varying ${tex`\beta`} around the critical threshold, we can see intensity and frequency of outbreak size change drastically. This is characteristic of heavy tail distributions, that is, distributions that decay slower than any exponential. That is, most of the times you get small values, but once in a life time you get a black swan events that screw everything up.
 
 ```js
-const beta2 = view(Inputs.range([2.0e-6, 2.0e-5], {value: 4.0e-6, label:"β"}))
+const beta2 = view(Inputs.range([2.0e-6, 9.0e-6], {value: 4.0e-6, label:"β"}))
 ```
 
 ```js
@@ -488,7 +476,7 @@ function runReps(steps, N, β, α, repetitions) {
 }
  
 function loglog_outbreaks() {
-  let N = 20_000
+  let N = 10_000
 	let steps = 1000
 	let repetitions = 10_000
  
