@@ -2,7 +2,7 @@
 toc: true
 ---
 
-# Discrete models
+# Discrete-time models
 <div class="flex-container">
   <div class="left-div callback">
     <h3>💡 Previously on...</h3>  
@@ -80,12 +80,16 @@ In the clip below, LHD shows how both these issues – transition probabilities 
 
 ...
 
-> Rate of a sum of poisson processes is the sum of rates!
+### Key properties of Poisson processes
 
-__Property__: Given two competing Poisson processes, the probability of Poisson process of rate ${tex`\lambda_1`} occuring before Poisson process of rate ${tex`{\lambda_2}`} is
-
+__P1__: The rate ${tex`{\Lambda}`} of a sum of ${tex`n`} Poisson processes of rates ${tex`{\lambda_1}`}, ${tex`{\dots}`}, ${tex`{\lambda_n}`}, is the sum of the rates,
 ```tex
-\frac{\lambda_1}{\lambda_1 + \lambda_2}
+\Lambda = \sum_{k=1}^n \lambda_k
+```
+
+__P2__: Given ${tex`n`} competing Poisson processes, the probability of Poisson process of rate ${tex`\lambda_i`} occuring first is
+```tex
+\frac{\lambda_i}{\sum_{k=1}^n \lambda_k} = \frac{\lambda_i}{\Lambda}
 ```
 
 <div class="callout-box">
