@@ -50,7 +50,7 @@ export default {
     { name: "Syllabus", path: "/syllabus" },
     { name: "Evaluation", path: "/eval" },
     { name: "References", path: "/refs" },
-    { name: "Computational ressources", path: "/comp-ressources" },
+    { name: "Computational resources", path: "/comp-resources" },
     { name: "Pluto ↗", path: "https://jstonge.github.io/2024Fall-MOCS/"},
     { name: "Notebooks ↗", path: "https://github.com/jstonge/2024Fall-MOCS/tree/main/notebooks"},
   ],
