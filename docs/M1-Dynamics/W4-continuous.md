@@ -121,7 +121,7 @@ let [I] = integrate_Euler_SIS(10000, 10000, beta, alpha, 0.01);
 ```js
 Plot.plot({
   x: {label: "time"},
-  y: {label: "fraction infected", grid:true},
+  y: {label: "number of infected", grid:true},
   marks: [
     Plot.frame(),
     Plot.lineY(I, {stroke: "black"}),
