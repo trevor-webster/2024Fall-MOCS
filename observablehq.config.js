@@ -9,8 +9,8 @@ export default {
       name: "Dynamics",
       path: "Dynamics",
       pages: [
-        { name: "Week 3: Discrete-time models", path: "/M1-Dynamics/W3-discrete" },
-        { name: "Week 4: Continous-time models", path: "/M1-Dynamics/W4-continuous" },
+        { name: "Week 3: Discrete models", path: "/M1-Dynamics/W3-discrete" },
+        { name: "Week 4: Continuous models", path: "/M1-Dynamics/W4-continuous" },
         { name: "Week 5: Chaos", path: "/M1-Dynamics/W5-chaos" },
       ]
     },

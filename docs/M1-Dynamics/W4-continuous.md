@@ -1,4 +1,8 @@
-# Continuous-time models
+---
+toc: true
+---
+
+# Continuous models
 <div class="flex-container">
   <div class="left-div callback">
     <h3>💡 Previously on...</h3>  
@@ -46,7 +50,7 @@ Whether we want to explore the behavior of a stochastic system or test how well 
 
 ---
 
-### Solving the SI(S) model
+## Solving the SI(S) model
 
 Let us briefly rederive the equation for the SIS model in the well-mixing or mean-field approximation – it is a good exercise. We assume that each of the ${tex`N`} individuals interacts with ${tex`k`} random individuals per time unit (e.g., per hour). Each of the ${tex`k`} contacts of each of the ${tex`I`} infected individuals in the population has probability ${tex`S/N`} of being susceptible. New infections are thus produced at rate ${tex`\beta k I (S/N)`}, while infected individuals recover at rate ${tex`\alpha`}. Considering a closed population (hence ${tex`S=N-I`}), we get the following dynamic equation,
 ```tex
@@ -138,7 +142,7 @@ I(t)= \frac{I(0)}{1+I(0)\beta t} = \frac{I(0)}{1+I(0)\frac{\alpha}{N} t}
 ```
 Therefore, the epidemic dies out also for ${tex`R_0 = 1`}, yet not exponentially, but hyperbolically (${tex`\sim 1/t`}) – at a much lower pace. This phenomenon of a (qualitatively!) longer relaxation time towards the equilibrium state is an example of _critical slowing down_. In particular, we see from Equation (4) that the time needed for the system to relax diverges linearly with the system's size – doubling ${tex`N`} requires doubling ${tex`t`} to reach the same value of ${tex`I`}.
 
-### Transversality of simple models
+## Transversality of simple models
 
 Can you think of other cases than infectious diseases where the dynamics is "isomorphic" to the SI(S) model? A couple of them come straight to my mind: a word or a behavior diffusing in a society, or a species growing in an environment. Wait...what?! How phenomena such different among them can be represented by the same model? Well, it turns out, they are not that different. Looking closer, they are all examples of population growth. The population of people using a word or adopting a behavior, or the population of a species. Words and behaviors "reproduce" themselves by being copied from mind to mind, through learning and imitation; species reproduce in the usual biological sense. This kind of transversality is typical of simple models: Stripped of finer details, many systems appear formally equivalent. You often want sophisticated models to make quantitatively accurate predictions, but simple, idealized models allow you to appreciate general patterns, build intuition and understanding, and transfer knowledge between fields.
 
@@ -158,7 +162,7 @@ known as _logistic equation_. Remember the name, because its discrete-time versi
 
 You may ask at this point: what is the limited resource in the SIS model when used to represent contagions – spread of pathogens, words, behaviors? Well, susceptible individuals. These are finite in number and infected individuals "compete" to infect them – the more the people I infect, the less the people available for you to infect.
 
-### Reading between the (math) lines
+## Reading between the (math) lines
 
 The limited resources we made reference to do not show up in the equations. We just mentioned them to justify the presence of that quadratic term. They are hidden there and it is a good exercise to make them appear explicitly. To make the Verhulst model a bit more general, suppose we now have two species of abundances ${tex`A`} and ${tex`B`}, competing for the same, finite resource of abundance ${tex`R`}. Calling ${tex`\alpha`} and ${tex`\beta`} the rates at which ${tex`A`} and ${tex`B`} individuals respectively consume the resource, and assuming for now a closed system, we get the following system of equations
 ```tex
@@ -200,6 +204,6 @@ ${mermaid`graph TD
       style outB fill:#fff,stroke:#fff,color:#fff
 `}
 
-The flow coming out from the ${tex`A`} and ${tex`B`} boxes, ${tex`(\alpha A + \beta B) (A + B)`}, is indeed the positive contribution to ${tex`dR/dt`} – lost biomass due to competition fed back into the environment as new available resource –, while the rate in the loops, ${tex`\rho_A A + \rho_B B`}, give the negative contribution to it – species consume resources to reproduce.
+The flow coming out from the ${tex`A`} and ${tex`B`} boxes, ${tex`(\alpha A + \beta B) (A + B)`}, is indeed the positive contribution to ${tex`dR/dt`} – lost biomass due to competition feeds back into the environment as new available resource –, while the rate in the loops, ${tex`\rho_A A + \rho_B B`}, give the negative contribution to it – species consume resources to reproduce.
 
 

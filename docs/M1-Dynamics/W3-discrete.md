@@ -2,7 +2,7 @@
 toc: true
 ---
 
-# Discrete-time models
+# Discrete models
 <div class="flex-container">
   <div class="left-div callback">
     <h3>💡 Previously on...</h3>  
