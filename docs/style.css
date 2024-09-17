@@ -1,0 +1,231 @@
+@import url("observablehq:default.css");
+@import url("observablehq:theme-air.css") (prefers-color-scheme: light);
+@import url("observablehq:theme-near-midnight.css") (prefers-color-scheme: dark);
+
+#observablehq-header a[href] {
+  color: inherit;
+}
+
+#observablehq-header a[target="_blank"] {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  text-decoration: none;
+}
+
+#observablehq-header a[target="_blank"]:hover span {
+  text-decoration: underline;
+}
+
+#observablehq-header a[target="_blank"]::after {
+  content: "\2197";
+}
+
+#observablehq-header a[target="_blank"][data-decoration]::after {
+  content: attr(data-decoration);
+}
+
+#observablehq-header a[target="_blank"]:not(:hover, :focus)::after {
+  color: var(--theme-foreground-muted);
+}
+
+#observablehq-main {
+  min-height: calc(100vh - 23.8rem);
+}
+
+@container not (min-width: 640px) {
+  .hide-if-small {
+    display: none;
+  }
+}
+
+a.observablehq-version-badge {
+  font: 500 12px var(--sans-serif);
+  display: inline-block;
+  vertical-align: top;
+  padding: 2px 8px;
+  color: var(--theme-green);
+  background: color-mix(in srgb, var(--theme-green), transparent 80%);
+  border-radius: 12px;
+}
+
+.observablehq-version-badge::before {
+  content: attr(data-version);
+}
+
+.caution {
+  border-left: solid 1px;
+  border-radius: 0 4px 4px 0;
+  padding: 1rem 2rem;
+  margin: 1rem 0;
+  box-sizing: border-box;
+  max-width: 640px;
+  border-left-color: rgba(238, 127, 0, 0.645); /* Green border */
+  background-color: rgba(251, 133, 0, 0.2);
+}
+
+.def {
+  border-left: solid 1px;
+  border-radius: 8px;
+  padding: 15px;
+  margin: 15px 0;
+  box-sizing: border-box;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  max-width: 640px;
+  border-left-color: rgb(138, 221, 49); /* Green border */
+  background-color: rgba(147, 198, 145, 0.2);
+}
+
+/* NEXT WEEK CALLOUT */
+
+.callout-box {
+  padding: 15px;
+  background-color: rgba(251, 133, 0, 0.2);
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin: 15px 0;
+  margin-top: 2rem;
+  max-width: 500px;
+}
+
+.callout-box h3 {
+  margin-top: 0;
+  font-size: 15px;
+}
+
+.checklist {
+  list-style: none;
+  padding: 0;
+}
+
+.checklist li {
+  margin: 8px 0;
+  font-size: 15px;
+}
+
+input[type="checkbox"] {
+  margin-right: 8px;
+}
+
+/* READING BOX */
+
+.reading-box {
+  padding: 15px;
+  background-color: rgba(2, 48, 71, 0.1);
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin: 15px 0;
+  max-width: 500px;
+}
+
+.reading-box h3 {
+  margin-top: 20px;
+  font-size: 16px;
+}
+
+.reading-list {
+  list-style: none;
+  padding: 0;
+}
+
+.reading-list li {
+  margin: 8px 0;
+  font-size: 16px;
+}
+
+.reading-list li span {
+  margin-right: 10px;
+}
+
+/* MATH DEEP DIVE */
+
+.math-box {
+  padding: 15px;
+  background-color: rgba(119, 156, 174, 0.355);
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin: 15px 0;
+  max-width: 700px;
+}
+
+.math-box h3 {
+  margin-top: 20px;
+  font-size: 16px;
+}
+
+.math-list {
+  list-style: none;
+  padding: 0;
+}
+
+.math-list li {
+  margin: 8px 0;
+  font-size: 16px;
+}
+
+.math-list li span {
+  margin-right: 10px;
+}
+
+/* QUOTE */
+
+.quote {
+  margin: 0;
+  background: #eee;
+  padding: 1em;
+  border-radius: 1em;
+}
+
+.quote figcaption,
+.quote blockquote {
+    margin: 1em;
+  }
+
+/* CALLBACK */
+
+.callback {
+  background-color: #f9f9f9;
+  border-left: 5px solid #007acc; /* Accent color */
+  padding: 15px 20px;
+  margin: 20px 0;
+  border-radius: 4px;
+  max-width: 500px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  color: #333;
+}
+
+.callback h3 {
+  margin-top: 0;
+  font-size: 16px;
+  color: #007acc;
+}
+
+.callback p {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+/* FLEX CONTAINER */
+
+.flex-container {
+  display: flex;
+  justify-content: space-between; /* Distributes space evenly between the divs */
+  gap: 20px; /* Optional: Adds space between the divs */
+  flex-wrap: wrap; /* Allows items to wrap onto the next row if there's not enough space */
+}
+
+  .left-div, .right-div {
+    flex: 1; /* Makes both divs take up equal space */
+    padding: 10px;
+    border-radius: 8px; /* Optional: Rounds the corners */
+  }
+
+  @media screen and (max-width: 767px) {
+    /* Hero full width or with some padding on small screen */
+    .left-div, .right-div {
+      flex: 1 1 100%; /* Allows divs to shrink and wrap onto a new line when needed */
+      padding: 10px;
+      border-radius: 8px;
+    }
+}
