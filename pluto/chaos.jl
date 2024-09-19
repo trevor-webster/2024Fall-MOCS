@@ -14,744 +14,208 @@ macro bind(def, element)
     end
 end
 
-# ╔═╡ 0828dafd-9a61-4346-90fa-0d09b9a2a198
-begin 
-	using ImageCore, PlutoUI, Plots, FileIO, ImageIO, ImageShow
- 	using ModelingToolkit
-	using DifferentialEquations: solve
-	using ModelingToolkit: t_nounits as t, D_nounits as D
-	using Distributions: Binomial
-end
-
-# ╔═╡ bea36c11-da70-4997-98ee-5ffc9f30c528
-md"Some models are taught everywhere. I call them **rosetta models**, as they allow you to translate between notations, formalism, solution strategies, and programming languages. Those models are also the basis for a family of models, e.g. the SI model is the basis for the SIS, SIR, SEIR, etc..
-
-For each model, we look at its structure and interpretation. Following Weisberg (2013), we distinguish between 3 types of structures: (i) physical/concrete, (ii) mathematical, and (iii) computational. For each structure, we briefly mention the original model's construal, that is, how modellers understood the structure in question. We also briefly discuss their intepretation, or how modelers thought the models denoted the truthness of some target phenomenon. This is work in progress, but some subsection headers are link to a notebook containing the model's family.
-"
-
-# ╔═╡ 715cb946-521d-4607-b442-ff4b1e55ba85
-md"## Exponential growth
-"
-
-# ╔═╡ 44243aa8-3e3d-46fd-b23f-d5ed6a0a1af2
-load("./diagrams/exp-growth.png")
-
-# ╔═╡ c1a6c862-16ca-4970-a0d5-09c6c4f6c029
-md"
-
-The exponential growth is the quintessential rosetta (mathematical) model. It is broadly use because it is easily solved. This model is almost always cast in terms of population growth; bacterial, rabbits, human population, etc. Obviously, it is an idealized model. If not, the planet would be covered in rabbits.
-
-Using a discrete time interval $\Delta t$,
-
-$$P(t + \Delta t) = P(t) + r \Delta t \cdot P(t) \qquad (\text{Discrete})$$
-
-Or, as $\Delta t \rightarrow 0$,
-
-$$\frac{dP(t)}{dt} = r \cdot P(t) \qquad(\text{ODE})$$
-
-Solving the ODE, we get
-
-$$P(t) = P(0) \cdot e^{rt} \qquad (\text{General Solution})$$
-
-_refs:_
-- Otto and Day (2009), ch.2
-- Roughgarden (1998), pp.55-60
-- [Zobitz (2022) ch.1](https://jmzobitz.github.io/ModelingWithR/intro-01.html#fn1) 
-"
-
-# ╔═╡ 7015b624-c11b-4e5b-bd8c-155734ebc9ee
-n = @bind n Slider(0:16, default=0, show_value=true)
-
-# ╔═╡ a77d35a1-2d48-41d1-9a1a-210133c13674
-let 
-	# initial conditions (i.cs)
-	P₀ = 1 / 2
-	Tmax = 5.0
-	tspan = (0.0, Tmax)
-	r=1.01
-	n=4
-	# NUMERICAL
-	
-	f(u, p, t) = r * u
-	prob = ODEProblem(f, P₀, tspan)
-	num_sol = solve(prob)
-
-	# TIMESTEPPING 1: using difference equation as is
-
-	P_dot = P₀
-	res = [P_dot]
-	dt = 0.1
-	for t in 1:Int(Tmax/dt)
-		# P(n+1) = P(t) + rP(t)
-		# ΔP = P(t+1)-P(t) = rP(t)
-	    △P = dt*r*P_dot 
-	    P_dot += △P
-	    push!(res, P_dot)
-	end
-	
-	# TIMESTEPPING 2: solving reccurence equation
-	
-	# P(t+1) = N(t) + r N(t)
-	# P(t+1) = (1 + r) P(t)
-	# P(t) = (1 + r) P(t-1) = (1 + r)^2 P(t-2) = ... 
-	# P(t) = P₀ (1 + r)^t.
-	
-	P = [P₀ * (1 + r)^t for t in 0:Tmax]
-	
-	# ANALYTICAL - SPECIFIC SOLUTION
-	
-	p(t) = 0.5 * exp(r*t)
-
-	# Plotting
-	
-	plot(0:dt:Tmax, res, lw=2, marker=:circle, color="green", label="Euler Approximation (dt=0.1)")
-	plot!(num_sol, lw=2, color="orange", label="ODE Solver")
-	plot!(0:Tmax, P, marker=:circle, alpha=0.5, label="once daily", lw=2)
-	plot!(num_sol.t, t -> p(t), lw = 2, ls=:dash, label = "Analytical", color=:blue)
-	
-	# Bonus
-	# What if we have reproduction more than once a year, say n times as many times
-    # P(t + 1/n) = (1 + r/n) P(t)
-
-    # P(t + 1) = P(t) (1 + r/n)^n
-    # Hence
-    # P(t) = P₀ (1 + r/n)^{nt}
-
-	# In code
-	P = [P₀ * (1 + r/(2^n))^t for t in 0:(2^n)*Tmax]
-	plot!(0:(2.0^(-n)):Tmax, P, marker=:circle, alpha=0.5, label="$(2^n) times per day")
-
-end
-
-
-# ╔═╡ 6d3f5c87-226a-45c9-a26b-ec9babeac103
-md"## SI (logistic growth)"
-
-# ╔═╡ 65101a30-3659-45c8-b7d0-e8343dd0ce9a
-load("./diagrams/logistic-growth.png")
-
-# ╔═╡ 45bcdab5-1eb5-4533-9216-ef1581adcd9f
-md"
-As [Roughgarden](https://en.wikipedia.org/wiki/Joan_Roughgarden) says, it got'ta stop somewhere. The logistic growth is the exponential function in disguised, with some dependeny on the $P(t)$ getting closer to a carrying capacity. In ecology, population growth stops when it hits some environmental limits. When average birth/death rates per individual is a function of population size, we say that it is 'density-dependent population growth'. 
-
-In contagion, the carrying capacity is when you run out of sick people. When assuming a closed system, and a large enough population, we can get rid of one of the two boxes above. Indeed, the number of, say, susceptible individuals is the total population size minus the infected individuals. See [Smaldino 2023, ch.4.4](https://github.com/jstonge/2024Fall-MOCS/blob/main/docs/readings/Smaldino-2023-ch4.pdf) for a nice walkthrough of the procedure.
-
-The ODE in terms of population size is written
-
-$$\frac{dN(t)}{dt} = r \cdot \textcolor{green}{\left(1 - \frac{N(t)}{K}\right)} \cdot N(t)$$
-
-Where _K_ is often use for carrying capacity (in contagion example, it is our 	total population _N_). If we think in terms of recursion equation:
-
-$$N(t+1) = N(t) + r (K - N(t)) N(t)$$
-
-One way to write the solution is 
-
-$$N(t) = N(0)\frac{K}{N(0) + (K - N_0)e^{-rt}}$$
-
-
-_refs:_
- - Roughgarden 1998, pp.102-140
- - [Zobitz (2022) ch.1](https://jmzobitz.github.io/ModelingWithR/intro-01.html#fn1) 
-"
-
-# ╔═╡ ca611a2c-7b2c-47ba-a481-97c012ae451d
-let 
-	I₀ = 250
-	N0 = 13_600
-	k0 = 0.024
-	
-	# trying out modeling toolkit...numerical solution
-	
-	@mtkmodel L begin
-	    @parameters begin
-			N=N0
-			k=k0
-		end
-		
-		@variables begin
-			I(t)=I₀
-		end
-	    
-	    @equations begin
-	        D(I) ~  k * I * (1 - (I / N)) 
-	    end
-	end
-	
-	@mtkbuild logistic = L()
-		
-	Tmax = 600
-	tspan = (0.0, Tmax)
-	prob = ODEProblem(logistic, [], tspan,  [])
-	sol = solve(prob)
-
-	# analytic solution
-	
-	f(t) = (N0 * I₀) / (I₀ + (N0 - I₀) * exp(-k0 * t))
-	
-	# Plotting both solutions for comparison
-	plot(sol, lw=2, color="orange", label="Numerical Solution (ODE Solver)")	
-	plot!(sol.t, t -> f(t),  lw=2, ls=:dash, color="blue", 
-		  label="Analytical Solution")
-end
-
-
-# ╔═╡ a5a9a839-d268-4503-8305-1e9c1b3df262
-md"Following the [cosmo-notes](https://cosmo-notes.github.io/sos/chapters/discrete.html), here we look at the discrete composition approach of the logistic growth model. Instead of asking each animal if they are gonna reproducing, we ask _how many animals are reproducing within a generation_? As we are entering in the stochastic simulation realm, we look at multiple realizations of the process:"
-
-# ╔═╡ 60557554-6bf8-4cb6-822a-5bdbf7c12486
-let
-	# about timestepping
-	tmax=20
-	capacity=20
-	growth_rate=0.25
-	dt = 1.0/(growth_rate*capacity)
-	println("nb timesteps:$(Int(tmax/dt)); δt: $(dt)")
-end
-
-# ╔═╡ 03c73af0-cc42-445f-9eaa-6a3ee21120c9
-function logistic_sim(;N0, r, K, nb_sims)
-	
-	p = plot(title="Population Growth Over Time", xlabel="Time", 
-			 ylabel="Population", legend=false)
-
-	tmax = 20
-	dt = 0.1
-	for sim in 1:nb_sims
-	    population = N0
-	    history_comp = [population]
-	
-	    # For each generation (one way to do timestepping)
-	    for _ in 1:Int(tmax / dt)
-	        # Calculate and add the number of reproduction
-	        prob = r * (K - population) * dt
-	        if prob >= 0.0
-	            population += rand(Binomial(population, prob))
-	        end
-	
-	        # Update history
-	        push!(history_comp, population)
-	    end
-	
-	    # Plot time series
-	    plot!(dt .* collect(0:length(history_comp)-1), history_comp, marker=:o, 
-			  linestyle=:dash, color=:blue, alpha=0.5, label="")
-	end
-
-	hline!([K], ls=:dashdot, color=:red, label="Carrying capacity")
-	p
-end
-
-# ╔═╡ b1c84f63-e660-4869-95ef-7e93c68ebe40
-logistic_sim(N0=1, r=0.03, K=20, nb_sims=20.)
-
-# ╔═╡ f391d1a5-098a-48f2-8e6d-f965d99fe3e4
-md"## Birth-death processes"
-
-# ╔═╡ 8c1b8994-81d5-42bf-a8e6-1e73fc369828
-load("./diagrams/birth-death.png")
-
-# ╔═╡ ae60ba3c-a32d-443a-93c0-00eb9acda8c4
-md"Things flowing in and out of compartments, say molecules of coffee in liver or a given mouse population. The phenomenon of interest is the concentration of stuff in a compartment. Things are distinguished by whether they are in the compartment or not. Say that here we have an open system, meaning that we don't care where the stuff come from, and where they go next, we have:"
-
-# ╔═╡ 9b9cf8e1-1eab-45c2-9050-b509c5c60170
-md"We can write the following recursion equation (see [here](https://jstonge.github.io/2024Fall-MOCS/notebooks/all-the-models/reccurence-eqs.jl) for a more detailed derivation):
-
-$$N(t+1) = N(t) + (b-d)\Delta t N(t) + m\Delta t \\$$
-
-The continous version can be eyeballed
-
-$$\frac{dN(t)}{dt} = (b-d) N(t) + m$$
-"
-
-# ╔═╡ 4a1c661c-a65e-42dc-98eb-4665030986a6
-let 
-	# initial conditions (i.cs)
-	N₀ = 1 / 2
-	Tmax = 30.0
-	tspan = (0.0, Tmax)
-	m = 1/2 # inflow 
-	d = 1/2 # outflow
-	b = 1/4 # repro
-	
-	# TIMESTEPPING (Back to v1)
-
-	N_dot = N₀
-	res = [N_dot]
-	for t in 1:Tmax
-	    △N = (b-d)*N_dot + m
-	    N_dot += △N
-	    push!(res, N_dot)
-	end
-
-	plot(res, label="N")
-end
-
-
-# ╔═╡ 7560a130-1205-4cc9-a58f-d562dbeca77a
-md"## SIR
-
-_Same same, but different_
-
-For the SIR model, we show the myriads of ways that it can be written. We balance the pros and cons of each version.
-"
-
-# ╔═╡ f445a06d-269b-4977-945f-953f56440600
-load("./diagrams/sir.png")
-
-# ╔═╡ 7dc1eb5b-48f8-4bc0-8c7b-a84706e64b78
-md"
-
-The corresponding system of equations:
-
-$$\frac{dS(t)}{dt} =  \beta S(t)I(t)$$
-$$\frac{dI(t)}{dt} = \beta S(t) I(t) -\alpha I(t)$$
-$$\frac{dR(t)}{dt} = \alpha I(t)$$
-
-One way to write it in discrete time is with recursion equations:
-
-$$S(t+1) = S(t) - \beta S(t)I(t)$$
-$$I(t+1) = I(t) + \beta S(t)I(t) - \alpha I$$
-$$R(t+1) = R(t) + \alpha I$$
-
-Note that in the code below, they will magically become difference equations. Here, we are asking about the expected number of interactions between the S-I-R parts of our system. A second way to write the discrete SIR model is as follows:
-
-$$S(t+1) = S(t) - S(t)\Big [ (1-(1-\beta)^{I(t)}\Big ]$$
-$$I(t+1) = I(t) + S(t)\Big [ (1-(1-\beta)^{I(t)}\Big ] - \alpha I(t)$$
-$$R(t+1) = R(t) + \alpha I(t)$$
-
-This version makes simultaneous events impossible, as we are asking about the 'leftover' of the timesteps instead of the expected changes between parts. That is, we ask 'who remains' in, say, the susceptible box after substracting the proportion:
-"
-
-# ╔═╡ 2de1558b-4cf8-4076-97fd-2dd59308c537
-let
-	β = 0.00005
-	S, I = 9999, 1
-	prob_not_infected = (1-β)
-	println("prob not infected: $(prob_not_infected)")
-	println("who remains? $(S - S*(1 - prob_not_infected^I))")
-end
-
-# ╔═╡ 1a524fd2-d7c8-48d9-9c23-fac20886669d
-let 
-	# initialize
-	N, I₀, R₀ = 10000.0, 1., 0.
-	S₀ = N - I₀ - R₀
-	β = 1/15*5*1/N # transmission time per contact: 30days. contacts per day: 5
-	γ = 1/15  #recovery period: 15 days 
-
-	# Timestepping (again v1)
-	
-	S, I, R = S₀, I₀, R₀
-	res = [(S, I, R)]
-	for t in 1:182
-	    △S = -S*(1-(1 - β)^I)
-	    S += △S
-		△R = γ*I
-		
-		I += -△S - △R
-		R += △R
-		
-	    push!(res, (S, I, R))
-	end
-	
-	St, It, Rt = map(collect, zip(res...)) # small hack to unpack vars
-	
-	plot( St, label="Susceptible", xlabel="time", ylabel="# people", leg=:right, 
-		  marker=:rect, color=:lightgreen, opacity=0.5)
-	plot!(It, label="Infected",  marker=:o, color=:red)
-	plot!(Rt, label="Recovered", marker=:star, color=:blue, opacity=0.5)
-end
-
-# ╔═╡ 92e9bdd4-07e3-45fa-a6eb-906d2b7c2615
-function run_math_sir(steps, N, β, α)
-	# Initialization
-	I,R = 1, 0
-	S = N-I-R
-
-	# Observe
-	history = []
-	
-	# Update
-	for step=1:steps
-		next_S = S
-		next_I = I
-		next_R = R
-
-		# Version 2: better... calc the change in a mathematical model
-		
-		next_S -= S*(1-(1-β)^I)
-		next_I += S*(1-(1-β)^I)- α*I
-		next_R += α*I
-
-		S, I, R = next_S, next_I, next_R
-		push!(history, (S,I,R))
-	end
-		
-	St, It, Rt = map(collect, zip(history...)) # small hack to unpack vars
-	return (St, It, Rt)
-end	
-
-# ╔═╡ 06b8a636-bca6-4741-8a59-05e2e719b9a1
-function run_computational_sir(steps, N, β, α)
-		I,R = 1, 0
-		S = N-I-R
-
-		history = []
-		for step=1:steps
-			next_S = S
-			next_I = I
-			next_R = R
-
-			# simulate the change in a computational model!		
-
-			# Cheaper version
-			p_inf = 1-(1-β)^I
-			new_I = rand(Binomial(S, p_inf)) 
-			new_R = rand(Binomial(I, α))		
-			next_S -= new_I
-			next_I += new_I - new_R
-			next_R += new_R
-
-			# update variable
-			S, I, R = next_S, next_I, next_R
-			push!(history, (S,I,R))
-			
-			if I == 0
-				break
-			end
-		end
-		
-	St, It, Rt = map(collect, zip(history...)) # small hack to unpack vars
-	return (St, It, Rt)
-end	
-
-# ╔═╡ 2ecb83fe-d495-48ff-b23d-c2252f138879
-# β = @bind β Slider(0.00005:0.00001:1.1, show_value=true, default=0.00005)
-β = 0.00005
-
-# ╔═╡ 157f8455-88e1-4d5a-9582-de011e5ebc10
-# α = @bind α Slider(0.:0.01:1., show_value=true, default=0.33)
-α = 0.33
-
-# ╔═╡ d74fdf5d-0b69-4bba-8540-f9429160cbe8
-S_c,I_c,R_c  = run_computational_sir(100, 10_000, β, α)
-
-# ╔═╡ 6c6f3103-5a04-4b01-b8a1-05f64616a847
-S,I, R  = run_math_sir(100, 10_000, β, α)
-
-# ╔═╡ b32c7c4c-45c5-4bcc-a487-53efc3e2a347
+# ╔═╡ 7b578bb1-ce45-417a-82b2-504c1d1a3b41
 begin
-	plot( I,  label="infected", xlabel="time", ylabel="# people", 
-		  marker=:o, color=:red)
-	plot!(I_c, label="simulations", marker=:hexagon)
-	plot!(S, label="suceptible", marker=:rect, color=:lightgreen, opacity=0.5)
-	plot!(R, label="recovered", marker=:star, color=:blue, opacity=0.5)
-	title!("Discrete SIR (Maths vs Simulation)")
+	using Plots, PlutoUI, Roots
+ 	using DifferentialEquations
+	using ModelingToolkit: t_nounits as t, D_nounits as D
 end
 
-# ╔═╡ 43f5b10a-670d-11ef-1308-5ba25fe852bf
-md"## Lotka Volterra"
+# ╔═╡ 11fee4f8-6c55-11ef-266d-8b9f0f158ef2
+md"# Towards Hysteresis"
 
-# ╔═╡ a28b8392-0493-4861-a218-d4ed114511bc
-mosaic(
-	load("./diagrams/lotka-volterra-1.png"), 
-	load("./diagrams/lotka-volterra-2.png"), 
-	load("./diagrams/lotka-volterra-3.png"), 
-	nrow=1
-)
+# ╔═╡ b9932967-c1f4-4f9b-9b4f-de2100adc3dc
+md"### Cobweb plot
 
-# ╔═╡ 6f79705f-01c4-4580-8a0f-b1a21ec57e77
-md"
-The system of interest here is predator-prey relationship. The arrows are not about individuals being converted from one state to another; they are about converting predator into prey, as we are assuming that the predator birth rates is dependent on number of available prey. 
-
-Here we show equivalent ways to draw the diagrams. The leftmost diagram makes it clear that we 'convert' Lynx into Hares by drawing an arrow from L --> H. The middle diagram is more consistent with previous diagrams.  In both diagrams, we assume that rates are proportional to the compartments of origin.  The last one is more verbose, as we draw all the dependencies in the arrows.
-
-As with the exponential model, we are assuming that the the number of predators at the next time step depends on population size at previous time step.
-
-The system of ODEs is the following:
-
-$$\frac{dH(t)}{dt} = \alpha H(t) - \beta L(t)H(t)$$
-$$\frac{dL(t)}{dt} = -\gamma L(t) + \delta L(t)H(t)$$
-
-_refs_:
- - Roughgarden 1998, ch. 6
+> Typically used in iterative maps to show how an initial value evolves over time by alternating between the function and the line $y=x$, visually demonstrating convergence to a fixed point or periodic orbit. It traces the iteration step-by-step, connecting the points graphically. See [this video](https://www.youtube.com/watch?v=F4C-wavd8MA).
 "
 
-# ╔═╡ d90a1f6d-94eb-4b0e-a110-6673ba0d713f
-prey_repro_rate = @bind αlv Slider(0.5:0.01:1.5, default=2/3, show_value=true)
+# ╔═╡ 8d76f42d-7d5c-4c7c-abf5-0cc1cf66e79f
+md"### [May & Oster (1976)](http://155.101.98.133/~keener/classes/math5110/papers/may_oster.pdf)
 
-# ╔═╡ 40bca008-09c7-4c90-8270-8756dda676c6
-prey_death_rate = @bind βlv Slider(0.:0.01:1.5, default=4/3, show_value=true)
+$\Delta N = N(t) e^{r (1 - N(t))}$
+"
 
-# ╔═╡ a2be6ad3-5ea2-412c-8042-f073ee7b435c
-let 
-	# trying out modeling toolkit...
-	
-	@mtkmodel LV begin
-		@parameters  begin
-			α=2/3 
-			β=4/3
-			γ=1.0 
-			δ=1.0
-		end
-	
-		@variables  begin 
-			🦊(t)=1.4 
-			🐇(t)=2.2
-		end
-	    
-		@equations begin
-	        D(🐇) ~ α*🐇 - β*🐇*🦊
-			D(🦊) ~ -γ*🦊 + δ*🐇*🦊
-	    end
+# ╔═╡ b725d413-b725-4e1f-8039-ff048f8c7104
+r = @bind r Slider(0.01:0.01:5, show_value=true, default=2.61)
 
+# ╔═╡ 92eb1f58-353a-40f3-ba15-afb48f4bbedf
+let
+	function update_population(Nt, r)
+	    return Nt * exp(r * (1 - Nt))
 	end
-
-	@mtkbuild sys = LV(; α=αlv, β=βlv)
-	@mtkbuild sys2 = LV(; α=αlv, β=βlv, 🐇=0.4, 🦊 = 7.2)
 	
-	tspan = (0.0, 50.0)
+	# Find the equilibrium N* (solve for N when N(t+1) = N(t))
+	equilibrium = find_zero(N -> update_population(N, r) - N, 0.5) 
 	
-	# Simulate
-	prob = ODEProblem(sys, [], tspan)
-	sol = solve(prob)
+	# Initialize the population and time steps
+	N0 = 0.1
+	T = 50  
+	N = zeros(T)
+	N[1] = N0  	
+	# Simulate the population over time
+	for t in 1:T-1
+	    N[t+1] = update_population(N[t], r)
+	end
 	
-	# Simulate w/ different i.c
-	prob2 = ODEProblem(sys2, [], tspan)
-	sol2 = solve(prob2)
+	N_range = range(0, stop=maximum(N)+2, length=1000) # Range for N(t)
 
 	# Plotting
-	l = @layout [ [b ; c ] a{0.4w} ]
-	p1 = plot(sol, label=["hares" "fox"] )
-	p2 = plot(sol2, legend=false )
-	p3 = plot(sol, idxs = (1, 2), legend=false, color="grey")
-	plot!(sol2, idxs = (1, 2), legend=false, color="grey")
+
+	# y = x line
+	p1 = plot(N_range, N_range,  xlabel="N(t)", ylabel="N(t+1)", lw=2, label=false, 		  ylim=(0,maximum(N_range)), xlim=(0,maximum(N_range)), color=:grey, 
+			  ls=:dash) 
+
+	# function N(t+1)
+	plot!(N_range, update_population.(N_range, r), label="N(t+1) = f(N(t))",
+		  lw=2, color=:red) 
+
+	# equilibrium point
+	plot!([equilibrium], [equilibrium], seriestype=:scatter, 
+		   label="Equilibrium N*", color=:white, markershape = :star, ms=6)
 	
-	plot(p1, p2, p3, layout=l)
+	# Plot the cobweb steps
+	for t in 1:T-1
+	    plot!([N[t], N[t]], [N[t], N[t+1]], color=:black, label=false)  #vlines
+	    plot!([N[t], N[t+1]], [N[t+1], N[t+1]], color=:black, label=false)  #hlines
+	end
+
+	# iterative map plot (do not connect the dots)
+	p2 = scatter(N, label=false, color=:black)
+
+	plot(p1, p2, layout=(2,1))
 end
 
-# ╔═╡ 111fd244-22de-4585-9e01-dca011be3f30
+# ╔═╡ 41f56b48-dd48-40fd-ae7a-471fa3c7b7ce
 let 
-	# TIMESTEPPING
+	N0 = 0.1
+	r_values = range(0.1, stop=5.0, length=500)  # Range of r values
+	Tb = 100  # Number of time steps
+	last_T = 50  # Number of time steps to capture after transients have settled
 	
-	γ=1.0 
-	δ=1.0
-	
-	L₀ = 1.4 
-	H₀ = 2.2
-	
-	Tmax = 50.0
-	dt = .1
-	L_dot = L₀
-	H_dot = H₀
-	
-	res = [(L_dot, H_dot)]
-	
-	for t in 0:dt:(Tmax-dt)
-	    △L = dt * ( δ*L_dot*H_dot - γ*L_dot) 
-	    L_dot += △L
-		# Ordering matter! We should use previous approach
-	    △H = dt * ( αlv*H_dot - βlv*H_dot*L_dot) 
-	    H_dot += △H
-	    push!(res, (L_dot, H_dot))
+	function update_population(Nt, r)
+	    return Nt * exp(r * (1 - Nt))
 	end
 	
-	L, H = map(collect, zip(res...)) # small hack to unpack vars
+	# Prepare data for the bifurcation diagram
+	r_data = Float64[]
+	N_data = Float64[]
 	
-	plot(0:dt:Tmax, H, label="Hares", xlabel="time")
-	plot!(0:dt:Tmax, L, label="Lynx")
+	for rb in r_values
+	    Nb = N0
+	    # Iterate the population for T steps
+	    for t in 1:Tb
+	        Nb = update_population(Nb, rb)
+	        # After transient dynamics, store N for plotting
+	        if t > Tb - last_T
+	            push!(r_data, rb)
+	            push!(N_data, Nb)
+	        end
+	    end
+	end
+	
+ 	scatter(r_data, N_data, color = :black, ms = 1,
+			label="Bifurcation diagram", xlabel="r", 
+			ylabel="N", xlim=(0.1, 5.0), ylim=(0, 2), legend=false)
 end
 
-# ╔═╡ 776f7ecc-61ef-4c57-8a6d-5648e867422a
-md"---"
+# ╔═╡ d33beb81-7d9b-4bdb-9055-3194cc04597e
+md"### Model 2
 
-# ╔═╡ 22c92187-9e47-489f-9c60-963fdeb47c7e
-md"
-> #### Interlude: what are the parts? 
-> In the SIR model, the parts were the same people transitionning between states. In the Lotka-voltera model, the parts were interdependent populations of prey and predators. In pharmacokinetics, we had molecules coming in and out of an organ. In each case, the point particles within compartments were indistinguishable from each other; all susceptible people were the same, all foxes were the same, and all molecules were the same. 
+
+$$N(t+1) = \frac{\lambda N(t)}{1 + \exp[-A(1 - \frac{N(t)}{B})]}$$
+
+$$\Delta N = \frac{\lambda N(t)}{1 + \exp[-A(1 - \frac{N(t)}{B})]} - N(t)$$
+
 "
 
-# ╔═╡ 95062482-8f26-4620-96f3-a91a54da1076
-md"## Romeo and Juliet (with resistance)"
+# ╔═╡ 93cf4fd9-f316-431c-b3cc-c3d2aed59466
+λ = @bind λ Slider(0:0.1:5, show_value=true, default=1.5)
 
-# ╔═╡ 043ee371-3502-456a-b8a2-9835cb093e48
-load("./diagrams/romeo-juliet.png")
+# ╔═╡ f2b58da7-7e0d-4a28-8c97-c21bccd15219
+A = @bind A Slider(1.0:50.0, show_value=true, default=5.0)
 
-# ╔═╡ ffa76c36-48a7-4ce5-ace2-a7d874a2fcd9
-md"Romeo and Juliet is yet another way to think about what we mean by parts of a system. Here we have two people, and their love for each other. The more Juliet loves Romeo, the more he runs away and hides. But when Juliet gets discouraged and backs off, Romeo begins to find her strangely attractive. Moreover, Romeo is affected by his own feelings to her. Juliet, on the other hand, warms up when he loves her and grows cold when he does not."
+# ╔═╡ 1f5e28e7-08f0-4715-9003-fa5d2c6cf738
+B = @bind B Slider(10.0:150.0, show_value=true, default=100.0)
 
-# ╔═╡ eba5a0ea-740f-426c-8396-3e21ecc13a02
-love_friction = @bind μ Slider(-1:0.01:1, default=0, show_value=true)
-
-# ╔═╡ b82021b5-9da6-4d49-afb3-2f581a4afdfb
+# ╔═╡ 083f8145-95ae-48eb-a3d5-4ab2a19d8c7b
 let
-	function parameterized_RJ!(du, u, p, t)
-	    💚, 💙 = u
-	    α, β, μ = p
-	    du[1] = d💚 = α*💙
-	    du[2] = d💙 = μ*💙 + β*💚
+	# Initialize the population and time steps
+	N0 = 10.0  # initial population size
+	T = 50     # number of time steps
+	N = zeros(T)  # array to store population at each time step
+	N[1] = N0     # initial condition
+	
+	# Define the population equation
+	function update_population(Nt, λ, A, B)
+	    return λ * Nt / (1 + exp(-A * (1 - Nt / B)))
 	end
 
-	tspan = (0.0, 50.0)
-	α, β = 1, -0.5
-0.5
-	p = [α, β, μ]
+	# Find N* numerically
+	equilibrium = find_zero(N -> update_population(N, λ, A, B) - N, B)  
+	
+	# Create the identity line (y = x)
+	N_range = range(0, stop=150, length=100)
+	
+	# Simulate the population over time
+	for t in 1:T-1
+	    N[t+1] = update_population(N[t], λ, A, B)
+	end
+	
+	# Plot the cobweb diagram
+	p1 = plot(N_range, N_range, label="y = x", xlabel="N(t)", ylabel="N(t+1)", lw=2)  # y = x line
+	plot!(N_range, update_population.(N_range, λ, A, B), label="N(t+1) = f(N(t))", lw=2)  # function N(t+1)
+	
+	# Plot the cobweb steps
+	for t in 1:T-1
+	    plot!([N[t], N[t]], [N[t], N[t+1]], color=:black, lw=1, label=false) 
+	    plot!([N[t], N[t+1]], [N[t+1], N[t+1]], color=:black, lw=1, label=false)
+	end
 
-	u0 = [0, 0.5]
-	prob = ODEProblem(parameterized_RJ!, u0, tspan, p)
-	sol = solve(prob)
-	
-	# Time plots
-	p1 = plot(sol, label=["Juliet" "Romeo"], color=["green" "blue"] )
-	
-	# Phase space
-	p2 = plot(sol, idxs = (1, 2), legend=false, color="grey") 
-	scatter!((u0[1],u0[2])) # plotting i.c.
+	plot!([equilibrium], [equilibrium], seriestype=:scatter, label="Equilibrium N*", color=:white, markershape = :star, ms=6)
+
+	p2 = scatter(N, label=false, color=:black)
 	
 	plot(p1, p2, layout=(2,1))
 end
 
-# ╔═╡ 696782a9-47ac-4401-898c-6cc8556086e0
-md"## [Pendulum](https://jstonge.github.io/2024Fall-MOCS/notebooks/all-the-models/pendulum.jl)
-_see [Observable notebook](https://observablehq.com/@mocs/double-trouble-phase-space) for real interactivity; click on the subsection for the family_
+# ╔═╡ b49a8d8d-2bb7-4e4c-8f28-a83198e91a82
+md"### [May 1976](https://www.nature.com/articles/269471a0)"
 
-
-The ODE for the damped pendulum is:
-
-$$\frac{d^2\theta(t)}{dt^2}+\frac{\nu}{m}\frac{d\theta(t)}{dt}+\frac{g}{l}\sin(\theta(t)) = 0$$
-
-If oscillations are small, then $\sin(\theta) \approx \theta$, and we end up with a second-order ODE of the form
-
-$$\frac{d^2x(t)}{dt^2} + a\frac{dx(t)}{dt} + bx(t) = 0$$
-
-which is the general equation describing the motion of a damped harmonic oscillator ($a = \nu/m$ and $b = g/l$).
-"
-
-# ╔═╡ f3759ec6-e4b1-4b32-9494-501975a1a347
-let
-	# borrowed from 3b1b
-    l = 2.0                             # bob length [m]
-	m = 1.0                             # bob mass [kg]
-	ν = 0.1                             # friction coefficient [kg/s]
-	g = 9.81                            # gravitational acceleration [m/s²]
+# ╔═╡ dfb1e4b1-6fc9-48ee-b9bc-6b29e6e6ddbc
+let 
+	G(V) = V^2 - 2*V + 1
+	Hc(V) = 0.5 * V
 	
-    θ₀, θ_dot₀ = 0.,  0.1
-	
-    T = 50.
-    δt = 0.01 #timestep
-
-    # Definition of ODE
-	get_θ_dotdot(θ, θ_dot) = -(ν/m) * θ_dot - (g/l) * sin(θ)
-
-	# Solution to the differential equation
-    function simulate_pendulum(T, δt, θ₀, θ_dot₀)
-        # initialize value
-		θ = θ₀
-        θ_dot = θ_dot₀
-        res = [(θ, θ_dot)]
-        
-        for _ in 1:((T/δt) - 1)
-            θ_dotdot = get_θ_dotdot(θ, θ_dot)
-            θ += θ_dot * δt
-            θ_dot += θ_dotdot * δt
-            push!(res, (θ, θ_dot))
-        end
-        
-        return res
-    end
-    
-	plot(simulate_pendulum(T, δt, θ₀, θ_dot₀), 
-		 xlabel="θ", ylabel="dθ/dt", label=:none,
-		 title="Phase Space Plot")
-	
-end
-
-# ╔═╡ f4227cc1-5b67-447e-81b7-c5e5b58c7def
-md"From `DifferentialEquations.jl` documentation, we can also look at the dynamics with some torque"
-
-# ╔═╡ 75eeffe3-78ab-4cc7-9528-89040533ef32
-let
-	l = 2.0                             # bob length [m]
-	m = 1.0                             # bob mass [kg]
-	ν = 0.5                             # friction coefficient [kg/s]
-	g = 9.81                            # gravitational acceleration [m/s²]
-
-	θ₀ = 0.01                           # initial angular deflection [rad]
-	ω₀ = 0.0                            # initial angular velocity [rad/s]
-	u₀ = [θ₀, ω₀]                       # initial state vector
-	tspan = (0.0, 50.0)                 # time interval
-	
-	function pendulum!(du, u, p, t)
-		du[1] = u[2] # θ'(t) = ω(t)     
-	    du[2] = - (ν/m) * u[2] - (g/l) * sin(u[1]) + M(t)  # ω'(t) = - (ν/m)ω'(t) -g/l sin θ(t) + M(t)
+	function grazing!(du, u, p, t)
+	    V = u[1]
+	    du[1] = G(V) - Hc(V)
 	end
 	
-	M = t -> 0.01sin(t)                  # external torque [Nm]
+	V0 = [0.0]  # Initial condition for V
+	tspan = (0.0, 10.0)  # Time span for the solution
 	
-	prob = ODEProblem(pendulum!, u₀, tspan, M)
+	prob = ODEProblem(grazing!, V0, tspan)
 	sol = solve(prob)
 	
-	plot(sol, linewidth = 2, xaxis = "t", label = ["θ [rad]" "ω [rad/s]"], 
-		 layout = (2, 1))
+	plot(sol, xlabel="Time", ylabel="V(t)", title="Solution of dV/dt = G(V) - Hc(V)")
 end
-
-
-# ╔═╡ 76bdf271-cf59-4809-ae21-73cb00d96a68
-md"## Lorenz
-"
-
-# ╔═╡ 55cd4f50-5872-43a5-9f5a-c05794f9cd91
-let
-	function parameterized_lorenz!(du, u, p, t)
-	    x, y, z = u
-	    σ, ρ, β = p
-	    du[1] = dx = σ * (y - x)
-	    du[2] = dy = x * (ρ - z) - y
-	    du[3] = dz = x * y - β * z
-	end
-
-	u0 = [1.0, 0.0, 0.0]
-	tspan = (0.0, 100.0)
-	p = [10.0, 28.0, 8 / 3]
-	prob = ODEProblem(parameterized_lorenz!, u0, tspan, p)
-	sol = solve(prob)
-	plot(sol, idxs = (1, 2, 3))
-	
-end
-
-# ╔═╡ 85470136-f58b-4766-9073-aaaed705633b
-md"## Heat equation
-
-The heat equation is the quintessential example of a partial differential equations (PDEs).
-
-$$\frac{\partial u}{\partial t} = \frac{\partial^2 u}{\partial x^2}$$
-
-It contains time _t_ and space _x_ as independent variables.
-"
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
 [deps]
 DifferentialEquations = "0c46a032-eb83-5123-abaf-570d42b7fbaa"
-Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
-FileIO = "5789e2e9-d7fb-5bc7-8068-2c6fae9b9549"
-ImageCore = "a09fc81d-aa75-5fe9-8630-4744c3626534"
-ImageIO = "82e4d734-157c-48bb-816b-45c225c6df19"
-ImageShow = "4e3cecfd-b093-5904-9786-8bbb286a6a31"
 ModelingToolkit = "961ee093-0014-501f-94e3-6117800e7a78"
 Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
 PlutoUI = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
+Roots = "f2b01f46-fcfa-551c-844a-d8ac1e96c665"
 
 [compat]
 DifferentialEquations = "~7.13.0"
-Distributions = "~0.25.111"
-FileIO = "~1.16.3"
-ImageCore = "~0.9.4"
-ImageIO = "~0.6.8"
-ImageShow = "~0.3.8"
 ModelingToolkit = "~9.34.0"
 Plots = "~1.40.8"
 PlutoUI = "~0.7.60"
+Roots = "~2.1.7"
 """
 
 # ╔═╡ 00000000-0000-0000-0000-000000000002
@@ -760,7 +224,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.10.5"
 manifest_format = "2.0"
-project_hash = "ac3ea38543d9a931c94ab985218d74c98bb4e98d"
+project_hash = "c3ac81115995427731879c1c722d8ebf38b358c5"
 
 [[deps.ADTypes]]
 git-tree-sha1 = "99a6f5d0ce1c7c6afdb759daa30226f71c54f6b0"
@@ -771,17 +235,6 @@ weakdeps = ["ChainRulesCore", "EnzymeCore"]
     [deps.ADTypes.extensions]
     ADTypesChainRulesCoreExt = "ChainRulesCore"
     ADTypesEnzymeCoreExt = "EnzymeCore"
-
-[[deps.AbstractFFTs]]
-deps = ["LinearAlgebra"]
-git-tree-sha1 = "d92ad398961a3ed262d8bf04a1a2b8340f915fef"
-uuid = "621f4979-c628-5d54-868e-fcf4e3e8185c"
-version = "1.5.0"
-weakdeps = ["ChainRulesCore", "Test"]
-
-    [deps.AbstractFFTs.extensions]
-    AbstractFFTsChainRulesCoreExt = "ChainRulesCore"
-    AbstractFFTsTestExt = "Test"
 
 [[deps.AbstractPlutoDingetjes]]
 deps = ["Pkg"]
@@ -883,12 +336,6 @@ weakdeps = ["SparseArrays"]
 
 [[deps.Artifacts]]
 uuid = "56f22d72-fd6d-98f1-02f0-08ddc0907c33"
-
-[[deps.AxisArrays]]
-deps = ["Dates", "IntervalSets", "IterTools", "RangeArrays"]
-git-tree-sha1 = "16351be62963a67ac4083f748fdb3cca58bfd52f"
-uuid = "39de3d68-74b9-583c-8d2d-e117c070f3a9"
-version = "0.4.7"
 
 [[deps.BandedMatrices]]
 deps = ["ArrayLayouts", "FillArrays", "LinearAlgebra", "PrecompileTools"]
@@ -1005,10 +452,14 @@ uuid = "3da002f7-5984-5a60-b8a6-cbb66c0b333f"
 version = "0.11.5"
 
 [[deps.ColorVectorSpace]]
-deps = ["ColorTypes", "FixedPointNumbers", "LinearAlgebra", "SpecialFunctions", "Statistics", "TensorCore"]
-git-tree-sha1 = "600cc5508d66b78aae350f7accdb58763ac18589"
+deps = ["ColorTypes", "FixedPointNumbers", "LinearAlgebra", "Requires", "Statistics", "TensorCore"]
+git-tree-sha1 = "a1f44953f2382ebb937d60dafbe2deea4bd23249"
 uuid = "c3611d14-8923-5661-9e6a-0046d554d3a4"
-version = "0.9.10"
+version = "0.10.0"
+weakdeps = ["SpecialFunctions"]
+
+    [deps.ColorVectorSpace.extensions]
+    SpecialFunctionsExt = "SpecialFunctions"
 
 [[deps.Colors]]
 deps = ["ColorTypes", "FixedPointNumbers", "Reexport"]
@@ -1417,12 +868,6 @@ git-tree-sha1 = "cbf5edddb61a43669710cbc2241bc08b36d9e660"
 uuid = "29a986be-02c6-4525-aec4-84b980013641"
 version = "2.0.4"
 
-[[deps.FileIO]]
-deps = ["Pkg", "Requires", "UUIDs"]
-git-tree-sha1 = "82d8afa92ecf4b52d78d869f038ebfb881267322"
-uuid = "5789e2e9-d7fb-5bc7-8068-2c6fae9b9549"
-version = "1.16.3"
-
 [[deps.FileWatching]]
 uuid = "7b1f6079-737a-58dc-b8bc-7a2ca5c1b5ee"
 
@@ -1566,12 +1011,6 @@ git-tree-sha1 = "97285bbd5230dd766e9ef6749b80fc617126d496"
 uuid = "c27321d9-0574-5035-807b-f59d2c89b15c"
 version = "1.3.1"
 
-[[deps.Graphics]]
-deps = ["Colors", "LinearAlgebra", "NaNMath"]
-git-tree-sha1 = "d61890399bc535850c4bf08e4e0d3a7ad0f21cbd"
-uuid = "a2bd30eb-e257-5431-a919-1863eab51364"
-version = "1.1.2"
-
 [[deps.Graphite2_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
 git-tree-sha1 = "344bf40dcab1073aca04aa0df4fb092f920e4011"
@@ -1636,53 +1075,6 @@ git-tree-sha1 = "debdd00ffef04665ccbb3e150747a77560e8fad1"
 uuid = "615f187c-cbe4-4ef1-ba3b-2fcf58d6d173"
 version = "0.1.1"
 
-[[deps.ImageAxes]]
-deps = ["AxisArrays", "ImageBase", "ImageCore", "Reexport", "SimpleTraits"]
-git-tree-sha1 = "2e4520d67b0cef90865b3ef727594d2a58e0e1f8"
-uuid = "2803e5a7-5153-5ecf-9a86-9b4c37f5f5ac"
-version = "0.6.11"
-
-[[deps.ImageBase]]
-deps = ["ImageCore", "Reexport"]
-git-tree-sha1 = "b51bb8cae22c66d0f6357e3bcb6363145ef20835"
-uuid = "c817782e-172a-44cc-b673-b171935fbb9e"
-version = "0.1.5"
-
-[[deps.ImageCore]]
-deps = ["AbstractFFTs", "ColorVectorSpace", "Colors", "FixedPointNumbers", "Graphics", "MappedArrays", "MosaicViews", "OffsetArrays", "PaddedViews", "Reexport"]
-git-tree-sha1 = "acf614720ef026d38400b3817614c45882d75500"
-uuid = "a09fc81d-aa75-5fe9-8630-4744c3626534"
-version = "0.9.4"
-
-[[deps.ImageIO]]
-deps = ["FileIO", "IndirectArrays", "JpegTurbo", "LazyModules", "Netpbm", "OpenEXR", "PNGFiles", "QOI", "Sixel", "TiffImages", "UUIDs"]
-git-tree-sha1 = "437abb322a41d527c197fa800455f79d414f0a3c"
-uuid = "82e4d734-157c-48bb-816b-45c225c6df19"
-version = "0.6.8"
-
-[[deps.ImageMetadata]]
-deps = ["AxisArrays", "ImageAxes", "ImageBase", "ImageCore"]
-git-tree-sha1 = "355e2b974f2e3212a75dfb60519de21361ad3cb7"
-uuid = "bc367c6b-8a6b-528e-b4bd-a4b897500b49"
-version = "0.9.9"
-
-[[deps.ImageShow]]
-deps = ["Base64", "ColorSchemes", "FileIO", "ImageBase", "ImageCore", "OffsetArrays", "StackViews"]
-git-tree-sha1 = "3b5344bcdbdc11ad58f3b1956709b5b9345355de"
-uuid = "4e3cecfd-b093-5904-9786-8bbb286a6a31"
-version = "0.3.8"
-
-[[deps.Imath_jll]]
-deps = ["Artifacts", "JLLWrappers", "Libdl"]
-git-tree-sha1 = "0936ba688c6d201805a83da835b55c61a180db52"
-uuid = "905a6f67-0a94-5f89-b386-d35d92009cd1"
-version = "3.1.11+0"
-
-[[deps.IndirectArrays]]
-git-tree-sha1 = "012e604e1c7458645cb8b436f8fba789a51b257f"
-uuid = "9b13fd28-a010-5f03-acff-a1bbcff69959"
-version = "1.0.0"
-
 [[deps.Inflate]]
 git-tree-sha1 = "d1b1b796e47d94588b3757fe84fbf65a5ec4a80d"
 uuid = "d25df0c9-e2be-5dd7-82c8-3ad0b3e990b9"
@@ -1729,11 +1121,6 @@ git-tree-sha1 = "630b497eafcc20001bba38a4651b327dcfc491d2"
 uuid = "92d709cd-6900-40b7-9082-c6be49f344b6"
 version = "0.2.2"
 
-[[deps.IterTools]]
-git-tree-sha1 = "42d5f897009e7ff2cf88db414a389e5ed1bdd023"
-uuid = "c8e1da08-722c-5040-9ed9-7db0dc04731e"
-version = "1.10.0"
-
 [[deps.IteratorInterfaceExtensions]]
 git-tree-sha1 = "a3f24677c21f5bbe9d2a714f95dcd58337fb2856"
 uuid = "82899510-4779-5014-852e-03e436cf321d"
@@ -1756,12 +1143,6 @@ deps = ["Dates", "Mmap", "Parsers", "Unicode"]
 git-tree-sha1 = "31e996f0a15c7b280ba9f76636b3ff9e2ae58c9a"
 uuid = "682c06a0-de6a-54ab-a142-c8b1cf79cde6"
 version = "0.21.4"
-
-[[deps.JpegTurbo]]
-deps = ["CEnum", "FileIO", "ImageCore", "JpegTurbo_jll", "TOML"]
-git-tree-sha1 = "fa6d0bcff8583bac20f1ffa708c3913ca605c611"
-uuid = "b835a17e-a41a-41e7-81f0-2f016b05efe0"
-version = "0.1.5"
 
 [[deps.JpegTurbo_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
@@ -1871,11 +1252,6 @@ version = "2.2.0"
 [[deps.LazyArtifacts]]
 deps = ["Artifacts", "Pkg"]
 uuid = "4af54fe1-eca0-43a8-85a7-787d91b784e3"
-
-[[deps.LazyModules]]
-git-tree-sha1 = "a560dd966b386ac9ae60bdd3a3d3a326062d3c3e"
-uuid = "8cdb02fc-e678-4876-92c5-9defec4f444e"
-version = "0.3.1"
 
 [[deps.LevyArea]]
 deps = ["LinearAlgebra", "Random", "SpecialFunctions"]
@@ -2068,11 +1444,6 @@ git-tree-sha1 = "bcaef4fc7a0cfe2cba636d84cda54b5e4e4ca3cd"
 uuid = "d125e4d3-2237-4719-b19c-fa641b8a4667"
 version = "0.1.8"
 
-[[deps.MappedArrays]]
-git-tree-sha1 = "2dab0221fe2b0f2cb6754eaa743cc266339f527e"
-uuid = "dbb5928d-eab1-5f90-85c2-b9b0edb7c900"
-version = "0.4.2"
-
 [[deps.Markdown]]
 deps = ["Base64"]
 uuid = "d6f4376e-aef5-505a-96c1-9c027394607a"
@@ -2140,12 +1511,6 @@ version = "9.34.0"
     DeepDiffs = "ab62b9b5-e342-54a8-a765-a90f495de1a6"
     LabelledArrays = "2ee39098-c373-598a-b85f-a56591580800"
 
-[[deps.MosaicViews]]
-deps = ["MappedArrays", "OffsetArrays", "PaddedViews", "StackViews"]
-git-tree-sha1 = "7b86a5d4d70a9f5cdf2dacb3cbe6d251d1a61dbe"
-uuid = "e94cdb99-869f-56ef-bcf0-1ae2bcbe0389"
-version = "0.3.4"
-
 [[deps.MozillaCACerts_jll]]
 uuid = "14a3606d-f60d-562e-9121-12d972cd8159"
 version = "2023.1.10"
@@ -2184,12 +1549,6 @@ deps = ["OpenLibm_jll"]
 git-tree-sha1 = "0877504529a3e5c3343c6f8b4c0381e57e4387e4"
 uuid = "77ba4419-2d1f-58cd-9bb1-8ffee604a2e3"
 version = "1.0.2"
-
-[[deps.Netpbm]]
-deps = ["FileIO", "ImageCore", "ImageMetadata"]
-git-tree-sha1 = "d92b107dbb887293622df7697a2223f9f8176fcd"
-uuid = "f09324ee-3d7c-5217-9330-fc30815ba969"
-version = "1.1.1"
 
 [[deps.NetworkOptions]]
 uuid = "ca575930-c2e3-43a9-ace4-1e988b2c1908"
@@ -2246,18 +1605,6 @@ version = "1.3.5+1"
 deps = ["Artifacts", "CompilerSupportLibraries_jll", "Libdl"]
 uuid = "4536629a-c528-5b80-bd46-f80d51c5b363"
 version = "0.3.23+4"
-
-[[deps.OpenEXR]]
-deps = ["Colors", "FileIO", "OpenEXR_jll"]
-git-tree-sha1 = "327f53360fdb54df7ecd01e96ef1983536d1e633"
-uuid = "52e1d378-f018-4a11-a4be-720524705ac7"
-version = "0.3.2"
-
-[[deps.OpenEXR_jll]]
-deps = ["Artifacts", "Imath_jll", "JLLWrappers", "Libdl", "Zlib_jll"]
-git-tree-sha1 = "8292dd5c8a38257111ada2174000a33745b06d4e"
-uuid = "18a262bb-aa17-5467-a713-aee519bc75cb"
-version = "3.2.4+0"
 
 [[deps.OpenLibm_jll]]
 deps = ["Artifacts", "Libdl"]
@@ -2506,23 +1853,11 @@ git-tree-sha1 = "949347156c25054de2db3b166c52ac4728cbad65"
 uuid = "90014a1f-27ba-587c-ab20-58faa44d9150"
 version = "0.11.31"
 
-[[deps.PNGFiles]]
-deps = ["Base64", "CEnum", "ImageCore", "IndirectArrays", "OffsetArrays", "libpng_jll"]
-git-tree-sha1 = "67186a2bc9a90f9f85ff3cc8277868961fb57cbd"
-uuid = "f57f5aa1-a3ce-4bc8-8ab9-96f992907883"
-version = "0.4.3"
-
 [[deps.PackageExtensionCompat]]
 git-tree-sha1 = "fb28e33b8a95c4cee25ce296c817d89cc2e53518"
 uuid = "65ce6f38-6b18-4e1d-a461-8949797d7930"
 version = "1.0.2"
 weakdeps = ["Requires", "TOML"]
-
-[[deps.PaddedViews]]
-deps = ["OffsetArrays"]
-git-tree-sha1 = "0fac6313486baae819364c52b4f483450a9d793f"
-uuid = "5432bcbf-9aad-5242-b902-cca2824c8663"
-version = "0.5.12"
 
 [[deps.Pango_jll]]
 deps = ["Artifacts", "Cairo_jll", "Fontconfig_jll", "FreeType2_jll", "FriBidi_jll", "Glib_jll", "HarfBuzz_jll", "JLLWrappers", "Libdl"]
@@ -2557,12 +1892,6 @@ version = "0.43.4+0"
 deps = ["Artifacts", "Dates", "Downloads", "FileWatching", "LibGit2", "Libdl", "Logging", "Markdown", "Printf", "REPL", "Random", "SHA", "Serialization", "TOML", "Tar", "UUIDs", "p7zip_jll"]
 uuid = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
 version = "1.10.0"
-
-[[deps.PkgVersion]]
-deps = ["Pkg"]
-git-tree-sha1 = "f9501cc0430a26bc3d156ae1b5b0c1b47af4d6da"
-uuid = "eebad327-c553-4316-9ea0-9fa01ccd7688"
-version = "0.3.3"
 
 [[deps.PlotThemes]]
 deps = ["PlotUtils", "Statistics"]
@@ -2660,22 +1989,10 @@ version = "0.5.6"
 deps = ["Unicode"]
 uuid = "de0858da-6303-5e67-8744-51eddeeeb8d7"
 
-[[deps.ProgressMeter]]
-deps = ["Distributed", "Printf"]
-git-tree-sha1 = "8f6bc219586aef8baf0ff9a5fe16ee9c70cb65e4"
-uuid = "92933f4c-e287-5a05-a399-4b506db050ca"
-version = "1.10.2"
-
 [[deps.PtrArrays]]
 git-tree-sha1 = "77a42d78b6a92df47ab37e177b2deac405e1c88f"
 uuid = "43287f4e-b6f4-7ad1-bb20-aadabca52c3d"
 version = "1.2.1"
-
-[[deps.QOI]]
-deps = ["ColorTypes", "FileIO", "FixedPointNumbers"]
-git-tree-sha1 = "18e8f4d1426e965c7b532ddd260599e1510d26ce"
-uuid = "4b34888f-f399-49d4-9bb3-47ed5cae4e65"
-version = "1.0.0"
 
 [[deps.Qt6Base_jll]]
 deps = ["Artifacts", "CompilerSupportLibraries_jll", "Fontconfig_jll", "Glib_jll", "JLLWrappers", "Libdl", "Libglvnd_jll", "OpenSSL_jll", "Vulkan_Loader_jll", "Xorg_libSM_jll", "Xorg_libXext_jll", "Xorg_libXrender_jll", "Xorg_libxcb_jll", "Xorg_xcb_util_cursor_jll", "Xorg_xcb_util_image_jll", "Xorg_xcb_util_keysyms_jll", "Xorg_xcb_util_renderutil_jll", "Xorg_xcb_util_wm_jll", "Zlib_jll", "libinput_jll", "xkbcommon_jll"]
@@ -2732,11 +2049,6 @@ deps = ["Random"]
 git-tree-sha1 = "c6ec94d2aaba1ab2ff983052cf6a606ca5985902"
 uuid = "e6cf234a-135c-5ec9-84dd-332b85af5143"
 version = "1.6.0"
-
-[[deps.RangeArrays]]
-git-tree-sha1 = "b9039e93773ddcfc828f12aadf7115b4b4d225f5"
-uuid = "b3c3ace0-ae52-54e7-9d0b-2c1406fd6b9d"
-version = "0.3.2"
 
 [[deps.RecipesBase]]
 deps = ["PrecompileTools"]
@@ -2817,6 +2129,24 @@ git-tree-sha1 = "e60724fd3beea548353984dc61c943ecddb0e29a"
 uuid = "f50d1b31-88e8-58de-be2c-1cc44531875f"
 version = "0.4.3+0"
 
+[[deps.Roots]]
+deps = ["Accessors", "ChainRulesCore", "CommonSolve", "Printf"]
+git-tree-sha1 = "12e0a0e549c8545db615a2ec48664d56e1aad44d"
+uuid = "f2b01f46-fcfa-551c-844a-d8ac1e96c665"
+version = "2.1.7"
+
+    [deps.Roots.extensions]
+    RootsForwardDiffExt = "ForwardDiff"
+    RootsIntervalRootFindingExt = "IntervalRootFinding"
+    RootsSymPyExt = "SymPy"
+    RootsSymPyPythonCallExt = "SymPyPythonCall"
+
+    [deps.Roots.weakdeps]
+    ForwardDiff = "f6369f11-7733-5829-9624-2563aa707210"
+    IntervalRootFinding = "d2bf35a9-74e0-55ec-b149-d360ff49b807"
+    SymPy = "24249f21-da20-56a4-8eb1-6a02cf4ae2e6"
+    SymPyPythonCall = "bc8888f7-b21e-4b7c-a06a-5d9c9496438c"
+
 [[deps.RuntimeGeneratedFunctions]]
 deps = ["ExprTools", "SHA", "Serialization"]
 git-tree-sha1 = "04c968137612c4a5629fa531334bb81ad5680f00"
@@ -2826,12 +2156,6 @@ version = "0.5.13"
 [[deps.SHA]]
 uuid = "ea8e919c-243c-51af-8825-aaa63cd721ce"
 version = "0.7.0"
-
-[[deps.SIMD]]
-deps = ["PrecompileTools"]
-git-tree-sha1 = "2803cab51702db743f3fda07dd1745aadfbf43bd"
-uuid = "fdea26ae-647d-5447-a871-4b548cad5224"
-version = "3.5.0"
 
 [[deps.SIMDTypes]]
 git-tree-sha1 = "330289636fb8107c5f32088d2741e9fd7a061a5c"
@@ -2945,12 +2269,6 @@ git-tree-sha1 = "58e6353e72cde29b90a69527e56df1b5c3d8c437"
 uuid = "ce78b400-467f-4804-87d8-8f486da07d0a"
 version = "1.1.0"
 
-[[deps.Sixel]]
-deps = ["Dates", "FileIO", "ImageCore", "IndirectArrays", "OffsetArrays", "REPL", "libsixel_jll"]
-git-tree-sha1 = "2da10356e31327c7096832eb9cd86307a50b1eb6"
-uuid = "45858cf5-a6b0-47a3-bbea-62219f50df47"
-version = "0.1.3"
-
 [[deps.Sockets]]
 uuid = "6462fe0b-24de-5631-8697-dd941f90decc"
 
@@ -3006,12 +2324,6 @@ weakdeps = ["ChainRulesCore"]
 
     [deps.SpecialFunctions.extensions]
     SpecialFunctionsChainRulesCoreExt = "ChainRulesCore"
-
-[[deps.StackViews]]
-deps = ["OffsetArrays"]
-git-tree-sha1 = "46e589465204cd0c08b4bd97385e4fa79a0c770c"
-uuid = "cae243ae-269e-4f55-b966-ac2d0dc13c15"
-version = "0.1.1"
 
 [[deps.Static]]
 deps = ["CommonWorldInvalidations", "IfElse", "PrecompileTools"]
@@ -3203,12 +2515,6 @@ deps = ["ManualMemory"]
 git-tree-sha1 = "eda08f7e9818eb53661b3deb74e3159460dfbc27"
 uuid = "8290d209-cae3-49c0-8002-c8c24d57dab5"
 version = "0.5.2"
-
-[[deps.TiffImages]]
-deps = ["ColorTypes", "DataStructures", "DocStringExtensions", "FileIO", "FixedPointNumbers", "IndirectArrays", "Inflate", "Mmap", "OffsetArrays", "PkgVersion", "ProgressMeter", "SIMD", "UUIDs"]
-git-tree-sha1 = "bc7fd5c91041f44636b2c134041f7e5263ce58ae"
-uuid = "731e570b-9d59-4bfa-96dc-6df516fadf69"
-version = "0.10.0"
 
 [[deps.TimerOutputs]]
 deps = ["ExprTools", "Printf"]
@@ -3562,12 +2868,6 @@ git-tree-sha1 = "d7015d2e18a5fd9a4f47de711837e980519781a4"
 uuid = "b53b4c65-9356-5827-b1ea-8c7a1a84506f"
 version = "1.6.43+1"
 
-[[deps.libsixel_jll]]
-deps = ["Artifacts", "JLLWrappers", "JpegTurbo_jll", "Libdl", "Pkg", "libpng_jll"]
-git-tree-sha1 = "d4f63314c8aa1e48cd22aa0c17ed76cd1ae48c3c"
-uuid = "075b6546-f08a-558a-be8f-8157d0f608a5"
-version = "1.10.3+0"
-
 [[deps.libvorbis_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Ogg_jll", "Pkg"]
 git-tree-sha1 = "490376214c4721cdaca654041f635213c6165cb3"
@@ -3616,58 +2916,19 @@ version = "1.4.1+1"
 """
 
 # ╔═╡ Cell order:
-# ╠═0828dafd-9a61-4346-90fa-0d09b9a2a198
-# ╟─bea36c11-da70-4997-98ee-5ffc9f30c528
-# ╟─715cb946-521d-4607-b442-ff4b1e55ba85
-# ╟─44243aa8-3e3d-46fd-b23f-d5ed6a0a1af2
-# ╟─c1a6c862-16ca-4970-a0d5-09c6c4f6c029
-# ╟─7015b624-c11b-4e5b-bd8c-155734ebc9ee
-# ╠═a77d35a1-2d48-41d1-9a1a-210133c13674
-# ╟─6d3f5c87-226a-45c9-a26b-ec9babeac103
-# ╟─65101a30-3659-45c8-b7d0-e8343dd0ce9a
-# ╟─45bcdab5-1eb5-4533-9216-ef1581adcd9f
-# ╠═ca611a2c-7b2c-47ba-a481-97c012ae451d
-# ╟─a5a9a839-d268-4503-8305-1e9c1b3df262
-# ╠═b1c84f63-e660-4869-95ef-7e93c68ebe40
-# ╠═60557554-6bf8-4cb6-822a-5bdbf7c12486
-# ╠═03c73af0-cc42-445f-9eaa-6a3ee21120c9
-# ╟─f391d1a5-098a-48f2-8e6d-f965d99fe3e4
-# ╟─8c1b8994-81d5-42bf-a8e6-1e73fc369828
-# ╟─ae60ba3c-a32d-443a-93c0-00eb9acda8c4
-# ╟─9b9cf8e1-1eab-45c2-9050-b509c5c60170
-# ╠═4a1c661c-a65e-42dc-98eb-4665030986a6
-# ╟─7560a130-1205-4cc9-a58f-d562dbeca77a
-# ╟─f445a06d-269b-4977-945f-953f56440600
-# ╟─7dc1eb5b-48f8-4bc0-8c7b-a84706e64b78
-# ╠═2de1558b-4cf8-4076-97fd-2dd59308c537
-# ╠═1a524fd2-d7c8-48d9-9c23-fac20886669d
-# ╠═92e9bdd4-07e3-45fa-a6eb-906d2b7c2615
-# ╠═06b8a636-bca6-4741-8a59-05e2e719b9a1
-# ╠═2ecb83fe-d495-48ff-b23d-c2252f138879
-# ╠═157f8455-88e1-4d5a-9582-de011e5ebc10
-# ╠═b32c7c4c-45c5-4bcc-a487-53efc3e2a347
-# ╠═d74fdf5d-0b69-4bba-8540-f9429160cbe8
-# ╠═6c6f3103-5a04-4b01-b8a1-05f64616a847
-# ╟─43f5b10a-670d-11ef-1308-5ba25fe852bf
-# ╟─a28b8392-0493-4861-a218-d4ed114511bc
-# ╟─6f79705f-01c4-4580-8a0f-b1a21ec57e77
-# ╠═d90a1f6d-94eb-4b0e-a110-6673ba0d713f
-# ╠═40bca008-09c7-4c90-8270-8756dda676c6
-# ╠═a2be6ad3-5ea2-412c-8042-f073ee7b435c
-# ╠═111fd244-22de-4585-9e01-dca011be3f30
-# ╟─776f7ecc-61ef-4c57-8a6d-5648e867422a
-# ╟─22c92187-9e47-489f-9c60-963fdeb47c7e
-# ╟─95062482-8f26-4620-96f3-a91a54da1076
-# ╟─043ee371-3502-456a-b8a2-9835cb093e48
-# ╟─ffa76c36-48a7-4ce5-ace2-a7d874a2fcd9
-# ╠═eba5a0ea-740f-426c-8396-3e21ecc13a02
-# ╠═b82021b5-9da6-4d49-afb3-2f581a4afdfb
-# ╟─696782a9-47ac-4401-898c-6cc8556086e0
-# ╠═f3759ec6-e4b1-4b32-9494-501975a1a347
-# ╟─f4227cc1-5b67-447e-81b7-c5e5b58c7def
-# ╠═75eeffe3-78ab-4cc7-9528-89040533ef32
-# ╟─76bdf271-cf59-4809-ae21-73cb00d96a68
-# ╠═55cd4f50-5872-43a5-9f5a-c05794f9cd91
-# ╟─85470136-f58b-4766-9073-aaaed705633b
+# ╠═7b578bb1-ce45-417a-82b2-504c1d1a3b41
+# ╟─11fee4f8-6c55-11ef-266d-8b9f0f158ef2
+# ╟─b9932967-c1f4-4f9b-9b4f-de2100adc3dc
+# ╟─8d76f42d-7d5c-4c7c-abf5-0cc1cf66e79f
+# ╟─b725d413-b725-4e1f-8039-ff048f8c7104
+# ╟─92eb1f58-353a-40f3-ba15-afb48f4bbedf
+# ╠═41f56b48-dd48-40fd-ae7a-471fa3c7b7ce
+# ╠═d33beb81-7d9b-4bdb-9055-3194cc04597e
+# ╟─93cf4fd9-f316-431c-b3cc-c3d2aed59466
+# ╟─f2b58da7-7e0d-4a28-8c97-c21bccd15219
+# ╟─1f5e28e7-08f0-4715-9003-fa5d2c6cf738
+# ╠═083f8145-95ae-48eb-a3d5-4ab2a19d8c7b
+# ╟─b49a8d8d-2bb7-4e4c-8f28-a83198e91a82
+# ╠═dfb1e4b1-6fc9-48ee-b9bc-6b29e6e6ddbc
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
