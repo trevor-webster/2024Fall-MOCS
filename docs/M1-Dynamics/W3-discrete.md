@@ -264,6 +264,19 @@ Because of stochasticity, there are variation in draws. Notice, in particular, h
 
 <!-- In the discrete SIR model, several fixed points can be identified. First, when $R = N$, no further infections can occur. Similarly, when ${tex`I = 0`}, the epidemic ends. However, a more interesting case is whether fixed points are stable? What if we have no infected individual in the system, then we nudge the system by injecting an infected individual. If the transmission rate is too low, stochastic extinctions occur, meaning patient zero cannot infect enough individuals to sustain the outbreak. At a certain threshold, denoted as ${tex`\beta_c`}, the transmission rate becomes high enough that patient zero will almost certainly trigger an epidemic. -->
 
+### Linear stability analysis and criticality
+
+This is the art of nudging a little our system around a fixed point to determine the (local) stability of that point. If following the perturbation the system tends to go back to that point, then the latter is said to be _stable_. It is _unstable_ if the systems tends to move away from it, or _neutrally stable_ if the perturbation neither grows or shrinks.
+
+For our case study, we want to know the conditions under which the generic fixed point ${tex`(S,I,R) = (S,0,N-S)`} is stable or not. Nudging the system then means introducing an infinitesimal amount ${tex`I \rightarrow 0`} in the infected compartment and see whether such amount will grow to larger values or shrink towards zero. To do this, we first compute Equation (1b) in the ${tex`I \rightarrow 0`} limit. From ${tex`(1-\beta \Delta t)^{I(t)} = 1 - \beta \Delta t I(t) + {\cal O}(I(t)^2)`}, we get
+```tex
+\begin{align}
+    I(t+\Delta t) &= (1 - \gamma \Delta t)I(t) + \beta \Delta t S(t) I(t) \notag \\
+    &= (1 - \gamma \Delta t + \beta \Delta t S(t)) I(t) \notag
+\end{align}
+```
+It follows that ${tex`I(t+\Delta t) < I(t)`} – the perturbation shrinks – if and only if ${tex`\beta S < \gamma`}. The infection-free state ${tex`(S,I,R) = (S,0,N-S)`} is stable in this case. Otherwise, if ${tex`\beta S > \gamma`}, the perturbation expands and an outbreak takes place. We can restate these conditions in a more meaningful way by defining the basic reproduction number ${tex`R_0 \equiv \beta S/\gamma`}. Given that ${tex`1/\gamma`} is the average infection period, and that ${tex`\beta S`} is the average rate at which an infected individual produces new infections, ${tex`R_0`} represents the average number of new infections (secondary cases) produced by an infected individual (zero/primary case) in an otherwise infection-free population. The infection-free state is thus stable for ${tex`R_0 < 1`} and unstable for ${tex`R_0 > 1`}. The condition ${tex`R_0 = 1`} marks a _critical point_: outbreaks are expected above it but not below it. This is shown in the plot below, which reports results from the simulated SIR process.
+
 <!-- ### Stability analysis
 
 Stability analysis is the art of nudging a little our system around a given point to determine the (local) stability of fixed points. What do we mean by nudging? Let
@@ -289,23 +302,27 @@ Now, if we're thinking about patient zero, where almost everyone is still suscep
 \beta_c \gt \frac{\alpha}{N}
 ```
 
-So, for the outbreak to take off, the transmission rate has to be greater than this threshold.
+So, for the outbreak to take off, the transmission rate has to be greater than this threshold. -->
 
 ```js
 manySIRs()
 ```
 
-If you increase the transmission rate just above 5.0e-6, you hit a phase transition. At this point, even a small increase in the number of infected people can trigger a full-blown epidemic.
+We considered a population of size ${tex`N = 10^4`} in a quasi-susceptible initial state (${tex`S \simeq N`}), and took ${tex`\gamma = 0.05`}. Imposing ${tex`R_0 = 1`} yields ${tex`\beta = 5\cdot 10^{-6}`} as the critical value for the infection rate. This is the value where a _phase transition_ occurs, separating the inactive phase (left) from the active one (right).
 
-Another way to look at this phase transition is by looking at the log-log of number of outbreaks with respect to outbreak size. By varying ${tex`\beta`} around the critical threshold, we can see intensity and frequency of outbreak size change drastically. This is characteristic of heavy tail distributions, that is, distributions that decay slower than any exponential. That is, most of the times you get small values, but once in a life time you get a black swan events that screw everything up.
+We can get a more detailed view of this transition if we look at the distribution of outbreak sizes. That is, we choose a value for ${tex`\beta`} (notice the slider below) and run lots of simulations to record how many outbreaks of each possible size occurred. As we cross the critical point ${tex`\beta = 5\cdot 10^{-6}`}, a bulk of large outbreaks appears on the right. These are indeed the large outbreaks we expect to see above the critical point. The adjective _large_ here has a specific meaning: it indicates outbreaks whose size is proportional to the size of the system – double the system's size and those large outbreaks will double their size too. The small outbreaks stored in the left chunk of the distribution, instead, do not scale and so their size becomes negligible as you consider bigger and bigger populations. Because of stochastic fluctuations, such small, localized infection chains are there even far above the critical point, although they become less and less frequent.
 
 ```js
-const beta2 = view(Inputs.range([2.0e-6, 9.0e-6], {value: 4.0e-6, label:"β"}))
+const beta2 = view(Inputs.range([2.0e-6, 9.0e-6], {step: 1.0e-6, value: 5.0e-6, label:"β"}))
 ```
  
 ```js
 loglog_outbreaks()
 ```
+
+You may have noticed that the plot above has both its axis in logarithmic scale. The reason is that it allows to get a first, visual check of whether the system is or not at a critical point. How? Setting ${tex`\beta = 5\cdot 10^{-6}`} you should be able to see (either making an effort of imagination or running many more simulations to remove some noise) that the tail of the distribution is fitted by a straight line. A straight line in a log-log plot is a power-law in a linear plot, i.e., a curve of the form ${tex`y(x) \propto x^{\alpha}`}. At the critical point, the tail of the cluster size distribution thus follows a power-law. This is a general signature of _criticality_ that you may encounter in any kind of system undergoing a phase transition. Also observe that moving just a little away from the critical point, either below or above it, makes the tail of the (small outbreaks) distribution decaying exponentially.
+
+<!-- Another way to look at this phase transition is by looking at the log-log of number of outbreaks with respect to outbreak size. By varying ${tex`\beta`} around the critical threshold, we can see intensity and frequency of outbreak size change drastically. This is characteristic of heavy tail distributions, that is, distributions that decay slower than any exponential. That is, most of the times you get small values, but once in a life time you get a black swan events that screw everything up. 
 
 When ${tex`\beta`} is small, there's a higher chance of stochastic extinctions. For example, with ${tex`\beta=2e-6`} , the outbreak sizes range from around 100 people to at most a few hundreds. But once you increase ${tex`\beta`} to ${tex`3e-6`}, you start to see large outbreaks become more often (the chunk on the right becomes higher and higher). When crosses the critical threshold, which is roughly , that’s when the contagion really takes off. -->
 
@@ -483,11 +500,11 @@ function loglog_outbreaks() {
 	let steps = 1000
 	let repetitions = 10_000
  
- let pairs = runReps(steps, N, beta, 0.05, repetitions)
+ let pairs = runReps(steps, N, beta2, 0.05, repetitions)
 
  return Plot.plot({
     x: {label: "Outbreak size", type: "log"},
-    y: {label: "Number of outbreaks", type: "log"},
+    y: {label: "Counts", type: "log"},
     grid: true,
     marks: [
       Plot.dot(pairs, { fill: "black", stroke: "white"}),
