@@ -13,7 +13,10 @@ begin
 end
 
 # ╔═╡ a25b213e-fc15-4791-a973-4bc9beb83736
-md"### SIS"
+md"### SIS
+
+TODO
+"
 
 # ╔═╡ 72667792-777d-11ef-07b3-8511f20e9623
 md"## SEIRs
@@ -66,35 +69,30 @@ let
 	sol2 = solve(prob2)
 	
 		
-	# Plotting
-	# l = @layout [ [b ; c ] a{0.5w} ]
-
+	f = Figure(size = (800, 800))
 	
+	ax = Axis(f[1, 1], title="SeIRS trajectory")
 	T = range(0,1000)  
+	lines!(ax, T, sol(T)[1,:], color=:black)
+	lines!(ax, T, sol(T)[2,:], color=:lightgreen)
+	lines!(ax, T, sol(T)[3,:], color=:firebrick)
+	lines!(ax, T, sol(T)[4,:], color=:blue)
 	
-	lines(T, sol(T)[1,:])
-	lines!(T, sol(T)[2,:])
-	lines!(T, sol(T)[3,:])
-	lines!(T, sol(T)[4,:])
-	current_figure()
+	ax = Axis(f[1, 2], title="E vs I trajectory")
+	lines!(ax, sol(T)[2,:], color=:lightgreen, label="E")
+	lines!(ax, sol(T)[3,:], color=:firebrick, label="I")
 	
-	# p1 = plot(sol, 
-	# 	color=[:black :lightgreen :firebrick :blue], 
-	# 	label=["S" "E" "I" "R"], title="SeIRS trajectory")
-	
-	# p2 = plot(sol, idxs = (0, 2), color=:lightgreen, label="E")
-	# plot!(sol, idxs = 3, color=:firebrick, label="I")
 
-	# # yaxis is wrong, not sure how to do yscale with a fct
-	# p3 = plot(sol, idxs = (1,3), color=:firebrick,
-	# 		  xlabel="S", ylabel="I", title="I versus S phase planes")
-	# plot!(sol2, idxs = (1,3), color=:red, legend=false)
-	# annotate!([
+	# yaxis still wrong, I need to fix it
+	ax = Axis(f[2, 1:2], title="I versus S phase planes", xlabel="S", ylabel="I", )
+	lines!(ax, sol(T)[1,:], sol(T)[3,:], color=:firebrick)
+	lines!(ax, sol2(T)[1,:], sol2(T)[3,:], color=:red)
+	# text!(ax, [
 	# 	(3000,1250,text("1/σ = 14", 10)), 
 	# 	(4000,2000, text("1/σ = 7", 10))
 	# ])
 	
-	# plot(p1, p2, p3, layout=l)
+	current_figure()
 end
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
