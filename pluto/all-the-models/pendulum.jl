@@ -23,6 +23,54 @@ using PlutoUI: Slider
 # ╔═╡ b0f06a49-e4d1-44fb-b8cf-d12450b1a333
 using CairoMakie: scatter, scatter!
 
+# ╔═╡ 23d21d1c-7312-48ed-be6d-8a40ff2b63e8
+md"## Romeo and juliet
+
+$R' = aR + bJ$
+$J' = cR + dJ$
+
+where R is Romeo's love and J is Juliet's love for Romeo.
+"
+
+# ╔═╡ 9c4bfa36-16ad-4374-9016-df9b3b1dd4f4
+a=@bind a Slider(-2:0.1:2, default=-0.1, show_value=true)
+
+# ╔═╡ 9fc439e8-81cf-4cc1-9fcc-17ba4a76bd76
+b=@bind b Slider(-2:0.5:2, default=1, show_value=true)
+
+# ╔═╡ fa6d4ebb-fc8c-42e6-8b99-95ed7abaa4c0
+c=@bind c Slider(-2:0.1:2, default=-1, show_value=true)
+
+# ╔═╡ 81d727d7-07ef-4f55-a4e1-51270f87ba1b
+d=@bind d Slider(-2:0.5:2, default=0, show_value=true)
+
+# ╔═╡ 127590c9-cffc-4177-9be0-1649f23254e1
+let
+	a,b,c,d=-0.1, 1.0, -1.0, 0.0
+	println("a=$a, b=$b, c=$c, d=$d")
+	
+	struct RomeoJuliet{T}
+    	a::T
+    	b::T
+    	c::T
+    	d::T
+	end
+
+	params = RomeoJuliet(a,b,c,d)
+	
+	h(x, P::RomeoJuliet) = Point2f( # y,x
+		P.a*x[1]+P.b*x[2],
+		P.c*x[1]+P.d*x[2]
+	)
+	
+	h(x) = h(x, params)
+
+	f = Figure()
+	ax = Axis(f[1,1], xlabel="X", ylabel="X'")
+	streamplot!(ax, h, -2..2, -2..2, colormap = :magma, arrow_size=10.)
+	current_figure()
+end
+
 # ╔═╡ 5a2bacec-67f1-11ef-2682-c1e91902c2cb
 md"# Pendulum"
 
@@ -2516,6 +2564,12 @@ version = "3.5.0+0"
 # ╠═5a9b9217-808f-4d42-b309-fb3ed72dde3c
 # ╠═51e70a1a-5a18-4393-86de-0e574fe8899c
 # ╠═b0f06a49-e4d1-44fb-b8cf-d12450b1a333
+# ╟─23d21d1c-7312-48ed-be6d-8a40ff2b63e8
+# ╟─9c4bfa36-16ad-4374-9016-df9b3b1dd4f4
+# ╟─9fc439e8-81cf-4cc1-9fcc-17ba4a76bd76
+# ╟─fa6d4ebb-fc8c-42e6-8b99-95ed7abaa4c0
+# ╟─81d727d7-07ef-4f55-a4e1-51270f87ba1b
+# ╠═127590c9-cffc-4177-9be0-1649f23254e1
 # ╟─5a2bacec-67f1-11ef-2682-c1e91902c2cb
 # ╠═cf57109e-fa5d-4d85-889a-9c36f0b6b798
 # ╠═14e2c81d-c49b-4a08-9d2b-ebc8939fbcd2
