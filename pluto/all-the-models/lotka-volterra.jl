@@ -12,108 +12,7 @@ md"## Lotka volterra"
 
 # ╔═╡ 8939a047-a3ad-4ae2-8203-a5b832a2665e
 let
-	function plot_nullclines(ax, k1,k2)
-		x1_range = 0:0.01:k1
-		x2_nullcline = (k1 .- x1_range) ./ α2
-		lines!(ax, x1_range, x2_nullcline, color=:red)
 	
-		x2_range = 0:0.01:k2
-		x1_nullcline = (k2 .- x2_range) ./ α1
-		lines!(ax, x1_nullcline, x2_range, color=:blue)
-	end
-	
-	function plot_fixed_points(ax, k1, α1, k2, α2)
-		if k1 > k2/α1 && k2 > k1/α2 || k1 < k2/α1 && k2 < k1/α2 
-			x2_star = (k2 - α1 * k1) / (1 - α1 * α2)
-			x1_star = k1 - α2 * x2_star
-			
-			# non-zero fixed point
-			scatter!(ax, [x1_star], [x2_star],  marker=:star4, color = :white, 
-					strokecolor = :red, strokewidth = 1, markersize=20)
-			
-		end
-		
-		# fixed points
-		scatter!(ax, [0, k1, k2/α1,0], [k2, 0, 0, k1/α2],  color = :white, 
-				 strokecolor = :black, strokewidth = 1, markersize=15)
-			
-	end
-	
-	struct LK{T}
-    	r1::T  
-    	k1::T  
-    	α1::T  
-    	r2::T
-    	k2::T
-    	α2::T
-	end
-
-	h(x, P::LK) = Point2f( # y,x
-		P.r1*x[1] * ((P.k1 - x[1] - P.α2*x[2]) / P.k1),
-		P.r2*x[2] * ((P.k2 - x[2] - P.α1*x[1]) / P.k2)
-	)
-	
-	# Plotting
-	f = Figure(size = (800, 800))
-	
-	# mutual exclusion regime (k1 > k2/α1 , k2 > k1/α2)
-	r1, r2, α1, α2, k1, k2 = 0.01, 0.01, 1.5, 1.5, 20., 20.
-	max_k = maximum([k1,k2])+5
-
-	ax = Axis(f[1, 1], title="Mutual exclusion")
-	streamplot!(
-		ax, 
-		x -> h(x, LK(r1,k1,α1,r2,k2,α2)), 
-		0..max_k, 0..max_k, 
-		colormap = :magma, 
-		arrow_size=10
-	)
-	plot_nullclines(ax, k1, k2)
-	plot_fixed_points(ax, k1, α1, k2, α2)
-	
-	# coexistence regime (k2/α1 > k1, k1/α2> k2)
-	r1, r2, α1, α2, k1, k2 = 0.01, 0.01, 0.8, 0.8, 20., 20.
-	max_k = maximum([k1,k2])+5
-	ax = Axis(f[1, 2], title="Coexistence")
-	streamplot!(
-		ax, 
-		x -> h(x, LK(r1,k1,α1,r2,k2,α2)), 
-		0..max_k, 0..max_k, 
-		colormap = :magma, 
-		arrow_size=10
-	)
-	plot_nullclines(ax, k1, k2)
-	plot_fixed_points(ax, k1, α1, k2, α2)
-	
-	# species 1 wins 
-	r1, r2, α1, α2, k1, k2 = 0.01, 0.01, 0.9, 1.5, 20., 20.
-	max_k = maximum([k1,k2])+2
-	ax = Axis(f[2, 1], title="Species 1 wins")
-	streamplot!(
-		ax, 
-		x -> h(x, LK(r1,k1,α1,r2,k2,α2)), 
-		0..max_k, 0..max_k, 
-		colormap = :magma, 
-		arrow_size=10
-	)
-	plot_nullclines(ax, k1, k2)
-	plot_fixed_points(ax, k1, α1, k2, α2)
-	
-	# species 2 wins 
-	r1, r2, α1, α2, k1, k2 = 0.01, 0.01, 1.5, 0.9, 20., 20.
-	max_k = maximum([k1,k2])+2
-	ax = Axis(f[2, 2], title="Species 2 wins", xlabel = "N2")
-	streamplot!(
-		ax, 
-		x -> h(x, LK(r1,k1,α1,r2,k2,α2)), 
-		0..max_k, 0..max_k, 
-		colormap = :magma, 
-		arrow_size=10
-	)
-	plot_nullclines(ax, k1, k2)
-	plot_fixed_points(ax, k1, α1, k2, α2)
-
-	current_figure()
 end
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
@@ -2590,6 +2489,6 @@ version = "3.6.0+0"
 # ╔═╡ Cell order:
 # ╠═1c1d9c09-28e8-4adf-8099-ea489ddc7f87
 # ╟─966176bf-0d82-4829-b48e-3b9d78414f83
-# ╟─8939a047-a3ad-4ae2-8203-a5b832a2665e
+# ╠═8939a047-a3ad-4ae2-8203-a5b832a2665e
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
