@@ -13,10 +13,51 @@ md"This notebook demonstrate is also a case study in using [Symbolics.jl](Symbol
 # ╔═╡ afe17348-7b82-11ef-05a1-39ebdc1b8b4e
 md"# Logistic Growth"
 
+# ╔═╡ 958dcd14-ee35-47d7-97a2-4d72ac33c45a
+let
+	
+	# PHASE SPACE ----
+	
+	k, r = 10., 1.
+	
+	println("k=$k, r=$r")
+
+	# see https://docs.makie.org/stable/reference/plots/streamplot
+	struct LogisticGrowth{T}
+    	k::T
+    	r::T
+	end
+
+	params = LogisticGrowth(k, r)
+
+	h(x, P::LogisticGrowth) = Point2f( # y,x
+		x[2],
+		P.r*x[1]*(1-x[1]/P.k)
+	)
+	
+	f= Figure()
+	ax = Axis(f[1,1], xlabel="X", ylabel="X'")
+	
+	
+	streamplot!(ax, x -> h(x, params), 0..14, 0..14, colormap = :magma, arrow_size=10)
+	scatter!([0,k], [0, 0], color = :black, 
+			 strokecolor = :white, strokewidth = 1, markersize=15)
+	
+	x = 0:0.1:10  # Finer resolution for smoother line
+	y = 1 .* x .* (1 .- x ./ 10)  # Logistic growth equation
+	lines!(ax, x, y, color=:red, linewidth=2, label="Analytic solution")
+	axislegend(ax)
+
+	
+	current_figure()
+end
+
 # ╔═╡ a893ca06-1214-4e63-ac2a-3479575c78f8
 md"## Allee Effect
 
  - (Garfinkel et al., 123)
+
+$X' = rX(1-\frac{X}{k})(\frac{X}{a}-1)$
 "
 
 # ╔═╡ 02ebf2ea-15e9-4a8a-a313-8cc52ad55c89
@@ -45,7 +86,7 @@ let
 	# Plotting
 	f = Figure()
 	ax = Axis(f[1,1], xlabel="X", ylabel="X'")
-	streamplot!(ax, h, 0..14, 0..14, colormap = :magma)
+	streamplot!(ax, h, 0..14, 0..14, colormap = :magma, arrow_size=10)
 	scatter!([0, a, k], [0, 0, 0], color = :black, 
 			 strokecolor = :white, strokewidth = 1, markersize=15)
 	scatter!([a], [0, 0, 0], color = :white, 
@@ -83,7 +124,10 @@ end
 md"We can evaluate the function at different points with symbolic variables"
 
 # ╔═╡ 02e7e453-4168-4c52-9fc5-90f9c3a95d88
+# ╠═╡ disabled = true
+#=╠═╡
 eval_0 = substitute.(dxdx, (Dict(X => 0),))
+  ╠═╡ =#
 
 # ╔═╡ 9e83ac86-e28d-4ef0-862f-921fb7d3f34a
 eval_a = substitute.(dxdx, (Dict(X => a),))
@@ -101,7 +145,9 @@ $$r(1 - \frac{k}{a})$$
 Since we have assumed that a < k, then we find that the signs are negative, positive, and negative. We can check that programmatically by plugging in our values in the above expressions:"
 
 # ╔═╡ 64b12cea-ce4f-4b6c-9114-7ebeae52b202
+#=╠═╡
 substitute.(eval_0, (Dict(r => 1),))
+  ╠═╡ =#
 
 # ╔═╡ cbf6dc85-9552-4ba2-bf05-17f4951bb4ea
 substitute.(eval_a, (Dict(r => 1, k => 10, a=>1),))
@@ -2586,6 +2632,7 @@ version = "3.6.0+0"
 # ╠═48b86083-16d7-431a-aac2-340aaa0ae1a5
 # ╟─f1c21c15-12f1-43fe-8c57-8d047674935f
 # ╟─afe17348-7b82-11ef-05a1-39ebdc1b8b4e
+# ╠═958dcd14-ee35-47d7-97a2-4d72ac33c45a
 # ╟─a893ca06-1214-4e63-ac2a-3479575c78f8
 # ╠═02ebf2ea-15e9-4a8a-a313-8cc52ad55c89
 # ╟─5430df64-a1a7-42b5-be50-7e8c5cbe89ad

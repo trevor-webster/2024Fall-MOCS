@@ -31,9 +31,13 @@ md"### Cobweb plot
 "
 
 # ╔═╡ 8d76f42d-7d5c-4c7c-abf5-0cc1cf66e79f
-md"### [May & Oster (1976)](http://155.101.98.133/~keener/classes/math5110/papers/may_oster.pdf)
+md"### [May & Oster (1976; Discrete-Time Logistic Model)](http://155.101.98.133/~keener/classes/math5110/papers/may_oster.pdf)
 
 $\Delta N = N(t) e^{r (1 - N(t))}$
+
+Alternatively, we can write
+
+$X_{N+1} = r X_N(1 - \frac{X_N}{K})$
 "
 
 # ╔═╡ b725d413-b725-4e1f-8039-ff048f8c7104
@@ -85,6 +89,18 @@ let
 
 	plot(p1, p2, layout=(2,1))
 end
+
+# ╔═╡ 451aba41-3ca2-4aeb-a1b7-f7df481bc383
+md"
+\
+\
+\
+\
+\
+\
+\
+\
+But now we can do something fancy. Lets put the N(t) variable on the yaxis, and map how it changes as a function of parameter `r`. We can see a periodic orbit or limit cycles, whereas lower `r` (r=0.2) was an attracting fixed point."
 
 # ╔═╡ 41f56b48-dd48-40fd-ae7a-471fa3c7b7ce
 let 
@@ -2919,9 +2935,10 @@ version = "1.4.1+1"
 # ╠═7b578bb1-ce45-417a-82b2-504c1d1a3b41
 # ╟─11fee4f8-6c55-11ef-266d-8b9f0f158ef2
 # ╟─b9932967-c1f4-4f9b-9b4f-de2100adc3dc
-# ╟─8d76f42d-7d5c-4c7c-abf5-0cc1cf66e79f
+# ╠═8d76f42d-7d5c-4c7c-abf5-0cc1cf66e79f
 # ╟─b725d413-b725-4e1f-8039-ff048f8c7104
 # ╟─92eb1f58-353a-40f3-ba15-afb48f4bbedf
+# ╠═451aba41-3ca2-4aeb-a1b7-f7df481bc383
 # ╠═41f56b48-dd48-40fd-ae7a-471fa3c7b7ce
 # ╠═d33beb81-7d9b-4bdb-9055-3194cc04597e
 # ╟─93cf4fd9-f316-431c-b3cc-c3d2aed59466
