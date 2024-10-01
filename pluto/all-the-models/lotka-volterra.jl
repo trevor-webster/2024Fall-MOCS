@@ -32,8 +32,8 @@ md"# Lotka-Volterra (LK) models
 # ╔═╡ 45867cdf-9cff-4f37-9f8c-87eb6bf133b9
 md"## Lotka volterra prey predator
 
-$$\dot{F} = \mu \dot{F} - \beta \dot{F}\dot{S}$$
-$$\dot{S} = c \beta \dot{F}\dot{S} - \nu \dot{S}$$
+$$\dot{F} = \mu F - \beta FS$$
+$$\dot{S} = c \beta FS - \nu S$$
 
 where $c$ is a conversion factor of how much fish to you need to get a shark.
 "
@@ -531,7 +531,6 @@ let
 	plot_fixed_points(ax, k1, α12, k2, α21)
 
 	Axis(f[2,2], title="Mystery plot")
-
 	current_figure()
 end
 
@@ -3330,7 +3329,7 @@ version = "3.6.0+0"
 # ╠═3f35d529-931e-4895-82d1-01d611b49ed9
 # ╠═ff1e39f5-c648-481a-9194-7f9a4be71a88
 # ╟─680f4d18-b855-4535-83a7-3b859a92f0f1
-# ╟─45867cdf-9cff-4f37-9f8c-87eb6bf133b9
+# ╠═45867cdf-9cff-4f37-9f8c-87eb6bf133b9
 # ╠═21d35ee9-9f6a-44be-bf6a-6459175a83ae
 # ╟─31f94c86-ad6c-446f-84eb-a17c865d4463
 # ╠═a4e84256-abd8-495c-8445-a75235b2669c
