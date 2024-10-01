@@ -10,7 +10,7 @@ events (e.g. invited seminars of the Vermont Complex Systems Center). Assignment
 
 ### Assignment 1
 
-Done in teams of 2 or 3. Due on Brighspace by <u>midnight on Friday October 4th</u>.
+Done in teams of 2 or 3. Due on Brighspace by <u>midnight on Sunday October 6th</u>.
 
 ### Assignment 2
 
