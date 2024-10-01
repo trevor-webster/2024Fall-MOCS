@@ -323,10 +323,10 @@ where the positive parameters mean predation, while negative parameters mean the
 "
 
 # ╔═╡ 06dc3062-9798-400d-be31-2c384298dc51
-a = @bind a Slider(0.01:0.01:2, show_value=true, default=1.5)
+# a = @bind a Slider(0.01:0.01:2, show_value=true, default=1.5)
 
 # ╔═╡ 64b0b639-06e0-41f6-b793-0b8e606493de
-perturbation = @bind p Slider(0.01:0.01:0.5, default=0.09, show_value=true)
+# perturbation = @bind p Slider(0.01:0.01:0.5, default=0.09, show_value=true)
 
 # ╔═╡ 798b695d-45c0-4ced-96bd-b3b24b1bb176
 let
@@ -338,7 +338,8 @@ let
 	T = 1:h:100 # time range
 	
 	# Parameter of the model
-	# a = 1.5 # you can vary this value
+	a = 1.5 # you can vary this value
+	p = 0.09
 	A = [0.5 0.5 0.1; -0.5 -0.1 0.1; a 0.1 0.1] # interaction matrix
 	
 	# Euler's method for the 3-species Lotka-Volterra model
@@ -402,7 +403,9 @@ Using the good stuff
 
 # ╔═╡ c33edca1-2c77-4c7f-81a8-97a5f3216e02
 let
-
+	a = 1.5 # you can vary this value
+	p = 0.09
+	
 	# Define the Lotka-Volterra model for 3 species
 	function lotka_volterra!(du, u, p, t)
 	    x1, x2, x3 = u
@@ -553,13 +556,15 @@ See also Garfinkel p.201
 "
 
 # ╔═╡ 873f7d5c-07f6-4c10-81a3-21e0b23da434
-max_consumption_rate = @bind ω Slider(0.01:0.01:1, default=0.3, show_value=true)
+# max_consumption_rate = @bind ω Slider(0.01:0.01:1, default=0.3, show_value=true)
 
 # ╔═╡ 3c7bd9d6-da81-4234-9e05-2bec883141cf
-half_saturation_density = @bind d Slider(0.1:0.1:5.0, default=1.0, show_value=true)
+ 	# half_saturation_density = @bind d Slider(0.1:0.1:5.0, default=1.0, show_value=true)
 
 # ╔═╡ 2bdf51c6-af3a-4fea-bb36-5cda663cfa16
 let 
+	ω=0.3
+	d=1.0
 	fig = Figure(size=(800,400))
 
 	# r1, r2, k, d, j, ω = 1., 0.1, 7., 1., 1., 0.3
@@ -3345,8 +3350,8 @@ version = "3.6.0+0"
 # ╠═bc81df83-de41-421a-96af-bb6535f4e83f
 # ╟─5165359e-bc77-454f-ba2e-4a8890b84751
 # ╟─9302f6f8-2270-4e4b-a58e-421643884ca9
-# ╟─06dc3062-9798-400d-be31-2c384298dc51
-# ╟─64b0b639-06e0-41f6-b793-0b8e606493de
+# ╠═06dc3062-9798-400d-be31-2c384298dc51
+# ╠═64b0b639-06e0-41f6-b793-0b8e606493de
 # ╟─798b695d-45c0-4ced-96bd-b3b24b1bb176
 # ╟─434107bf-be8e-4751-a568-44b0398e163a
 # ╠═c33edca1-2c77-4c7f-81a8-97a5f3216e02
@@ -3354,8 +3359,8 @@ version = "3.6.0+0"
 # ╠═5b3b415e-ac46-45c2-9a94-37b104fccd17
 # ╠═271e32f9-d56c-4ebf-9dbc-8d926615b6c7
 # ╟─1eb25315-7f72-4888-ab9b-58c77ac254df
-# ╟─873f7d5c-07f6-4c10-81a3-21e0b23da434
-# ╟─3c7bd9d6-da81-4234-9e05-2bec883141cf
+# ╠═873f7d5c-07f6-4c10-81a3-21e0b23da434
+# ╠═3c7bd9d6-da81-4234-9e05-2bec883141cf
 # ╠═2bdf51c6-af3a-4fea-bb36-5cda663cfa16
 # ╠═3b6bc451-565a-4dc0-9fa2-37edbd0801a1
 # ╟─00000000-0000-0000-0000-000000000001
