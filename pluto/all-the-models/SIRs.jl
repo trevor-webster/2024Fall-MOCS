@@ -13,10 +13,98 @@ begin
 end
 
 # ╔═╡ a25b213e-fc15-4791-a973-4bc9beb83736
-md"### SIS
+md"### SIS"
 
-TODO
-"
+# ╔═╡ 7a26ae6f-33bd-43a7-b8ec-f61b4e1b7a4e
+let
+	
+	# parameters
+	N = 1_000
+	β = 1/15*5*1/N # transmission rate
+	α = 1/15 # recovery rate
+	
+	# Plotting
+	f = Figure(size=(700,350))
+	
+	h = 0.01 
+	Tmax = 100.0  
+	T = 0:h:Tmax  # range(0, Tmax, h) in python
+	
+	# Initial conditions
+	I = 1
+	S = N-I
+	
+	res = []
+	push!(res, (S,I))
+
+	# no super efficient
+	for t=2:length(T) 
+	    dS = -β*S*I + α*I
+	    dI = β*S*I - α*I
+	    
+	    S += dS * h 
+	    I += dI * h 
+	    
+	    push!(res, (S,I))
+	end
+	
+	ax = Axis(f[1, 1], title = "Time series", xlabel = "Time", ylabel = "Population")
+	
+	lines!(ax, T, [r[1] for r in res],color = :blue, label = "Suceptible")
+	lines!(ax, T, [r[2] for r in res], color = :red, label = "Infected")
+	axislegend(ax)
+	
+	f
+end
+
+# ╔═╡ f5febf6c-124b-4d08-92bf-97942a31fa3b
+md"## SIR model"
+
+# ╔═╡ 1199f2a9-1d0d-47bb-aec1-0cb2106201d6
+let
+	
+	# parameters
+	N = 1_000
+	β = 1/15*5*1/N # transmission rate
+	α = 1/15 # recovery rate
+	
+	# Plotting
+	f = Figure(size=(700,350))
+	
+	h = 0.01 
+	Tmax = 100.0  
+	T = 0:h:Tmax  # range(0, Tmax, h) in python
+	
+	# Initial conditions
+	I, R = 1, 0
+	S = N-I
+	
+	res = []
+	push!(res, (S,I,R))
+
+	# no super efficient
+	for t=2:length(T) 
+	    dS = -β*S*I
+	    dI = β*S*I - α*I
+	    dR = α*I
+	    
+	    S += dS * h 
+	    I += dI * h 
+	    R += dR * h 
+	    
+	    push!(res, (S,I,R))
+	end
+	
+	ax = Axis(f[1, 1], title = "Time series", xlabel = "Time", ylabel = "Population")
+	
+	lines!(ax, T, [r[1] for r in res],color = :blue, label = "Suceptible")
+	lines!(ax, T, [r[2] for r in res], color = :red, label = "Infected")
+	lines!(ax, T, [r[3] for r in res], color = :green, label = "Recovered")
+	axislegend(ax)
+	
+	
+	f
+end
 
 # ╔═╡ 72667792-777d-11ef-07b3-8511f20e9623
 md"## SEIRs
@@ -2868,7 +2956,10 @@ version = "3.6.0+0"
 
 # ╔═╡ Cell order:
 # ╠═5eb6a292-16ee-422e-9047-d5132eef6a30
-# ╠═a25b213e-fc15-4791-a973-4bc9beb83736
+# ╟─a25b213e-fc15-4791-a973-4bc9beb83736
+# ╟─7a26ae6f-33bd-43a7-b8ec-f61b4e1b7a4e
+# ╟─f5febf6c-124b-4d08-92bf-97942a31fa3b
+# ╟─1199f2a9-1d0d-47bb-aec1-0cb2106201d6
 # ╟─72667792-777d-11ef-07b3-8511f20e9623
 # ╠═f76034b3-d991-4d06-9c10-383c5a423d35
 # ╟─00000000-0000-0000-0000-000000000001
