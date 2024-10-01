@@ -530,12 +530,7 @@ let
 	plot_nullclines(ax, k1, α12, k2, α21)
 	plot_fixed_points(ax, k1, α12, k2, α21)
 
-	# mutual exclusion regime (k1 > k2/α12 , k2 > k1/α21)
-	# r1, r2, α12, α21, k1, k2 = 0.01, 0.01, 1.5, 1.5, 20., 20.
-	# max_k = maximum([k1,k2])+5
-
 	Axis(f[2,2], title="Mystery plot")
-
 
 	current_figure()
 end
@@ -3344,7 +3339,7 @@ version = "3.6.0+0"
 # ╟─897e030a-9efe-4ecd-8727-95bb4c5350ad
 # ╠═a6097bcf-2a35-4d22-a622-ed264e5df5f4
 # ╟─966176bf-0d82-4829-b48e-3b9d78414f83
-# ╠═8939a047-a3ad-4ae2-8203-a5b832a2665e
+# ╟─8939a047-a3ad-4ae2-8203-a5b832a2665e
 # ╟─27210822-ca11-4715-87fe-a368faccc885
 # ╟─887c30fb-410d-4ee2-a111-b652b248dd27
 # ╠═bc81df83-de41-421a-96af-bb6535f4e83f
