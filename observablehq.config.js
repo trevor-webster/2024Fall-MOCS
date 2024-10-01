@@ -11,15 +11,15 @@ export default {
       pages: [
         { name: "Week 3: Discrete models", path: "/M1-Dynamics/W3-discrete" },
         { name: "Week 4: Continuous models", path: "/M1-Dynamics/W4-continuous" },
-        { name: "Week 5: Chaos", path: "/M1-Dynamics/W5-chaos" },
+        { name: "Week 5: ...and Chaos", path: "/M1-Dynamics/W5-chaos" },
       ]
     },
     {
       name: "Structure, part 1",
       path: "Structure-part-1",
       pages: [
-        { name: "Week 6: A game of life", path: "/M2-Structure-part-1/W6-intro-ca" },
-        { name: "Week 7: Stochastic CA", path: "/M2-Structure-part-1/W7-stochastic-ca" },
+        { name: "Week 6: Cellular Automata and Fractals", path: "/M2-Structure-part-1/W6-intro-ca" },
+        { name: "Week 7: Random walks, Percolation, Stochastic CA", path: "/M2-Structure-part-1/W7-stochastic-ca" },
       ]
     },
     {
