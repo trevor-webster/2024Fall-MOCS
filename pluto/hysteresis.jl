@@ -4,11 +4,22 @@
 using Markdown
 using InteractiveUtils
 
+# This Pluto notebook uses @bind for interactivity. When running this notebook outside of Pluto, the following 'mock version' of @bind gives bound variables a default value (instead of an error).
+macro bind(def, element)
+    quote
+        local iv = try Base.loaded_modules[Base.PkgId(Base.UUID("6e696c72-6542-2067-7265-42206c756150"), "AbstractPlutoDingetjes")].Bonds.initial_value catch; b -> missing; end
+        local el = $(esc(element))
+        global $(esc(def)) = Core.applicable(Base.get, el) ? Base.get(el) : iv(el)
+        el
+    end
+end
+
 # ╔═╡ e294cc06-8612-4b0d-a6a8-71fd2c9b9b0a
 begin
 	using PlutoUI: Slider
-	using Roots: find_zero
+	using Roots: find_zero, find_zeros
  	using DifferentialEquations
+	using StaticArrays
 	using CairoMakie, Symbolics, LinearAlgebra
 end
 
@@ -17,94 +28,418 @@ md"# Hysteresis
 
  - see Garfinkel §6.3
  - Sayama §?
+ - Strogatz §3.7
 "
 
 # ╔═╡ e9df3bcd-0b22-4310-8091-9c2c06d74fb8
 md"## model 1: Lac Operon
 
 - Garfinkel p.159
+
+Here is the plot of the Lac Opeyron model
+
+$$f(x) = \frac{a+X^2}{1+X^2} - rX$$
+
+with $r=0.4$ and $a=0.01$
 "
+
+# ╔═╡ c44f28c6-34db-4e9a-834e-e1d99761996b
+md"The black dots are stable states, while the white dots are unstable. We can see that with these parameters, there is a point near $0.5$ where you get an unstable point, with values drawn either toward zero or 2. We can do the same for a slightly lower $r$ value ($r=0.19$). We extend the xaxis a little bit too"
+
+# ╔═╡ 1a31c7bf-f6b3-4dfb-b800-56e7e53daf19
+md"We find that where $kX$ and $\frac{a+X^2}{1+X^2}$ cross, this is indicative of the presence and stability of our equilibrium points. We can do the same again for a higher value of $r$ ($r=0.55$)"
+
+# ╔═╡ 852053ab-357f-4e15-97bf-7b27c01c8929
+md"We now get a single equilibrium point very close to zero, which correspond to a solution that is rapidly found by our solver as well. If we play the same game, then put all the state spaces on vertical lines for different values of $r$"
+
+# ╔═╡ 1d57537e-8ff8-45c8-b32d-439392a09f16
+let 
+	fig = Figure(size=(800,300))
+	ax = Axis(fig[1, 1], xlabel = "r (or conditions)", ylabel = "X (ecosystem state)") 
+	hidespines!(ax, :t, :r) # only top and right
+	hideydecorations!(ax,  label = false)
+	
+	# PART 1 - Rate of change
+	for r in 0.17:0.02:0.55
+		a = 0.01
+		f(X) = r * X^3 - X^2 + r * X - a
+		f_prime(X) = 3 * r * X^2 - 2 * X + r
+		roots = find_zeros(f, -10, 10)
+		stability = [f_prime(x) > 0 ? "stable" : "unstable" for x in roots]
+		vlines!(ax, r, color=:grey)
+			
+		# Plot stable points in green, unstable in red
+		for (root, stab) in zip(roots, stability)
+			    if stab == "stable"
+			        scatter!(ax, [r], [root], color = :black, strokewidth=1, 
+							 strokecolor=:white, markersize = 10)
+			    else
+			        scatter!(ax, [r], [root], color = :white, strokewidth=1, 
+							 strokecolor=:black, markersize = 10)
+			    end
+		end
+	end
+	fig
+end
+
+# ╔═╡ bfefee0d-6d54-414a-baab-05e5f2edf353
+md"We find bifurcation! Or how the change in $r$ parameters eventually create a region where the equilibrium points are splitted into an unstable point that sits inbetween two stable points (what is aptly called saddle-node bifurcation). The way that [Scheffer et al. (2001)](https://www.nature.com/articles/35098000) visualize that is as a shift from one basin of attraction (low $r$, you get a much higher equilibrium point; see previous figure). What do all those solutions look like, if we only simulated the systems:"
+
+# ╔═╡ 784867ee-33ac-4381-8259-cf6b421eba08
+let 
+	fig = Figure(size=(800,300))
+	
+	function Operon!(du, u, p, t) 
+		a,r = p
+		X = u[1]
+		du[1] = (a + X^2) / (1 + X^2) - r*X
+	end
+
+	u0 = [0.001] 
+
+	# Low values
+	
+	ax = Axis(fig[1, 1], ylabel = "Population")
+	
+	tspan = (0.0, 150.0)
+	for r in 0.17:0.02:0.2
+		a = 0.01
+		prob = ODEProblem(Operon!, u0, tspan, [a,r])
+		sol = solve(prob)
+		lines!(ax, sol.t, abs.(sol[1,:]), label="r=$(r)")
+	end
+	axislegend(position=(0,1))
+	
+	ax = Axis(fig[1, 2], xlabel = "Time")
+	
+	tspan = (0.0, 50.0)
+	for r in 0.27:0.02:0.33
+		a = 0.01
+		prob = ODEProblem(Operon!, u0, tspan, [a,r])
+		sol = solve(prob)
+		lines!(ax, sol.t, abs.(sol[1,:]), label="r=$(r)")
+	end
+	axislegend(position=(1,0))
+	
+	ax = Axis(fig[1, 3])
+	
+	tspan = (0.0, 20.0)
+	for r in 0.51:0.02:0.55
+		a = 0.01
+		prob = ODEProblem(Operon!, u0, tspan, [a,r])
+		sol = solve(prob)
+		lines!(ax, sol.t, abs.(sol[1,:]), label="r=$(r)")
+	end
+	axislegend(position=(1,0))
+	fig
+end
+
+# ╔═╡ 09a6c2d6-ac7d-43b5-863f-84db7059eeb2
+md"Could we tell just from simulations what is happening?
+
+## Model 2: The Spruce Budworm
+
+We have
+
+$$X' = rX\Big(1-\frac{X}{k}\Big) - \Big(\frac{X^2}{1+X^2}\Big)$$
+
+Assuming $X\neq 0$, we can divide by $X$ and set the two terms equal to each other. We find
+"
+
+# ╔═╡ e68eabd7-f21e-4290-924a-9fe5f80a6919
+# growth=@bind rv Slider(0.01:0.01:1, default=0.45, show_value=true)
+
+# ╔═╡ 288034cd-907d-4d40-8c4b-8b22b5176056
+# carrying_capacity=@bind kv Slider(1:30, default=20, show_value=true)
+
+# ╔═╡ d4bc7e01-cc34-4374-bf1e-37562a46e2d4
+md"If we look at the bifurcation diagram and another surprise plot"
+
+# ╔═╡ 166a1fca-a3b2-4b80-a793-8c27e7178b3d
+let 
+	fig = Figure(size=(800,300))
+
+	rv = @isdefined(rv) ? rv : 0.45
+	kv = @isdefined(kv) ? kv : 25
+
+	# PLOT 1 --------------------------------------------
+	
+	ax1 = Axis(fig[1, 1], ylabel = "X (ecosystem state)", xlabel = "r", title="k=$(kv)") 
+	# ax1 = Axis(fig[1, 1], xlabel = "X (ecosystem state)", ylabel = "r", title="k=$(kv)") 
+	hidespines!(ax1, :t, :r) # only top and right
+	# hidexdecorations!(ax1,  label = false)
+	hideydecorations!(ax1,  label = false)
+	
+	for r in 0.05:0.01:0.8
+		k = kv
+		f(x) = r*(1 - x/k) - x/(1+x^2)
+		f_prime(x) = (-r) / k + -1 / (1 + x^2) - 2*x*((-x) / ((1 + x^2)^2))
+		roots = find_zeros(f, -30, 30)
+		stability = [f_prime(x) > 0 ? "stable" : "unstable" for x in roots]
+			
+		# Plot stable points in green, unstable in red
+		for (root, stab) in zip(roots, stability)
+			    if stab == "unstable"
+			        scatter!(ax1, [r], [root], color = :black, markersize = 10)
+			    else
+			        scatter!(ax1, [r], [root], color = :white, strokewidth=1, strokecolor=:black, markersize = 10)
+			    end
+		end
+	end
+	
+	# PLOT 2 --------------------------------------------
+	
+	ax2 = Axis(fig[1, 2], xlabel = "k", ylabel="r") 
+	
+	k(x) = 2*x^3 / (x^2 -1)
+	r(x) = 2*x^3 / (1 + x^2)^2
+
+	out = []
+	for x=1:0.01:40
+		push!(out, (r(x), k(x))) 
+	end
+	
+	rvals = [x[1] for x in out]
+	kvals = [x[2] for x in out]
+	lines!(ax2, kvals, rvals, color=:black)
+
+	text!(ax2, [20], [0.7], text="outbreak only")
+	text!(ax2, [5], [0.10], text="refugee only")
+	text!(ax2, [15], [0.40], text="bistable")
+	scatter!(ax2, [kv], [rv], color=:blue, marker=:cross)
+	text!(ax2, [kv], [rv], text="You're here", fontsize=8)
+	
+	xlims!(0,40)
+	ylims!(0,0.8)
+	
+	# linkyaxes!(ax1,ax2)
+	
+	fig
+end
+
+# ╔═╡ 88713b49-2017-4d9e-b6cc-7fe1ffc0a08c
+md"On the right, you have a bifurcation diagram showing the type of equilibria possible. Top right is the outbreak only, while bottom left is refugee only. Inbetween the curves, this is bistable. You can explore that with the plot on the left, by playing with $k$ parameter. At $k=12$, you can see the splitting occuring with a saddle-node bifurcation."
+
+# ╔═╡ 96f12027-bd27-41bb-a9dd-a24254b3d4f9
+md"---
+
+### Appendix"
+
+# ╔═╡ 76fda2a0-fb4a-44c7-845f-764504b6ba24
+let 
+	# Cheat to find the derivative for model 2
+	@syms x k r
+	z = r*(1 - x/k) - x/(1+x^2)
+	D = Differential(x)
+	println(expand_derivatives(D(z)))
+end
+
+# ╔═╡ 46c84b21-889c-4c46-84e2-8ff2b2218541
+function plot_stability(ax, f, f_prime)
+		roots = find_zeros(f, -30, 30)
+		stability = [f_prime(x) < 0 ? "stable" : "unstable" for x in roots]
+		hlines!(ax, 0, color=:grey)
+		
+		# Plot stable points in green, unstable in red
+		for (root, stab) in zip(roots, stability)
+		    if stab == "stable"
+		        scatter!(ax, [root], [0], color = :black, markersize = 10)
+		    else
+		        scatter!(ax, [root], [0], color = :white, strokewidth=1, strokecolor=:black, markersize = 10)
+		    end
+		end
+	end
 
 # ╔═╡ 0d3c7e7d-89f2-4e56-a0e1-6c3f4e882cff
 let 
+	fig = Figure(size=(800,300))
+
+	# PART 1 - Rate of change
+	a, r = 0.01, 0.4
+	
+	ax = Axis(fig[1,1], xlabel="X", ylabel="X'", title="Lac Operon System Behavior")
+	lines!(ax, 0:0.01:2.1, x -> (a + x^2) / (1 + x^2), 
+		   label=L"N(t+1) = \frac{a+X^2}{1+X^2}", color=:blue) 
+	lines!(ax, 0:0.01:2.1, x ->  r*x, color=:red, label=L"kX") 
+
+	# Define the function representing the cubic equation
+	f(X) = r * X^3 - X^2 + r * X - a
+	f_prime(X) = 3 * r * X^2 - 2 * X + r
+	
+	# scatter!(ax, 0.5, Nstar)
+	axislegend(position=(0,1))
+	
+	ylims!(0, 1)
+
+	ax = Axis(fig[2, 1]) 
+	hidespines!(ax)
+	hidedecorations!(ax)
+	plot_stability(ax, f, f_prime)
+
+	rowsize!(fig.layout, 1, Relative(0.95))
+	
+	
+	# Part 2 - Solving the model
+	
 	function Operon!(du, u, p, t) 
-		a,k = p
+		a,r = p
 		X = u[1]
-		du[1] = (a + X^2) / (1 + X^2) - k*X
+		du[1] = (a + X^2) / (1 + X^2) - r*X
 	end
 
-	p = (0.3, 0.4)
-	u0 = [0.001] # Initial conditions for x1, x2, x3
-	tspan = (0.0, 50.0)
-	prob = ODEProblem(Operon!, u0, tspan, p)
+	u0 = [0.001] 
+	tspan = (0.0, 30.0)
+	prob = ODEProblem(Operon!, u0, tspan, [a,r])
 	sol = solve(prob)
 	
-	fig = Figure()
-	ax = Axis(fig[1, 1], title = "3-Species Lotka-Volterra Model", 
+	ax = Axis(fig[1, 2], title = "Numeric solution", 
 			  xlabel = "Time", ylabel = "Population")
 	
 	lines!(ax, sol.t, abs.(sol[1,:]), color = :red, label = "x1")
 	fig
 end
 
-# ╔═╡ ef7c29d2-92b7-4a62-a4f0-03e15da6f983
-let
-	fig = Figure(size=(800,400))
+# ╔═╡ 7a7360c3-6dce-4639-b37b-4f4f9a9d0014
+let 
+	fig = Figure(size=(800,300))
 
-	a, k = 0.3, 0.4
+	# PART 1 - Rate of change
+	a, r = 0.01, 0.19
 	
-	# ------------ Part 1 - Phase space -----------------------
+	ax = Axis(fig[1,1], xlabel="X", ylabel="X'", title="Lac Operon System Behavior")
+	lines!(ax, 0:0.01:6, x -> (a + x^2) / (1 + x^2), 
+		   label=L"N(t+1) = \frac{a+X^2}{1+X^2}", color=:blue) 
+	lines!(ax, 0:0.01:6, x ->  r*x, color=:red, label=L"kX") 
 
-	struct Operon{T}
-		a::T
-		k::T
+	# Define the function representing the cubic equation
+	f(X) = r * X^3 - X^2 + r * X - a
+	f_prime(X) = 3 * r * X^2 - 2 * X + r
+	
+	ylims!(0, 1)
+
+	ax = Axis(fig[2, 1]) 
+	hidespines!(ax)
+	hidedecorations!(ax)
+	plot_stability(ax, f, f_prime)
+	xlims!(0, 6)
+
+	rowsize!(fig.layout, 1, Relative(0.95))
+	
+	
+	# Part 2 - Solving the model
+	
+	function Operon!(du, u, p, t) 
+		a,r = p
+		X = u[1]
+		du[1] = (a + X^2) / (1 + X^2) - r*X
 	end
+
+	u0 = [0.001] 
+	tspan = (0.0, 200.0)
+	prob = ODEProblem(Operon!, u0, tspan, [a,r])
+	sol = solve(prob)
 	
-	h(x, P::Operon) = Point2f( # x,y
-	   	 	x[2],
-			(P.a + x[1]^2) / (1 + x[1]^2) - P.k*x[1]
-		    #    lactose import            degradation
-	)
+	ax = Axis(fig[1, 2], title = "Numeric solution", 
+			  xlabel = "Time", ylabel = "Population")
 	
-	ax = Axis(fig[1, 1], 
-	    xlabel = "X'", 
-	    ylabel = "X", 
-	    title = "Phase space"
-	)
-	
-	streamplot!(ax, 
-		x -> h(x, Operon(a, k)), 
-		0..2, 0..2, 
-		colormap = :magma
-	)
-	
+	lines!(ax, sol.t, abs.(sol[1,:]), color = :red, label = "x1")
 	fig
 end
 
-# ╔═╡ 1d57537e-8ff8-45c8-b32d-439392a09f16
-let
+# ╔═╡ ca2de1cd-dfe0-4777-8e6a-aee8c987c1e6
+let 
+	fig = Figure(size=(800,300))
 
-	a, k = .95, 4
+	# PART 1 - Rate of change
+	a, r = 0.01, 0.55
 	
-	# f(X) = (a + X^2) / (1 + X^2) - k*X
-	f(X) = a*X*(1-X/k)
-	# P.r*x[1]*(1-x[1]/P.k)
+	ax = Axis(fig[1,1], xlabel="X", ylabel="X'", title="Lac Operon System Behavior")
+	lines!(ax, 0:0.01:.5, x -> (a + x^2) / (1 + x^2), 
+		   label=L"N(t+1) = \frac{a+X^2}{1+X^2}", color=:blue) 
+	lines!(ax, 0:0.01:.5, x ->  r*x, color=:red, label=L"kX") 
+
+	# Define the function representing the cubic equation
+	f(X) = r * X^3 - X^2 + r * X - a
+	f_prime(X) = 3 * r * X^2 - 2 * X + r
 	
-	# Initial conditions
-	N₀ = 0
-	Tmax = 10  
-	dt = 0.1
-	T = Int(Tmax/dt)
-	N = zeros(T)
-	N[1] = N₀  	
-	for t in 1:T-1
-	    N[t+1] = f(N[t])
+	ylims!(0, 0.3)
+
+	ax = Axis(fig[2, 1]) 
+	hidespines!(ax)
+	hidedecorations!(ax)
+	plot_stability(ax, f, f_prime)
+	xlims!(0, .5)
+
+	rowsize!(fig.layout, 1, Relative(0.95))
+	
+	
+	# Part 2 - Solving the model
+	
+	function Operon!(du, u, p, t) 
+		a,r = p
+		X = u[1]
+		du[1] = (a + X^2) / (1 + X^2) - r*X
 	end
+
+	u0 = [0.001] 
+	tspan = (0.0, 20.0)
+	prob = ODEProblem(Operon!, u0, tspan, [a,r])
+	sol = solve(prob)
 	
-	fig = Figure()
-	ax = Axis(fig[1,1], xlabel="N(t)", ylabel="N(t+1)")
-	lines!(ax,  N, label=L"N(t+1) = N(t)", color=:red) 
+	ax = Axis(fig[1, 2], title = "Numeric solution", 
+			  xlabel = "Time", ylabel = "Population")
 	
+	lines!(ax, sol.t, abs.(sol[1,:]), color = :red, label = "x1")
+	fig
+end
+
+# ╔═╡ b32c0f0f-9e92-4cde-9027-68eb1373244e
+let 
+	fig = Figure(size=(800,300))
+
+	# PART 1 - Rate of change
+	r = @isdefined(rv) ? rv : 0.45
+	k = @isdefined(kv) ? kv : 25
+	
+	# r, k = 0.6, 25
+	tmax = k+5
+	
+	ax1 = Axis(fig[1,1], xlabel="X", ylabel="X'", title="Spruce Budworm (r=0.45, k=10)")
+	lines!(ax1, 0:0.01:tmax, x -> r*(1 - x/k), color=:blue, label=L"r(1-\frac{X}{k})") 
+	lines!(ax1, 0:0.01:tmax, x -> x / ( 1+x^2 ), color=:red, label=L"\frac{X}{1 + X^2}") 
+
+	axislegend()
+	ylims!(0,0.52)
+
+	f(x) = r*(1 - x/k) - x/(1+x^2)
+	f_prime(x) = (-r) / k + -1 / (1 + x^2) - 2*x*((-x) / ((1 + x^2)^2))
+	# stability plot (something's not working)
+	
+	ax2 = Axis(fig[2, 1]) 
+	hidespines!(ax2)
+	hidedecorations!(ax2)
+	plot_stability(ax2, f, f_prime)
+	rowsize!(fig.layout, 1, Relative(0.95))
+	
+	linkxaxes!(ax1, ax2)
+	
+	# Part 2 - Solving the model
+	
+	function BudWorm!(du, u, p, t) 
+		r,k = p
+		X = u[1]
+		du[1] = r*X*(1-X/k) - X^2 / (1 + X^2)
+	end
+
+	u0 = [0.001] 
+	tspan = (0.0, 150.0)
+	prob = ODEProblem(BudWorm!, u0, tspan, [r,k])
+	sol = solve(prob)
+	
+	ax = Axis(fig[1, 2], title = "Numeric solution", 
+			  xlabel = "Time", ylabel = "Population")
+	
+	lines!(ax, sol.t, abs.(sol[1,:]), color = :red, label = "x1")
 	fig
 end
 
@@ -116,6 +451,7 @@ DifferentialEquations = "0c46a032-eb83-5123-abaf-570d42b7fbaa"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 PlutoUI = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
 Roots = "f2b01f46-fcfa-551c-844a-d8ac1e96c665"
+StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
 Symbolics = "0c5d862f-8b57-4792-8d23-62f2024744c7"
 
 [compat]
@@ -123,6 +459,7 @@ CairoMakie = "~0.12.11"
 DifferentialEquations = "~7.13.0"
 PlutoUI = "~0.7.60"
 Roots = "~2.1.8"
+StaticArrays = "~1.9.7"
 Symbolics = "~6.4.0"
 """
 
@@ -132,7 +469,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.10.5"
 manifest_format = "2.0"
-project_hash = "154cf8d895d2d7f2aba5110570ac3dec6d8e598c"
+project_hash = "6ccc36cb77a25d1557bf0bdf2ec4e3342998f84d"
 
 [[deps.ADTypes]]
 git-tree-sha1 = "99a6f5d0ce1c7c6afdb759daa30226f71c54f6b0"
@@ -2819,9 +3156,25 @@ version = "3.6.0+0"
 # ╔═╡ Cell order:
 # ╠═e294cc06-8612-4b0d-a6a8-71fd2c9b9b0a
 # ╟─77f53eee-7f3e-11ef-1c4f-19f70a6defd8
-# ╠═e9df3bcd-0b22-4310-8091-9c2c06d74fb8
-# ╠═0d3c7e7d-89f2-4e56-a0e1-6c3f4e882cff
-# ╠═ef7c29d2-92b7-4a62-a4f0-03e15da6f983
-# ╠═1d57537e-8ff8-45c8-b32d-439392a09f16
+# ╟─e9df3bcd-0b22-4310-8091-9c2c06d74fb8
+# ╟─0d3c7e7d-89f2-4e56-a0e1-6c3f4e882cff
+# ╟─c44f28c6-34db-4e9a-834e-e1d99761996b
+# ╟─7a7360c3-6dce-4639-b37b-4f4f9a9d0014
+# ╟─1a31c7bf-f6b3-4dfb-b800-56e7e53daf19
+# ╟─ca2de1cd-dfe0-4777-8e6a-aee8c987c1e6
+# ╟─852053ab-357f-4e15-97bf-7b27c01c8929
+# ╟─1d57537e-8ff8-45c8-b32d-439392a09f16
+# ╟─bfefee0d-6d54-414a-baab-05e5f2edf353
+# ╟─784867ee-33ac-4381-8259-cf6b421eba08
+# ╟─09a6c2d6-ac7d-43b5-863f-84db7059eeb2
+# ╠═e68eabd7-f21e-4290-924a-9fe5f80a6919
+# ╠═288034cd-907d-4d40-8c4b-8b22b5176056
+# ╟─b32c0f0f-9e92-4cde-9027-68eb1373244e
+# ╟─d4bc7e01-cc34-4374-bf1e-37562a46e2d4
+# ╟─166a1fca-a3b2-4b80-a793-8c27e7178b3d
+# ╟─88713b49-2017-4d9e-b6cc-7fe1ffc0a08c
+# ╟─96f12027-bd27-41bb-a9dd-a24254b3d4f9
+# ╠═76fda2a0-fb4a-44c7-845f-764504b6ba24
+# ╠═46c84b21-889c-4c46-84e2-8ff2b2218541
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
