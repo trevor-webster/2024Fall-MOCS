@@ -45,3 +45,49 @@ Next week we start looking at spatially-structured systems!
     <li><input type="checkbox" id="task1"><label for="task1">Quiz 5</label></li>
   </ul>
 </div>
+
+---
+
+## Bonus content
+
+### Maximal Lyapunov exponent
+
+One of the characteristic features of a chaotic system is _sensitivity to initial conditions_. If in a chaotic regime (notice that the phase space of a system can both have chaotic and regular regions), no matter how close two initial conditions are, their following trajectories will diverge from each other. A way to quantify how fast such divergence happens is computing the set of Lyapunov exponents. For a system leaving in an ${tex`n`}-dimensional phase space, you get ${tex`n`} exponents, one for each direction you can shift from a point. Nonetheless, to know whether two trajectories are going to diverge or not, it is enough to know the value of the maximal Lyapunov exponent (MLE): if this is positive, there exists at least one direction along which the trajectories will depart from each other.
+
+The MLE is defined as follows. Consider a continuous map ${tex`\dot{x} = f(x(t))`}, and two close initial (${tex`t=0`}) points ${tex`x_0`} and ${tex`x_0'=x+\varepsilon`}, with ${tex`\varepsilon`} arbitrarily small but nonzero. (Notice that in general ${tex`x`} is a vector of dimension ${tex`n`}; and remember ${tex`n>2`} is a necessary condition for chaos in continuous systems.) After a time ${tex`t`}, ${tex`x_0`} is mapped to ${tex`x(t)`}, and ${tex`x_0'`} to ${tex`x'(t)`}. Suppose now to relate the difference between the two trajectories at time ${tex`t`}, ${tex`\vert x'(t) - x(t)\vert`}, with the initial difference at time ${tex`0`}, ${tex`\vert\varepsilon\vert`}, as
+```tex
+\begin{equation}
+\vert x'(t) - x(t)\vert = \vert\varepsilon\vert e^{\lambda t} \tag{1}
+\end{equation}
+```
+The parameter ${tex`\lambda`} is the MLE: if positive, the two trajectories depart (exponentially fast); if negative, they converge (exponentially fast). Equation (1) assumes a steady behavior for the difference ${tex`\vert x'(t) - x(t)\vert`}. However, due to the nonlinearity of the dynamics, that difference will sometime shrink and sometimes grow. What Lyapunov exponents measure is the average behavior over large time scales. We thus want to take two limits: ${tex`\vert\varepsilon\vert \rightarrow 0`} – arbitrarily close initial points – and ${tex`t \rightarrow \infty`} – long-time behavior. Inverting Equation (1), we thus have
+```tex
+\begin{equation}
+\lambda = \lim_{t\rightarrow \infty} \lim_{\vert\varepsilon\vert \rightarrow 0} \frac{1}{t} \ln\left(\frac{\vert x'(t) - x(t)\vert}{\vert\varepsilon\vert}\right) \tag{2}
+\end{equation}
+```
+
+In the case of a discrete map ${tex`x_{t} = f(x_{t-1})`}, ${tex`t`} taking integer values, we can easily make Equation (2) a bit more explicit. Remember that chaos is possible even in one dimension for discrete systems, so for simplicity let us assume ${tex`x`} to be just a scalar. Observe that ${tex`x_{t}`} is given by applying ${tex`t`} times the map ${tex`f`} to ${tex`x_0`}:
+```tex
+\begin{equation}
+x_t = \underbrace{f \circ f \circ \cdots \circ f}_{t\ \text{times}}(x_0) \equiv g^{(t)}(x_0)  \tag{3}
+\end{equation}
+```
+where ${tex`f \circ f(x) \equiv f(f(x))`}, and we defined the function ${tex`g^{(t)}`} as being the composition of ${tex`t`} functions ${tex`f`}. Repeating the same for ${tex`x_0'=x+\varepsilon`}, we can write ${tex`x_t' = g^{(t)}(x_0') = g^{(t)}(x_0+\varepsilon)`}. Expanding the latter according to its Taylor series around the point ${tex`x_0`} and repeatedly using the relation ${tex`g^{(t)} = f \circ g^{(t-1)}`}, we get
+```tex
+\begin{align}
+\underbrace{g^{(t)}(x_0+\varepsilon)}_{x'_t} &= \underbrace{g^{(t)}(x_0)}_{x_t} + \varepsilon \left.\frac{dg^{(t)}}{dx}\right\vert_{x = x_0} \notag \\
+                         &= x_t + \varepsilon \left.\frac{d}{dx}\left(f \circ g^{(t-1)}\right)\right\vert_{x = x_0} \notag \\
+                         &= x_t + \varepsilon \left.\frac{df}{dx}\right\vert_{x = \underbrace{g^{(t-1)}(x_0)}_{x_{t-1}}} \left.\frac{dg^{(t-1)}}{dx}\right\vert_{x = x_0} \notag \\
+                         &= x_t + \varepsilon \left.\frac{df}{dx}\right\vert_{x = x_{t-1}} \left.\frac{df}{dx}\right\vert_{x = \underbrace{g^{(t-2)}(x_0)}_{x_{t-2}}} \left.\frac{dg^{(t-2)}}{dx}\right\vert_{x = x_0} \notag \\
+                         &= x_t + \varepsilon \left.\frac{df}{dx}\right\vert_{x = x_{t-1}} \left.\frac{df}{dx}\right\vert_{x = x_{t-2}} \cdots \left.\frac{df}{dx}\right\vert_{x = x_0}  \notag \\
+                         &= x_t + \varepsilon \prod_{\tau = 0}^{t-1} \left.\frac{df}{dx}\right\vert_{x = x_{\tau}} \tag{4}
+\end{align}
+```
+An analogous equation to Equation (1) thus leads to
+```tex
+\begin{equation}
+\lambda = \lim_{t\rightarrow \infty} \frac{1}{t} \ln\left(\prod_{\tau = 0}^{t-1} \left\vert\left.\frac{df}{dx}\right\vert_{x = x_{\tau}}\right\vert\right) = \lim_{t\rightarrow \infty} \frac{1}{t} \sum_{\tau = 0}^{t-1} \ln\left(\left\vert\left.\frac{df}{dx}\right\vert_{x = x_{\tau}}\right\vert\right) \tag{5}
+\end{equation}
+```
+From Equation (5) we can see that the MLE is a temporal average.
