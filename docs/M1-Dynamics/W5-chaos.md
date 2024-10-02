@@ -16,6 +16,7 @@
     <li><span>📖</span> <a href="https://github.com/jstonge/2024Fall-MOCS/blob/main/docs/readings/Garfinkel-2017-ch5.pdf" target="_blank">Chaos (Ch.5 Garfinkel)</a></li>
   </ul>
 </div>
+</div>
 
 This week we look at examples of models with more than one effective dimension (recall that the closed-population SIS model is effectively one-dimensional) and learn to analyze them through the method of nullclines. Adding one or more dimensions, we will unlock more interesting behaviors other than attraction to or repulsion from fixed points. Things become rapidly cumbersome though, and since this is not a calculus or algebra course, we will mainly observe those behaviors by integrating our ODEs numerically. In doing so, we will even get a taste of chaos!
 
