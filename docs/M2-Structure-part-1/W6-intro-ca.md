@@ -50,14 +50,13 @@ Fractals are weird objects in many aspects. The weirdness of some of these aspec
 
 This fractal is defined by the following rule: start with a single line segment. Take out the third in the middle. Repeat indefinetely this process for any segment left at the previous step. You end up with a sequence (from top to bottom) looking like this:
 
-<figure class="quote">
+<figure class="">
   <blockquote>
-  <h3></h3>
   <div class="container">
   <img src="../assets/cantor_set.webp"></img>
   </div>
+  [First five generations of the infinite process leading to the Cantor ternary set.]
   <blockquote>
-  First five generations of the infinite process leading to the Cantor ternary set.
 </figure>
 
 <style>
@@ -71,11 +70,11 @@ This fractal is defined by the following rule: start with a single line segment.
   }
 </style>
 
-What is the length ${tex`L_n`} of this object at generation ${tex`n`}? This equals the length ${tex`L_0`} of the initial segment minus all the portions of it removed during the ${tex`n`} steps. At each step, a third is removed from each present segment. The number of segments doubles each time, while the segments removed measure a third of the those removed at the previous step. Using the finite sum of a geometric series, it is easy to see that ${tex`L_n = L_0 (2/3)^n`}. Therefore, in the ${tex`n \rightarrow \infty`} limit the sequence converges to a set of length zero, even though it has an infinite (uncountable) number of elements.
+What is the length ${tex`L_n`} of this object at generation ${tex`n`}? This equals the length ${tex`L_0`} of the initial segment minus all the portions of it removed during the ${tex`n`} steps. At each step, a third is removed from each present segment. The number of segments doubles each time, while the segments removed measure a third of those removed at the previous step. Using the finite sum of a geometric series, it is easy to see that ${tex`L_n = L_0 (2/3)^n`}. Therefore, in the ${tex`n \rightarrow \infty`} limit the sequence converges to a set of length zero, even though it has an infinite (uncountable) number of elements.
 
 Does this mean that it has dimension zero? Using the box-counting method, if we decrease by a factor of ${tex`\epsilon^{-1} = 3`} the length of the sticks we are using to cover the set, we then need twice the number of sticks we needed at the previous step, i.e., ${tex`N(\epsilon^{n+1})/N(\epsilon^{n}) = 2`}. From the formula for the box-counting dimension, then ${tex`D = -\log(2)/\log(1/3) = \log(2)/\log(3) \approx 0.631`}. The set has null length as any set of points, but its dimension is nonzero! More importantly, the dimension ${tex`D`} is not a property of the limit set, but of the relation between any two adjacent scales! This makes the fractal dimension something measurable even in real, finite systems.
 
-A coastline, for instance, is a line of finite length and has dimension 1, no matter how rough and folded it is or how small are the sticks we are using (i.e., how good is the resolution at which we observe the coastline). Nonetheless, it is possible that as we make the sticks smaller and smaller, the number of them required to cover the coastline does not increase linearly, but faster, implying a fractal dimension. Eventually, when our sticks gets to the diameter of sand grains, that relation becomes linear (the same happens when stopping the Cantor set algorithm at generation ${tex`n`} and considering sticks of length ${tex`3^{-n-1} L_0`} or smaller). On the other hand, we can only use one stick once it is so long to span the entire coastline or any larger distance, meaning there is no scaling at all. But between these two cutoff scales, the scaling exists and might do so with a noninteger scale exponent (aka dimension).
+Take a coastline for instance. No matter how rough and folded it is, if the scale – the stick – we are using to measure it is sufficiently small, say smaller than a sand grain, the coastline will appear to have dimension 1 and a finite length. That is, below that scale, the number of sticks you need to cover it scales linearly with their length (the same happens when stopping the Cantor set algorithm at generation ${tex`n`} and considering sticks of length ${tex`3^{-n-1} L_0`} or smaller). On the opposite extreme, we can only use one stick once this is so long to span the entire coastline or any larger distance, meaning there is no scaling at all; or, put differently, the coastline appears point-like, of dimension zero. Nonetheless, between these two cutoff scales, the number of sticks required to cover the coastline may scale with a noninteger scale exponent, implying a fractal dimension. It turns out that real coastlines, generally, have fractal dimension across different resolution scales.
 
 
 ---
@@ -85,3 +84,7 @@ A coastline, for instance, is a line of finite length and has dimension 1, no ma
 Lhd introducing binary numbers
 
 <iframe src="https://streaming.uvm.edu/embed/49975/" width="560" height="315" frameborder="0" allowfullscreen></iframe>
+
+Great 3b1b video on the meaning of fractal dimension
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/gB9n2gHsHN4?si=WDHD2I2ltMAQxeeQ" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
