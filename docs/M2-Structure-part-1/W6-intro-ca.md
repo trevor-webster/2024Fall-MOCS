@@ -54,7 +54,7 @@ This fractal is defined by the following rule: start with a single line segment.
   <blockquote>
   <h3></h3>
   <div class="container">
-  <img src="./assets/cantor_set.webp"></img>
+  <img src="../assets/cantor_set.webp"></img>
   </div>
   <blockquote>
   First five generations of the infinite process leading to the Cantor ternary set.
