@@ -44,6 +44,38 @@ We close by introducing the most popular CA, Conway's _Game of Life_.
 
 ---
 
+## On fractals and their dimension
+
+Fractals are weird objects in many aspects. The weirdness of some of these aspects emerge, however, only when the scales involved are pushed to some mathematical limit. The resulting structure is consequently irrealizable in the real world, and works just as an idealized limit. Examples are the length, surface, volume (or any generalization of the kind) of a fractal. Other aspects like the fractal dimension, instead, appear even for "finite", realizable fractals. Let us illustrate these facts via perhaps the most simple algorithm to generate a fractal, the Cantor ternary set.
+
+This fractal is defined by the following rule: start with a single line segment. Take out the third in the middle. Iterate this process for any segment left at previous step. You end up with a sequence looking like this:
+
+<figure class="quote">
+  <blockquote>
+  <h3>Cantor ternary set</h3> 
+  <div class="container">
+  <img src="./assets/cantor_set.png"></img>
+  </div>
+  <blockquote>
+</figure>
+
+<style>
+  
+  img {
+    margin: 2rem;
+  }
+
+  .container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+</style>
+
+
+---
+
 ## Bonus content
 
 Lhd introducing binary numbers
