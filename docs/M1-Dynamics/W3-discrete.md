@@ -103,19 +103,21 @@ __P2__: Given ${tex`n`} competing Poisson processes, the probability of Poisson 
 
 ## Case study: discrete SIR
 
-<div class="math-box">
+<!-- <div class="math-box">
 Work in progress, there might be mistakes.
-</div>
+</div> -->
 
-We review this week's key concepts by way of analyzing the discrete SIR model. First, we sketch our assumptions about the model using a flow diagram:
+We review this week's key concepts by analyzing the discrete-time SIR model. For each contact between a susceptible and an infected individual, an infection event occurs with probability ${tex`\beta \Delta t`}. Susceptible individuals then recover (more generally, the ${tex`R`} compartment can stand for 'removed', for individuals there are effectively outside the dynamics, either because they gain definitive immunity or die) with probability ${tex`\gamma \Delta t`}. We can resume these assumptions using a flow diagram:
 
 ```mermaid
 graph LR
-S("S(t)") --βS(t)I(t)---> I("I(t)")
-I("I(t)") --αI(t)---> R("R(t)")
+S("S") --(βΔt)SI---> I("I")
+I("I") --(αΔt)I---> R("R")
 ```
 
-There are different ways to translate this sketch into mathematics and code. If we focus on the change in infected individuals, we could write
+We already saw in the second clip how to derive the probability that a susceptible individual gets the infection via at least one infectious contact. It reads ${tex`1 - ( 1 - \beta \Delta t)^{I(t)}`}, namely, ${tex`1\ -`} [probability of _not_ getting infected by any of the ${tex`I(t)`} contacts]. (Say 4\% transmission probability and 5 infected contacts, you get ${(Math.pow(1-0.04, 5)*100).toFixed(1)}\% of chance of not being infected.)
+
+<!-- There are different ways to translate this sketch into mathematics and code. If we focus on the change in infected individuals, we could write
 
 
 ```tex
@@ -128,24 +130,24 @@ In the discrete realm, this version has two issues. First, what if we assume a r
 Inputs.table(naive_approach(), {header: ["suceptible", "infected"], maxWidth: 400})
 ```
 
-This is nonsense. What is happening? The issue is that in a [fully-connected]() world, infecting 5\% of 10,000 leads to a lot of transmission. Using the number of transmission by contact rate you can end up with more transmission than there are susceptible individuals. But you can't get infected more than once! One way around this problem is to have a very small transmission probability, say 5 in a million (or ${5/1_000_000}). This approach is hinting at the second issue; that of simultaneous events. By assuming a very small ${tex`\beta`}, we are assuming that there is very little chance than two infection event happen at the same time. 
+This is nonsense. What is happening? The issue is that in a [fully-connected]() world, infecting 5\% of 10,000 leads to a lot of transmission. Using the number of transmission by contact rate you can end up with more transmission than there are susceptible individuals. But you can't get infected more than once! One way around this problem is to have a very small transmission probability, say 5 in a million (or ${5/1_000_000}). This approach is hinting at the second issue; that of simultaneous events. By assuming a very small ${tex`\beta`}, we are assuming that there is very little chance than two infection event happen at the same time.  -->
 
-What we can do instead is to change the units of our model, going from counting contacts to counting people switching from susceptible to infected. How? In plain english, we want the probability of _not having a transmission_. In this week's second clip, we saw that ${tex`(1-\beta)^{I(t)}`} is the probability of susceptible people of not being infected (aka, say 5\% transmission probability, with 4 infected individuals, you get (${(Math.pow(1-0.05, 5)*100).toFixed(2)}\% of chance of not being infected). Then, ${tex`1 - \text{(prob not infected)}`} is the probability of not having a transmission event, which is normalized between 0 and 1. Hence, we write
+<!-- What we can do instead is to change the units of our model, going from counting contacts to counting people switching from susceptible to infected. How? In plain english, we want the probability of _not having a transmission_. In this week's second clip, we saw that ${tex`(1-\beta)^{I(t)}`} is the probability of susceptible people of not being infected (aka, say 5\% transmission probability, with 4 infected individuals, you get (${(Math.pow(1-0.05, 5)*100).toFixed(2)}\% of chance of not being infected). Then, ${tex`1 - \text{(prob not infected)}`} is the probability of not having a transmission event, which is normalized between 0 and 1. -->
+
+We thus get the following system of three equations
 
 ```tex
-\begin{equation*}
-  \begin{split}
-    S(t+1) &= S(t) (1 - ( 1 - \beta)^{I(t)})\\
-    I(t+1) &= S(t) (1 - ( 1 - \beta)^{I(t)}) - \alpha I(t)\\
-    R(t+1) &= \alpha I(t)
-  \end{split}
-\end{equation*}
+\begin{align}
+    S(t+\Delta t) &= S(t) ( 1 - \beta \Delta t)^{I(t)} \tag{1a}\\
+    I(t+\Delta t) &= (1 - \gamma \Delta t)I(t) + S(t) \left[1 - ( 1 - \beta \Delta t)^{I(t)}\right] \tag{1b}\\
+    R(t+\Delta t) &= R(t) + \gamma \Delta t I(t) \tag{1c}
+\end{align}
 ```
 
-In code, we write
+In code (taking ${tex`\Delta t = 1`}):
 
 ```js echo
-function runMathematicalSIR(steps, N, β, α) {
+function runMAthDiscreteSIR(steps, N, β, γ) {
     // Initialize
     let I = 1, R = 0
     let S = N - I - R;
@@ -162,12 +164,11 @@ function runMathematicalSIR(steps, N, β, α) {
       Rt[step] = R;
 
       // Update
-      // (1-(1-beta)^(t)) OR beta*I, based on toggle's value
-      let delta_I = toggle ? (1 - Math.pow(1 - β, I)) :  β*I
-      let delta_R = α*I  
+      let delta_I = S*(1 - Math.pow(1 - β, I))
+      let delta_R = γ*I  
 
-      S -= S*delta_I;
-      I += S*delta_I - delta_R;
+      S -= delta_I;
+      I += delta_I - delta_R;
       R += delta_R;
 
     }
@@ -176,13 +177,13 @@ function runMathematicalSIR(steps, N, β, α) {
 ```
 
 ```js
-let toggle = view(Inputs.toggle({label: "use ( 1 - (1-β)^I(t) )"}))
-let beta = view(Inputs.range([0.00005, 1.1], {label: "beta", step: 0.00001, value:  0.00005}))
-let alpha = view(Inputs.range([0.01, 1.], {label: "alpha", step: 0.001, value:  0.05}))
+// let toggle = view(Inputs.toggle({label: "use ( 1 - (1-β)^I(t) )"}))
+let beta = view(Inputs.range([0.00001, 0.0005], {label: "β", step: 0.00001, value:  0.00005}))
+let gamma = view(Inputs.range([0.0, 1.], {label: "γ", step: 0.01, value:  0.1}))
 ```
 
 ```js
-let [S, I, R] = runMathematicalSIR(100, 10000, beta, alpha);
+let [S, I, R] = runMAthDiscreteSIR(100, 10000, beta, gamma);
 ```
 ```js
 Plot.plot({
@@ -203,12 +204,14 @@ Plot.plot({
   })
 ```
 
-The rates of changes are still going fast, but at least we don't get nonsensical values.
+<!-- The rates of changes are still going fast, but at least we don't get nonsensical values. -->
 
-Computational simulations are powerful in part due to their flexibility. Instead of tracking expected rate of changes, we simulate a single realization of the model using random variables. In this case, we rely on the Binomial distribution, which helps us determine how many successful events occur—such as how many _S_ individuals become infected—based on the probability of infection derived from the expected rate of change. The code remains largely the same, but we adjust how we update key quantities. 
+...
+
+The model above is deterministic as it only tracks the expected values of the number of individuals in each compartment. Such formulation is exact _only_ for a system of infinite size, as fluctuation around the mean becomes negligible. The stochasticity of the contagion process thus never disappears for a system of finite size (aka, real-world systems). We can see this by simulating the process using random variables. In this case, we rely on the Binomial distribution, which helps us determine how many successful events occur – such as how many susceptible individuals become infected – based on the probability of infection derived from the expected rate. The code remains largely the same, but we adjust how we update key quantities.
 
 ```echo
-function runComputationalSIR(steps, N, β, α) {
+function runCompDiscreteSIR(steps, N, β, γ) {
     
     [...]
     
@@ -218,33 +221,33 @@ function runComputationalSIR(steps, N, β, α) {
       
       // We use our previously defined math as probability of infection in the Binomial distribution
       let p_inf = 1 - Math.pow(1 - β, I); 
-      let delta_I = Binomial(S, p_inf); 
-      let delta_R = Binomial(I, α);
+      let new_I = Binomial(S, p_inf); 
+      let new_R = Binomial(I, γ);
       
       // Update
-      S -= S*delta_I;
-      I += S*delta_I - delta_R;
-      R += delta_R;
+      S -= new_I;
+      I += new_I - new_R;
+      R += new_R;
 
       [...]
 }
 ```
 
-Here we plot the simulation of infections against the mathematical version: 
+Click the button below to run a simulation and compare with the prediction made by the mathematical model: 
 
 ```js
-const replay = view(Inputs.button("New contagion"));
+const replay = view(Inputs.button("run new simulation"));
 ```
 
 ```js
 replay;
-let [Sc, Ic, Rc] = runComputationalSIR(100, 10000, beta, alpha);
+let [Sc, Ic, Rc] = runCompDiscreteSIR(100, 10000, beta, gamma);
 ```
 
 ```js
 Plot.plot({
   x: {label: "time"},
-  y: {label: "# infected", grid:true},
+  y: {label: "number of infected", grid:true},
   color: {
     type: "categorical", domain: ["infected"],  range: ["red"],  legend:true
   },
@@ -257,11 +260,24 @@ Plot.plot({
   })
 ```
 
-Note that there are variation in draws. When the contagion takeoff, it is very similar to the mathematically defined version. But sometimes there we witness stochastic extinctions.
+Because of stochasticity, there are variation in draws. Notice, in particular, how from time to time the stochastic process goes extinct before an exponential growth can take place. With only the derministic model in our hand, when should we expect the process to be likely to take off? Imposing ${tex`S(t+\Delta t) = S(t)`} in Equation (1a) or ${tex`R(t+\Delta t) = R(t)`} in Equation (1c) requires ${tex`I = 0`}. Any state configuration ${tex`(S,I,R) = (S,0,N-S)`} is thus a fixed point of the dynamics. This is not really informative. The revelant question is instead whether or not the system experiences a rise in infections before relaxing to an inactive equilibrium. To get an answer, we need to estimate the stability of those fixed points.
 
-In the discrete SIR model, several fixed points can be identified. First, when $R = N$, no further infections can occur. Similarly, when ${tex`I = 0`}, the epidemic ends. However, a more interesting case is whether fixed points are stable? What if we have no infected individual in the system, then we nudge the system by injecting an infected individual. If the transmission rate is too low, stochastic extinctions occur, meaning patient zero cannot infect enough individuals to sustain the outbreak. At a certain threshold, denoted as ${tex`\beta_c`}, the transmission rate becomes high enough that patient zero will almost certainly trigger an epidemic.
+<!-- In the discrete SIR model, several fixed points can be identified. First, when $R = N$, no further infections can occur. Similarly, when ${tex`I = 0`}, the epidemic ends. However, a more interesting case is whether fixed points are stable? What if we have no infected individual in the system, then we nudge the system by injecting an infected individual. If the transmission rate is too low, stochastic extinctions occur, meaning patient zero cannot infect enough individuals to sustain the outbreak. At a certain threshold, denoted as ${tex`\beta_c`}, the transmission rate becomes high enough that patient zero will almost certainly trigger an epidemic. -->
 
-### Stability analysis
+### Linear stability analysis and criticality
+
+This is the art of nudging a little our system around a fixed point to determine the (local) stability of that point. If following the perturbation the system tends to go back to that point, then the latter is said to be _stable_. It is _unstable_ if the systems tends to move away from it, or _neutrally stable_ if the perturbation neither grows or shrinks.
+
+For our case study, we want to know the conditions under which the generic fixed point ${tex`(S,I,R) = (S,0,N-S)`} is stable or not. Nudging the system then means introducing an infinitesimal amount ${tex`I \rightarrow 0`} in the infected compartment and see whether such amount will grow to larger values or shrink towards zero. To do this, we first compute Equation (1b) in the ${tex`I \rightarrow 0`} limit. From ${tex`(1-\beta \Delta t)^{I(t)} = 1 - \beta \Delta t I(t) + {\cal O}(I(t)^2)`}, we get
+```tex
+\begin{align}
+    I(t+\Delta t) &= (1 - \gamma \Delta t)I(t) + \beta \Delta t S(t) I(t) \notag \\
+    &= (1 - \gamma \Delta t + \beta \Delta t S(t)) I(t) \notag
+\end{align}
+```
+It follows that ${tex`I(t+\Delta t) < I(t)`} – the perturbation shrinks – if and only if ${tex`\beta S < \gamma`}. The infection-free state ${tex`(S,I,R) = (S,0,N-S)`} is stable in this case. Otherwise, if ${tex`\beta S > \gamma`}, the perturbation expands and an outbreak takes place. We can restate these conditions in a more meaningful way by defining the basic reproduction number ${tex`R_0 \equiv \beta S/\gamma`}. Given that ${tex`1/\gamma`} is the average infection period, and that ${tex`\beta S`} is the average rate at which an infected individual produces new infections, ${tex`R_0`} represents the average number of new infections (secondary cases) produced by an infected individual (zero/primary case) in an otherwise infection-free population. The infection-free state is thus stable for ${tex`R_0 < 1`} and unstable for ${tex`R_0 > 1`}. The condition ${tex`R_0 = 1`} marks a _critical point_: outbreaks are expected above it but not below it. This is shown in the plot below, which reports results from the simulated SIR process.
+
+<!-- ### Stability analysis
 
 Stability analysis is the art of nudging a little our system around a given point to determine the (local) stability of fixed points. What do we mean by nudging? Let
 
@@ -286,25 +302,29 @@ Now, if we're thinking about patient zero, where almost everyone is still suscep
 \beta_c \gt \frac{\alpha}{N}
 ```
 
-So, for the outbreak to take off, the transmission rate has to be greater than this threshold.
+So, for the outbreak to take off, the transmission rate has to be greater than this threshold. -->
 
 ```js
 manySIRs()
 ```
 
-If you increase the transmission rate just above 5.0e-6, you hit a phase transition. At this point, even a small increase in the number of infected people can trigger a full-blown epidemic.
+We considered a population of size ${tex`N = 10^4`} in a quasi-susceptible initial state (${tex`S \simeq N`}), and took ${tex`\gamma = 0.05`}. Imposing ${tex`R_0 = 1`} yields ${tex`\beta = 5\cdot 10^{-6}`} as the critical value for the infection rate. This is the value where a _phase transition_ occurs, separating the inactive phase (left) from the active one (right).
 
-Another way to look at this phase transition is by looking at the log-log of number of outbreaks with respect to outbreak size. By varying ${tex`\beta`} around the critical threshold, we can see intensity and frequency of outbreak size change drastically. This is characteristic of heavy tail distributions, that is, distributions that decay slower than any exponential. That is, most of the times you get small values, but once in a life time you get a black swan events that screw everything up.
+We can get a more detailed view of this transition if we look at the distribution of outbreak sizes. That is, we choose a value for ${tex`\beta`} (notice the slider below) and run lots of simulations to record how many outbreaks of each possible size occurred. As we cross the critical point ${tex`\beta = 5\cdot 10^{-6}`}, a bulk of large outbreaks appears on the right. These are indeed the large outbreaks we expect to see above the critical point. The adjective _large_ here has a specific meaning: it indicates outbreaks whose size is proportional to the size of the system – double the system's size and those large outbreaks will double their size too. The small outbreaks stored in the left chunk of the distribution, instead, do not scale and so their size becomes negligible as you consider bigger and bigger populations. Because of stochastic fluctuations, such small, localized infection chains are there even far above the critical point, although they become less and less frequent.
 
 ```js
-const beta2 = view(Inputs.range([2.0e-6, 9.0e-6], {value: 4.0e-6, label:"β"}))
+const beta2 = view(Inputs.range([2.0e-6, 9.0e-6], {step: 1.0e-6, value: 5.0e-6, label:"β"}))
 ```
-
+ 
 ```js
 loglog_outbreaks()
 ```
 
-When ${tex`\beta`} is small, there's a higher chance of stochastic extinctions. For example, with ${tex`\beta=2e-6`} , the outbreak sizes range from around 100 people to at most a few hundreds. But once you increase ${tex`\beta`} to ${tex`3e-6`}, you start to see large outbreaks become more often (the chunk on the right becomes higher and higher). When crosses the critical threshold, which is roughly , that’s when the contagion really takes off.
+You may have noticed that the plot above has both its axis in logarithmic scale. The reason is that it allows to get a first, visual check of whether the system is or not at a critical point. How? Setting ${tex`\beta = 5\cdot 10^{-6}`} you should be able to see (either making an effort of imagination or running many more simulations to remove some noise) that the tail of the distribution is fitted by a straight line. A straight line in a log-log plot is a power-law in a linear plot, i.e., a curve of the form ${tex`y(x) \propto x^{\alpha}`}. At the critical point, the tail of the cluster size distribution thus follows a power-law. This is a general signature of _criticality_ that you may encounter in any kind of system undergoing a phase transition. Also observe that moving just a little away from the critical point, either below or above it, makes the tail of the (small outbreaks) distribution decaying exponentially.
+
+<!-- Another way to look at this phase transition is by looking at the log-log of number of outbreaks with respect to outbreak size. By varying ${tex`\beta`} around the critical threshold, we can see intensity and frequency of outbreak size change drastically. This is characteristic of heavy tail distributions, that is, distributions that decay slower than any exponential. That is, most of the times you get small values, but once in a life time you get a black swan events that screw everything up. 
+
+When ${tex`\beta`} is small, there's a higher chance of stochastic extinctions. For example, with ${tex`\beta=2e-6`} , the outbreak sizes range from around 100 people to at most a few hundreds. But once you increase ${tex`\beta`} to ${tex`3e-6`}, you start to see large outbreaks become more often (the chunk on the right becomes higher and higher). When crosses the critical threshold, which is roughly , that’s when the contagion really takes off. -->
 
 ---
 
@@ -324,7 +344,7 @@ And Taylor Series
 
 
 ```js
-function runComputationalSIR(steps, N, β, α) {
+function runCompDiscreteSIR(steps, N, β, γ) {
     // Initialize
     let I = 1;
     let R = 0;
@@ -343,7 +363,7 @@ function runComputationalSIR(steps, N, β, α) {
 
       let p_inf = 1 - Math.pow(1 - β, I); // 1 - (1-β)^I(t)
       let new_I = Binomial(S,p_inf);
-      let new_R = Binomial(I,α);
+      let new_R = Binomial(I,γ);
 
       // Update
       S -= new_I;
@@ -407,7 +427,7 @@ function manySIRs() {
   for (const β of β_values) {
       let results = [];
       for (let i = 0; i < repetitions; i++) {
-          const [St, It, Rt] = runComputationalSIR(steps, N, β, α);
+          const [St, It, Rt] = runCompDiscreteSIR(steps, N, β, α);
           results.push(Rt[Rt.length - 1]); // Taking the last value of Rt array
       }
       const averageOutbreakSize = d3.mean(results);
@@ -452,7 +472,7 @@ function runReps(steps, N, β, α, repetitions) {
 
   // Run the model, many times
   for (let reps = 0; reps < repetitions; reps++) {
-    let [S, I, R] = runComputationalSIR(steps, N, β, α);
+    let [S, I, R] = runCompDiscreteSIR(steps, N, β, α);
     results[reps] = R[R.length - 1];
   }
 
@@ -484,7 +504,7 @@ function loglog_outbreaks() {
 
  return Plot.plot({
     x: {label: "Outbreak size", type: "log"},
-    y: {label: "Number of outbreaks", type: "log"},
+    y: {label: "Counts", type: "log"},
     grid: true,
     marks: [
       Plot.dot(pairs, { fill: "black", stroke: "white"}),

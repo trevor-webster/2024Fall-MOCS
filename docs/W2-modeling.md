@@ -1,4 +1,4 @@
-## Model theory
+## Modeling
 
 <div class="flex-container">
   <div class="left-div callback">
