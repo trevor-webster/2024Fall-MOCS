@@ -150,15 +150,15 @@ let
 	
 	# we plug in our values
 	Je_eval = substitute.(Je, (Dict(
-			μ => 5, β => 1., ν => 10., γ => 1., 
+			μ => 4, β => 1., ν => 10., γ => 1., 
 	),))
 
 	println("trace: $(tr(Je_eval))") # = 0, means it is stable
 
 	
 	# We can look at the eigenvalues at those values
-	round.(eigvals(Symbolics.value.(Je_eval)), digits=2)
-
+	eigen = round.(eigvals(Symbolics.value.(Je_eval)), digits=2)
+	println(eigen)
 	
 end
 
@@ -252,7 +252,51 @@ Two species LK model of competition (Roughgarden §6.1):
 
 $$\frac{dN_1}{dt} = \frac{r_1 N_1(K_1 - N_1 - \alpha_{12} N_2)}{K1}$$
 $$\frac{dN_2}{dt} = \frac{r_2 N_2(K_2 - N_2 - \alpha_{21} N_1)}{K2}$$
+
+Nudge at $N_1=\epsilon N_2 = 0  \le K_1$
+
+$$\frac{dN_1}{dt} \propto K_1 - \epsilon > 0$$
+Nudge at $N_1=0, N_2 = \epsilon  \le K_2$
+
+$$\frac{dN_2}{dt} \propto K_2 - \epsilon > 0$$
 "
+
+
+
+# ╔═╡ fe40fd9e-5d7b-499f-b6da-9d42ca4d22d7
+
+
+# ╔═╡ 23f957e0-13c4-4a83-8b65-24286ae9d93b
+
+
+# ╔═╡ 2d2dee51-6346-4138-9fda-c4bb3dfef49a
+let
+	@variables r1 r2 α12 α21 k1 k2 n1 n2
+	# The jacobian is 
+	# [ ∂Ẋ/∂X  ∂Ẋ/∂Y 
+	#   ∂Ẋ/∂Y  ∂Ẏ/∂Y
+	# We get that easily in Symbolics
+	
+J = Symbolics.jacobian(
+		[
+			r1*n1*(k1 - n1 - α12*n2)/k1, 
+			r2*n2*(k2 - n2 - α21*n1)/k2
+		], 
+		[n1, n2]
+	)
+# we substitue in the Jacobian our nullclines
+	Je = substitute.(J, (Dict(n1 => (k1 - α21*k2)/(1 - α12*α21), n2 => (k2 - α12*k1)/(1 - α12*α21) ),))
+
+	println(Je)
+
+		# we plug in our values
+	
+	Je_eval = substitute.(Je, (Dict(
+			r1 => 0.01, r2 => 0.01, α12 => 1.2, α21 => 1.2, 
+			k1 => 20., k2 => 20.
+	),))
+	println("trace: $(tr(Je_eval))") # = 0, means it is stable
+end
 
 # ╔═╡ 27210822-ca11-4715-87fe-a368faccc885
 md"
@@ -530,7 +574,20 @@ let
 	plot_nullclines(ax, k1, α12, k2, α21)
 	plot_fixed_points(ax, k1, α12, k2, α21)
 
-	Axis(f[2,2], title="Mystery plot")
+	# 4 (k2/α12 < k1, k1/α21 < k2)
+	r1, r2, α12, α21, k1, k2 = 0.01, 0.01, 1.2, 1.2, 20., 20.
+	max_k = maximum([k1,k2])+5
+	ax = Axis(f[2,2], title="Coexistence 4")
+	streamplot!(
+		ax, 
+		x -> h(x, LK(r1,k1,α12,r2,k2,α21)), 
+		0..max_k, 0..max_k, 
+		colormap = :magma, 
+		arrow_size=10
+	)
+	plot_nullclines(ax, k1, α12, k2, α21)
+	plot_fixed_points(ax, k1, α12, k2, α21)
+	
 	current_figure()
 end
 
@@ -3335,10 +3392,13 @@ version = "3.6.0+0"
 # ╠═a4e84256-abd8-495c-8445-a75235b2669c
 # ╟─1cfab4fa-2fb0-49a4-92f6-a1a7eb56e8d2
 # ╟─5e26b052-7529-4841-a55c-79943c102bd6
-# ╟─897e030a-9efe-4ecd-8727-95bb4c5350ad
+# ╠═897e030a-9efe-4ecd-8727-95bb4c5350ad
 # ╠═a6097bcf-2a35-4d22-a622-ed264e5df5f4
-# ╟─966176bf-0d82-4829-b48e-3b9d78414f83
-# ╟─8939a047-a3ad-4ae2-8203-a5b832a2665e
+# ╠═966176bf-0d82-4829-b48e-3b9d78414f83
+# ╠═fe40fd9e-5d7b-499f-b6da-9d42ca4d22d7
+# ╠═23f957e0-13c4-4a83-8b65-24286ae9d93b
+# ╠═8939a047-a3ad-4ae2-8203-a5b832a2665e
+# ╠═2d2dee51-6346-4138-9fda-c4bb3dfef49a
 # ╟─27210822-ca11-4715-87fe-a368faccc885
 # ╟─887c30fb-410d-4ee2-a111-b652b248dd27
 # ╠═bc81df83-de41-421a-96af-bb6535f4e83f
