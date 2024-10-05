@@ -250,8 +250,8 @@ md"## Lotka volterra generalized version
 
 Two species LK model of competition (Roughgarden §6.1):
 
-$$\frac{dN_1}{dt} = \frac{r_1 N_1(K_1 - N_1 - \alpha_{12} N_2)}{K1}$$
-$$\frac{dN_2}{dt} = \frac{r_2 N_2(K_2 - N_2 - \alpha_{21} N_1)}{K2}$$
+$$\frac{dN_1}{dt} = \frac{r_1 N_1(K_1 - N_1 - \alpha_{21} N_2)}{K1}$$
+$$\frac{dN_2}{dt} = \frac{r_2 N_2(K_2 - N_2 - \alpha_{12} N_1)}{K2}$$
 
 
 "
@@ -262,6 +262,56 @@ $$\frac{dN_2}{dt} = \frac{r_2 N_2(K_2 - N_2 - \alpha_{21} N_1)}{K2}$$
 
 
 # ╔═╡ 23f957e0-13c4-4a83-8b65-24286ae9d93b
+
+
+# ╔═╡ fa099fe1-a72f-4b17-ac03-511e033e3e97
+function plot_nullclines2(ax, k1, α1, k2, α2, ρ)
+		x1_range = 0:0.01:k1
+		x2_nullcline = (k1 .- x1_range .-ρ*x1_range ) ./ α2
+		lines!(ax, x1_range, x2_nullcline, color=:red)
+	
+		x2_range = 0:0.01:k2
+		x1_nullcline = (k2 .- x2_range .-ρ*x2_range) ./ α1
+		lines!(ax, x1_nullcline, x2_range, color=:blue)
+end
+
+# ╔═╡ 73112c43-0331-4407-8fa2-b6c0ada51e9f
+let
+	
+	struct LK2{T}
+    	r1::T  
+    	k1::T  
+    	α12::T  
+    	r2::T
+    	k2::T
+    	α21::T
+		ρ::T
+	end
+
+	h(x, P::LK2) = Point2f( # y,x
+		P.r1*x[1] * ((P.k1 - x[1] - P.α21*x[2] - ρ*x[1]) / P.k1),
+		P.r2*x[2] * ((P.k2 - x[2] - P.α12*x[1] - ρ*x[2]) / P.k2)
+	)
+	
+	# Plotting
+	f = Figure(size = (800, 800))
+
+	# 4 (k2/α12 < k1, k1/α21 < k2)
+	r1, r2, α12, α21, k1, k2, ρ = 0.01, 0.01, 1.2, 1.2, 20., 20., .01
+	max_k = maximum([k1,k2])+5
+	ax = Axis(f[2,2], title="Coexistence ρ (k2/α12 < k1, k1/α21 < k2)")
+	streamplot!(
+		ax, 
+		x -> h(x, LK2(r1,k1,α12,r2,k2,α21, ρ)), 
+		0..max_k, 0..max_k, 
+		colormap = :magma, 
+		arrow_size=10
+	)
+	plot_nullclines2(ax, k1, α12, k2, α21, ρ)
+	# plot_fixed_points(ax, k1, α12, k2, α21)
+	
+	current_figure()
+end
 
 
 # ╔═╡ e74e1ec9-e4b9-403a-84aa-4fcbe83ad806
@@ -3446,6 +3496,8 @@ version = "3.6.0+0"
 # ╠═fe40fd9e-5d7b-499f-b6da-9d42ca4d22d7
 # ╠═23f957e0-13c4-4a83-8b65-24286ae9d93b
 # ╠═8939a047-a3ad-4ae2-8203-a5b832a2665e
+# ╠═fa099fe1-a72f-4b17-ac03-511e033e3e97
+# ╠═73112c43-0331-4407-8fa2-b6c0ada51e9f
 # ╟─e74e1ec9-e4b9-403a-84aa-4fcbe83ad806
 # ╟─2d2dee51-6346-4138-9fda-c4bb3dfef49a
 # ╟─dcf6140c-9291-4b67-bc9a-af1f4eee2965
