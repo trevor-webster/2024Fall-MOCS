@@ -253,12 +253,7 @@ Two species LK model of competition (Roughgarden §6.1):
 $$\frac{dN_1}{dt} = \frac{r_1 N_1(K_1 - N_1 - \alpha_{12} N_2)}{K1}$$
 $$\frac{dN_2}{dt} = \frac{r_2 N_2(K_2 - N_2 - \alpha_{21} N_1)}{K2}$$
 
-Nudge at $N_1=\epsilon N_2 = 0  \le K_1$
 
-$$\frac{dN_1}{dt} \propto K_1 - \epsilon > 0$$
-Nudge at $N_1=0, N_2 = \epsilon  \le K_2$
-
-$$\frac{dN_2}{dt} \propto K_2 - \epsilon > 0$$
 "
 
 
@@ -269,6 +264,16 @@ $$\frac{dN_2}{dt} \propto K_2 - \epsilon > 0$$
 # ╔═╡ 23f957e0-13c4-4a83-8b65-24286ae9d93b
 
 
+# ╔═╡ e74e1ec9-e4b9-403a-84aa-4fcbe83ad806
+md"## Stability
+
+Nudge at $N_1=0, N_2 = 0$
+
+We find $\text{Tr}(J) > 0$ so $\text{Re}(\lambda) > 0$ 
+
+showing the system is unstable at $(0,0)$ consistent with movement of species in phase space away from $(0,0)$
+"
+
 # ╔═╡ 2d2dee51-6346-4138-9fda-c4bb3dfef49a
 let
 	@variables r1 r2 α12 α21 k1 k2 n1 n2
@@ -277,19 +282,18 @@ let
 	#   ∂Ẋ/∂Y  ∂Ẏ/∂Y
 	# We get that easily in Symbolics
 	
-J = Symbolics.jacobian(
+	J = Symbolics.jacobian(
 		[
 			r1*n1*(k1 - n1 - α12*n2)/k1, 
 			r2*n2*(k2 - n2 - α21*n1)/k2
 		], 
 		[n1, n2]
 	)
-# we substitue in the Jacobian our nullclines
-	Je = substitute.(J, (Dict(n1 => (k1 - α21*k2)/(1 - α12*α21), n2 => (k2 - α12*k1)/(1 - α12*α21) ),))
-
+	# Nudge at $N_1=0, N_2 =\epsilon = 0$
+	# we substitue in the Jacobian our nullclines
+	Je = substitute.(J, (Dict(n1 => 0, n2 => 0 ),))
 	println(Je)
-
-		# we plug in our values
+	# we plug in our values
 	
 	Je_eval = substitute.(Je, (Dict(
 			r1 => 0.01, r2 => 0.01, α12 => 1.2, α21 => 1.2, 
@@ -297,6 +301,50 @@ J = Symbolics.jacobian(
 	),))
 	println("trace: $(tr(Je_eval))") # = 0, means it is stable
 end
+
+# ╔═╡ dcf6140c-9291-4b67-bc9a-af1f4eee2965
+md"
+Nudge at 
+
+$$N_1^{**} = \frac{(K_1 - \alpha_{12})}{1 - \alpha_{21}\alpha_{12}}$$
+$$N_2^{**} = \frac{(K_2 - \alpha_{21})}{1 - \alpha_{12}\alpha_{21}}$$
+
+We find $\text{Tr}(J) < 0$ so $\text{Re}(\lambda) < 0$ 
+
+ showing the system is stable at  $N_1^{**}, N_2^{**}$ consistent with movement of species toward equilibrium point, and not diverging to infinity
+"
+
+# ╔═╡ a778195c-d3a2-4567-854d-7e81b2aca7be
+let
+    @variables r1 r2 α12 α21 k1 k2 n1 n2
+	# The jacobian is 
+	# [ ∂Ẋ/∂X  ∂Ẋ/∂Y 
+	#   ∂Ẋ/∂Y  ∂Ẏ/∂Y
+	# We get that easily in Symbolics
+	
+	J = Symbolics.jacobian(
+		[
+			r1*n1*(k1 - n1 - α12*n2)/k1, 
+			r2*n2*(k2 - n2 - α21*n1)/k2
+		], 
+		[n1, n2]
+	)
+		# we substitue in the Jacobian our nullclines
+	Je = substitute.(J, (Dict(n1 => (k1 - α21*k2)/(1 - α12*α21), n2 => (k2 - α12*k1)/(1 - α12*α21) ),))
+	
+	# Je = substitute.(J, (Dict(n1 => (k1 - α21*k2)/(1 - α12*α21), n2 => (k2 - α12*k1)/(1 - α12*α21) ),))
+	println(Je)
+
+	# we plug in our values
+	Je_eval = substitute.(Je, (Dict(
+			r1 => 0.01, r2 => 0.01, α12 => 1.2, α21 => 1.2, 
+			k1 => 20., k2 => 20.
+	),))
+	println("trace: $(tr(Je_eval))") # = 0, means it is stable
+end
+
+# ╔═╡ fdaca7ef-29f9-4235-af31-c3a62ddb41cd
+
 
 # ╔═╡ 27210822-ca11-4715-87fe-a368faccc885
 md"
@@ -577,7 +625,7 @@ let
 	# 4 (k2/α12 < k1, k1/α21 < k2)
 	r1, r2, α12, α21, k1, k2 = 0.01, 0.01, 1.2, 1.2, 20., 20.
 	max_k = maximum([k1,k2])+5
-	ax = Axis(f[2,2], title="Coexistence 4")
+	ax = Axis(f[2,2], title="Coexistence 4 (k2/α12 < k1, k1/α21 < k2)")
 	streamplot!(
 		ax, 
 		x -> h(x, LK(r1,k1,α12,r2,k2,α21)), 
@@ -3398,7 +3446,11 @@ version = "3.6.0+0"
 # ╠═fe40fd9e-5d7b-499f-b6da-9d42ca4d22d7
 # ╠═23f957e0-13c4-4a83-8b65-24286ae9d93b
 # ╠═8939a047-a3ad-4ae2-8203-a5b832a2665e
-# ╠═2d2dee51-6346-4138-9fda-c4bb3dfef49a
+# ╟─e74e1ec9-e4b9-403a-84aa-4fcbe83ad806
+# ╟─2d2dee51-6346-4138-9fda-c4bb3dfef49a
+# ╟─dcf6140c-9291-4b67-bc9a-af1f4eee2965
+# ╟─a778195c-d3a2-4567-854d-7e81b2aca7be
+# ╠═fdaca7ef-29f9-4235-af31-c3a62ddb41cd
 # ╟─27210822-ca11-4715-87fe-a368faccc885
 # ╟─887c30fb-410d-4ee2-a111-b652b248dd27
 # ╠═bc81df83-de41-421a-96af-bb6535f4e83f
