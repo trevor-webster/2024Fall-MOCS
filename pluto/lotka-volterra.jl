@@ -250,8 +250,8 @@ md"## Lotka volterra generalized version
 
 Two species LK model of competition (Roughgarden §6.1):
 
-$$\frac{dN_1}{dt} = \frac{r_1 N_1(K_1 - N_1 - \alpha_{21} N_2)}{K1}$$
-$$\frac{dN_2}{dt} = \frac{r_2 N_2(K_2 - N_2 - \alpha_{12} N_1)}{K2}$$
+$$\frac{dN_1}{dt} = \frac{r_1 N_1(K_1 - N_1 - \alpha_{12} N_2)}{K1}$$
+$$\frac{dN_2}{dt} = \frac{r_2 N_2(K_2 - N_2 - \alpha_{21} N_1)}{K2}$$
 
 
 "
@@ -263,7 +263,7 @@ md"## Stability
 
 Nudge at $N_1=0, N_2 = 0$
 
-We find $\text{Tr}(J) > 0$ so $\text{Re}(\lambda) > 0$ 
+We find both eigenvalues $>0$ so $\text{Re}(\lambda) > 0$ 
 
 showing the system is unstable at $(0,0)$ consistent with movement of species in phase space away from $(0,0)$
 "
@@ -295,6 +295,7 @@ let
 			k1 => 20., k2 => 20.
 	),))
 	println("trace: $(tr(Je_eval))") # = 0, means it is stable
+	println(eigvals(Symbolics.value.(Je_eval)))
 end
 
 # ╔═╡ dcf6140c-9291-4b67-bc9a-af1f4eee2965
@@ -304,9 +305,7 @@ Nudge at
 $$N_1^{**} = \frac{(K_1 - \alpha_{12})}{1 - \alpha_{21}\alpha_{12}}$$
 $$N_2^{**} = \frac{(K_2 - \alpha_{21})}{1 - \alpha_{12}\alpha_{21}}$$
 
-We find $\text{Tr}(J) < 0$ so $\text{Re}(\lambda) < 0$ 
-
- showing the system is stable at  $N_1^{**}, N_2^{**}$ consistent with movement of species toward equilibrium point, and not diverging to infinity
+We find eigenvalues showing a saddle point at  $N_1^{**}, N_2^{**}$ showing species moving away from $N_1^{**}, N_2^{**}$ and toward equilibriums points at either species end, and not diverging to infinity
 "
 
 # ╔═╡ a778195c-d3a2-4567-854d-7e81b2aca7be
@@ -336,6 +335,7 @@ let
 			k1 => 20., k2 => 20.
 	),))
 	println("trace: $(tr(Je_eval))") # = 0, means it is stable
+	println(eigvals(Symbolics.value.(Je_eval)))
 end
 
 # ╔═╡ fdaca7ef-29f9-4235-af31-c3a62ddb41cd
@@ -343,13 +343,13 @@ md"## Lotka volterra Coexistence ρ
 
 To remain in space where no species dominates we stay within the nullclines so that $\frac{dN_1}{dt} > 0$ and $\frac{dN_2}{dt} > 0$, and the increase when rare criterion is possible
 
-$$N_2 < \frac{k_2}\alpha_{12}$$
-$$N_1 < \frac{k_1}\alpha_{21}$$
+$$N_2 < \frac{k_1}\alpha_{12} $$
+$$N_1 < \frac{k_2}\alpha_{21}$$
 
 ρ was applied for some values that show phase space going in this direction
 
-$$\frac{dN_1}{dt} = \frac{r_1 N_1(K_1 - N_1 - \alpha_{21} N_2 - ρ N_1)}{K1}$$
-$$\frac{dN_2}{dt} = \frac{r_2 N_2(K_2 - N_2 - \alpha_{12} N_1 - ρ N_2)}{K2}$$
+$$\frac{dN_1}{dt} = \frac{r_1 N_1(K_1 - N_1 - \alpha_{12} N_2 - ρ N_1)}{K1}$$
+$$\frac{dN_2}{dt} = \frac{r_2 N_2(K_2 - N_2 - \alpha_{21} N_1 - ρ N_2)}{K2}$$
 
 We see that for increasing ρ values, the stability at $n_2 = 0$ can be diverted away from extinction towards the coexistence fixed point
 "
@@ -382,8 +382,8 @@ let
 	end
 
 	h(x, P::LK2) = Point2f( # y,x
-		P.r1*x[1] * ((P.k1 - x[1] - P.α21*x[2] - ρ*x[1]) / P.k1),
-		P.r2*x[2] * ((P.k2 - x[2] - P.α12*x[1] - ρ*x[2]) / P.k2)
+		P.r1*x[1] * ((P.k1 - x[1] - P.α12*x[2] - ρ*x[1]) / P.k1),
+		P.r2*x[2] * ((P.k2 - x[2] - P.α21*x[1] - ρ*x[2]) / P.k2)
 	)
 	
 	# Plotting
@@ -652,8 +652,8 @@ let
 	end
 
 	h(x, P::LK) = Point2f( # y,x
-		P.r1*x[1] * ((P.k1 - x[1] - P.α21*x[2]) / P.k1),
-		P.r2*x[2] * ((P.k2 - x[2] - P.α12*x[1]) / P.k2)
+		P.r1*x[1] * ((P.k1 - x[1] - P.α12*x[2]) / P.k1),
+		P.r2*x[2] * ((P.k2 - x[2] - P.α21*x[1]) / P.k2)
 	)
 	
 	# Plotting
@@ -3521,15 +3521,15 @@ version = "3.6.0+0"
 # ╟─5e26b052-7529-4841-a55c-79943c102bd6
 # ╟─897e030a-9efe-4ecd-8727-95bb4c5350ad
 # ╠═a6097bcf-2a35-4d22-a622-ed264e5df5f4
-# ╟─966176bf-0d82-4829-b48e-3b9d78414f83
-# ╟─8939a047-a3ad-4ae2-8203-a5b832a2665e
+# ╠═966176bf-0d82-4829-b48e-3b9d78414f83
+# ╠═8939a047-a3ad-4ae2-8203-a5b832a2665e
 # ╟─d2705d15-88fb-42f2-9017-c5ad53502439
 # ╟─2d2dee51-6346-4138-9fda-c4bb3dfef49a
 # ╟─dcf6140c-9291-4b67-bc9a-af1f4eee2965
-# ╠═a778195c-d3a2-4567-854d-7e81b2aca7be
+# ╟─a778195c-d3a2-4567-854d-7e81b2aca7be
 # ╟─fdaca7ef-29f9-4235-af31-c3a62ddb41cd
 # ╟─d2d6664d-c3d8-40d7-9399-1df208392e54
-# ╠═23a70097-64c0-4c39-bb45-9ff27d53d016
+# ╟─23a70097-64c0-4c39-bb45-9ff27d53d016
 # ╠═625fc9e9-0975-445d-95a2-4514917d160d
 # ╠═6d1debfd-b84c-4411-8a04-8a278f3a4786
 # ╟─27210822-ca11-4715-87fe-a368faccc885
