@@ -258,92 +258,7 @@ $$\frac{dN_2}{dt} = \frac{r_2 N_2(K_2 - N_2 - \alpha_{12} N_1)}{K2}$$
 
 
 
-# ╔═╡ fe40fd9e-5d7b-499f-b6da-9d42ca4d22d7
-
-
-# ╔═╡ 23f957e0-13c4-4a83-8b65-24286ae9d93b
-
-
-# ╔═╡ 14f6aa56-ed04-4c27-ac1a-f410678b7139
-md"## Lotka volterra Coexistence ρ
-
-To remain in space where no species dominates we stay within the nullclines so that $\frac{dN_1}{dt} > 0$ and $\frac{dN_2}{dt} > 0$, and the increase when rare criterion is possible
-
-$$N_2 < \frac{k_2}\alpha_{12}$$
-$$N_1 < \frac{k_1}\alpha_{21}$$
-
-ρ was applied for some values that show phase space going in this direction
-
-$$\frac{dN_1}{dt} = \frac{r_1 N_1(K_1 - N_1 - \alpha_{21} N_2 - ρ N_1)}{K1}$$
-$$\frac{dN_2}{dt} = \frac{r_2 N_2(K_2 - N_2 - \alpha_{12} N_1 - ρ N_2)}{K2}$$
-
-"
-
-
-
-
-
-# ╔═╡ 0dccd574-5e30-48cc-be95-2bab291385d9
-
-
-# ╔═╡ 8e1938ce-eb00-4b16-8e29-7506e96efd9a
-function plot_nullclines2(ax, k1, α1, k2, α2, ρ)
-		x1_range = 0:0.01:k1
-		x2_nullcline = (k1 .- x1_range .-ρ*x1_range ) ./ α2
-		lines!(ax, x1_range, x2_nullcline, color=:red)
-	
-		x2_range = 0:0.01:k2
-		x1_nullcline = (k2 .- x2_range .-ρ*x2_range) ./ α1
-		lines!(ax, x1_nullcline, x2_range, color=:blue)
-end
-
-# ╔═╡ 73112c43-0331-4407-8fa2-b6c0ada51e9f
-let
-	
-	struct LK2{T}
-    	r1::T  
-    	k1::T  
-    	α12::T  
-    	r2::T
-    	k2::T
-    	α21::T
-		ρ::T
-	end
-
-	h(x, P::LK2) = Point2f( # y,x
-		P.r1*x[1] * ((P.k1 - x[1] - P.α21*x[2] - ρ*x[1]) / P.k1),
-		P.r2*x[2] * ((P.k2 - x[2] - P.α12*x[1] - ρ*x[2]) / P.k2)
-	)
-	
-	# Plotting
-	f = Figure(size = (800, 800))
-	ρ_values = collect( 0.01:(0.1):(1.))
-	
-	
-	# 4 (k2/α12 < k1, k1/α21 < k2)
-	r1, r2, α12, α21, k1, k2, ρ = 0.01, 0.01, 1.2, 1.2, 20., 20., .01
-	for i in 1:2
-		for j in 1:2
-			ρ = pop!(ρ_values)
-			println(ρ)
-			max_k = maximum([k1,k2])+5
-			ax = Axis(f[i,j], title="Coexistence ρ=$ρ (k2/α12 < k1, k1/α21 < k2)")
-			streamplot!(
-				ax, 
-				x -> h(x, LK2(r1,k1,α12,r2,k2,α21,ρ  )), 
-				0..max_k, 0..max_k, 
-				colormap = :magma, 
-				arrow_size=10
-			)
-			plot_nullclines2(ax, k1, α12, k2, α21, ρ)
-			# plot_fixed_points(ax, k1, α12, k2, α21)
-		end
-	end
-	current_figure()
-end
-
-
-# ╔═╡ e74e1ec9-e4b9-403a-84aa-4fcbe83ad806
+# ╔═╡ d2705d15-88fb-42f2-9017-c5ad53502439
 md"## Stability
 
 Nudge at $N_1=0, N_2 = 0$
@@ -352,6 +267,7 @@ We find $\text{Tr}(J) > 0$ so $\text{Re}(\lambda) > 0$
 
 showing the system is unstable at $(0,0)$ consistent with movement of species in phase space away from $(0,0)$
 "
+
 
 # ╔═╡ 2d2dee51-6346-4138-9fda-c4bb3dfef49a
 let
@@ -423,7 +339,91 @@ let
 end
 
 # ╔═╡ fdaca7ef-29f9-4235-af31-c3a62ddb41cd
+md"## Lotka volterra Coexistence ρ
 
+To remain in space where no species dominates we stay within the nullclines so that $\frac{dN_1}{dt} > 0$ and $\frac{dN_2}{dt} > 0$, and the increase when rare criterion is possible
+
+$$N_2 < \frac{k_2}\alpha_{12}$$
+$$N_1 < \frac{k_1}\alpha_{21}$$
+
+ρ was applied for some values that show phase space going in this direction
+
+$$\frac{dN_1}{dt} = \frac{r_1 N_1(K_1 - N_1 - \alpha_{21} N_2 - ρ N_1)}{K1}$$
+$$\frac{dN_2}{dt} = \frac{r_2 N_2(K_2 - N_2 - \alpha_{12} N_1 - ρ N_2)}{K2}$$
+
+We see that for increasing ρ values, the stability at $n_2 = 0$ can be diverted away from extinction towards the coexistence fixed point
+"
+
+
+
+
+# ╔═╡ d2d6664d-c3d8-40d7-9399-1df208392e54
+function plot_nullclines2(ax, k1, α1, k2, α2, ρ)
+		x1_range = 0:0.01:k1
+		x2_nullcline = (k1 .- x1_range .-ρ*x1_range ) ./ α2
+		lines!(ax, x1_range, x2_nullcline, color=:red)
+	
+		x2_range = 0:0.01:k2
+		x1_nullcline = (k2 .- x2_range .-ρ*x2_range) ./ α1
+		lines!(ax, x1_nullcline, x2_range, color=:blue)
+end
+
+# ╔═╡ 23a70097-64c0-4c39-bb45-9ff27d53d016
+let
+	
+	struct LK2{T}
+    	r1::T  
+    	k1::T  
+    	α12::T  
+    	r2::T
+    	k2::T
+    	α21::T
+		ρ::T
+	end
+
+	h(x, P::LK2) = Point2f( # y,x
+		P.r1*x[1] * ((P.k1 - x[1] - P.α21*x[2] - ρ*x[1]) / P.k1),
+		P.r2*x[2] * ((P.k2 - x[2] - P.α12*x[1] - ρ*x[2]) / P.k2)
+	)
+	
+	# Plotting
+	f = Figure(size = (800, 800))
+	ρ_values = collect([.29, .31,  .333, .667])
+	
+	
+	# 4 (k2/α12 < k1, k1/α21 < k2)
+	r1, r2, α12, α21, k1, k2, ρ = 0.01, 0.01, 1.2, 1.2, 20., 20., .01
+	for i in 1:2
+		for j in 1:2
+			ρ = pop!(ρ_values)
+			println(ρ)
+			max_k = maximum([k1,k2])+5
+			ax = Axis(f[i,j], title="Coexistence ρ=$ρ (k2/α12 < k1, k1/α21 < k2)")
+			streamplot!(
+				ax, 
+				x -> h(x, LK2(r1,k1,α12,r2,k2,α21,ρ  )), 
+				0..max_k, 0..max_k, 
+				colormap = :magma, 
+				arrow_size=10
+			)
+			plot_nullclines2(ax, k1, α12, k2, α21, ρ)
+			# plot_fixed_points(ax, k1, α12, k2, α21)
+		end
+	end
+	current_figure()
+end
+
+
+# ╔═╡ 625fc9e9-0975-445d-95a2-4514917d160d
+
+
+# ╔═╡ 6d1debfd-b84c-4411-8a04-8a278f3a4786
+let
+    @variables r1 r2 α12 α21 k1 k2 n1 n2 ρ
+	substitute.((k1 - n1 - ρ*n1)/α21,  (Dict(
+			n1 => k2 - n2 - ρ*n2/α21
+	),))
+end
 
 # ╔═╡ 27210822-ca11-4715-87fe-a368faccc885
 md"
@@ -3513,27 +3513,25 @@ version = "3.6.0+0"
 # ╠═3f35d529-931e-4895-82d1-01d611b49ed9
 # ╠═ff1e39f5-c648-481a-9194-7f9a4be71a88
 # ╟─680f4d18-b855-4535-83a7-3b859a92f0f1
-# ╠═45867cdf-9cff-4f37-9f8c-87eb6bf133b9
-# ╠═21d35ee9-9f6a-44be-bf6a-6459175a83ae
+# ╟─45867cdf-9cff-4f37-9f8c-87eb6bf133b9
+# ╟─21d35ee9-9f6a-44be-bf6a-6459175a83ae
 # ╟─31f94c86-ad6c-446f-84eb-a17c865d4463
 # ╠═a4e84256-abd8-495c-8445-a75235b2669c
 # ╟─1cfab4fa-2fb0-49a4-92f6-a1a7eb56e8d2
 # ╟─5e26b052-7529-4841-a55c-79943c102bd6
-# ╠═897e030a-9efe-4ecd-8727-95bb4c5350ad
+# ╟─897e030a-9efe-4ecd-8727-95bb4c5350ad
 # ╠═a6097bcf-2a35-4d22-a622-ed264e5df5f4
-# ╠═966176bf-0d82-4829-b48e-3b9d78414f83
-# ╠═fe40fd9e-5d7b-499f-b6da-9d42ca4d22d7
-# ╠═23f957e0-13c4-4a83-8b65-24286ae9d93b
-# ╠═8939a047-a3ad-4ae2-8203-a5b832a2665e
-# ╟─14f6aa56-ed04-4c27-ac1a-f410678b7139
-# ╠═0dccd574-5e30-48cc-be95-2bab291385d9
-# ╠═73112c43-0331-4407-8fa2-b6c0ada51e9f
-# ╠═8e1938ce-eb00-4b16-8e29-7506e96efd9a
-# ╟─e74e1ec9-e4b9-403a-84aa-4fcbe83ad806
+# ╟─966176bf-0d82-4829-b48e-3b9d78414f83
+# ╟─8939a047-a3ad-4ae2-8203-a5b832a2665e
+# ╟─d2705d15-88fb-42f2-9017-c5ad53502439
 # ╟─2d2dee51-6346-4138-9fda-c4bb3dfef49a
 # ╟─dcf6140c-9291-4b67-bc9a-af1f4eee2965
-# ╟─a778195c-d3a2-4567-854d-7e81b2aca7be
-# ╠═fdaca7ef-29f9-4235-af31-c3a62ddb41cd
+# ╠═a778195c-d3a2-4567-854d-7e81b2aca7be
+# ╟─fdaca7ef-29f9-4235-af31-c3a62ddb41cd
+# ╟─d2d6664d-c3d8-40d7-9399-1df208392e54
+# ╠═23a70097-64c0-4c39-bb45-9ff27d53d016
+# ╠═625fc9e9-0975-445d-95a2-4514917d160d
+# ╠═6d1debfd-b84c-4411-8a04-8a278f3a4786
 # ╟─27210822-ca11-4715-87fe-a368faccc885
 # ╟─887c30fb-410d-4ee2-a111-b652b248dd27
 # ╠═bc81df83-de41-421a-96af-bb6535f4e83f
