@@ -14,7 +14,7 @@ macro bind(def, element)
     end
 end
 
-# ╔═╡ 7b578bb1-ce45-417a-82b2-504c1d1a3b41
+# ╔═╡ 5e559b18-b17e-431d-946f-950113d847d3
 begin
 	using PlutoUI: Slider
 	using Roots: find_zero
@@ -22,55 +22,43 @@ begin
 	using CairoMakie, Symbolics, LinearAlgebra
 end
 
-# ╔═╡ 11fee4f8-6c55-11ef-266d-8b9f0f158ef2
-md"# Chaos"
-
-# ╔═╡ b9932967-c1f4-4f9b-9b4f-de2100adc3dc
-md"### Cobweb plot
-
-> Typically used in iterative maps to show how an initial value evolves over time by alternating between the function and the line $y=x$, visually demonstrating convergence to a fixed point or periodic orbit. It traces the iteration step-by-step, connecting the points graphically. See [this video](https://www.youtube.com/watch?v=F4C-wavd8MA).
-"
-
-# ╔═╡ 8d76f42d-7d5c-4c7c-abf5-0cc1cf66e79f
-md"### [May & Oster (1976; Discrete-Time Logistic Model)](http://155.101.98.133/~keener/classes/math5110/papers/may_oster.pdf)
-
-$\Delta N = N(t) e^{r (1 - N(t))}$
-"
-
-# ╔═╡ f590d50a-2aa8-440b-92c7-ca448e77c535
-md"
-With cobweb, we first go from initial condition to the first iterated value $N(t+1) = f(N_0)$. This correspond to the point on $f$ (red curve). We then use $X=Y$ to project back $N(t+1)$ onto the position on the horizontal axis. We do again and again. The point where $f$ cross the slope$=1$ is the equilibrium value, that cobwebbing converge when not chaotic. When chaotic, all bets are off. We can also see the chaotic behaviors by simulating $f$.
-"
-
-# ╔═╡ b725d413-b725-4e1f-8039-ff048f8c7104
-r = @bind r Slider(0.01:0.01:5, show_value=true, default=2.61)
-
-# ╔═╡ 26ebe704-c7ea-492a-8dbc-edcde1189cbf
+# ╔═╡ 0f043b80-7656-439f-ad22-3606e9bfebf5
 cobweb_step=@bind cobweb Slider(1:49, default=0, show_value=true)
 
-# ╔═╡ 92eb1f58-353a-40f3-ba15-afb48f4bbedf
+# ╔═╡ 8fb68ee0-8a1f-11ef-0a19-8750b48b1d7a
 let
 	# Simulate systems -----------------------------------
 	
-	logistic(Nt, r) = Nt*r * (1 - Nt)
+
+	ϕ(p) = binomial(9, 9) * p^9 * (1 - p)^0 +
+         binomial(9, 8) * p^8 * (1 - p)^1 +
+         binomial(9, 7) * p^7 * (1 - p)^2 +
+         binomial(9, 6) * p^6 * (1 - p)^3 +
+         binomial(9, 5) * p^5 * (1 - p)^4 +
+         binomial(9, 4) * p^4 * (1 - p)^5 +
+         binomial(9, 3) * p^3 * (1 - p)^6 +
+         binomial(9, 2) * p^2 * (1 - p)^7 +
+         binomial(9, 1) * p^1 * (1 - p)^8
+
+	# ϕ(x) = x^4 + (4*x^3)*(1-x) + (4*x^2)*(1-x)^2
 	# logistic(Nt, r) = Nt*exp(r * (1 - Nt)) # alternatively
-	
+			
 	# Initial conditions
-	N₀ = 0.1
+	N₀ = 0.2
 	Tmax = 50  
 	N = zeros(Tmax)
 	N[1] = N₀  	
 	
 	for t in 1:(Tmax-1)
-	    N[t+1] = logistic(N[t], r)
+	    N[t+1] = ϕ(N[t])
 	end
 
 	# Cobweb Plot -----------------------------------------
 	
 	fig = Figure(size=(800, 400))
-	maxN = maximum(N)+1
+	maxN = 1.5# maximum(N)+1
 	
-	ax = Axis(fig[1,1], xlabel="N(t)", ylabel="N(t+1)")
+	ax = Axis(fig[1,1], xlabel="p", ylabel="ϕ(p)")
 	
 	# y = x line
 	lines!(ax, 0:maxN+1, 0:maxN+1, linewidth=2, 
@@ -78,14 +66,15 @@ let
 	
 	# Plotting N(t+1) = N(t)
 	# The rate of change of the logistic goes up, then down at the inflection point.
-	lines!(ax, 0:0.001:maxN, x -> logistic(x, r), 
-		label=L"N(t+1) = rN(t)(1 - N(t))", color=:red) 
+	lines!(ax, 0:0.001:1, x -> ϕ(x), 
+		label=L"p' = ϕ(p)", color=:red) 
 	
 	# Plot the equilibrium point
 	# (solve for N when N(t+1) = N(t))
-	Nstar = find_zero(N -> logistic(N, r) - N, 0.5) 
+	Nstar = find_zero(x -> ϕ(x) - x, 0.5) 
+	
 	scatter!(ax, Nstar, Nstar, strokewidth=1, 
-		     label="Equilibrium N*", color=:white, strokecolor=:black)
+		     label="Equilibrium N* $Nstar", color=:white, strokecolor=:black)
 	
 	axislegend(ax)
 	
@@ -101,257 +90,41 @@ let
 	
 	# Iterative map plot -----------------------------------------
 	
-	ax = Axis(fig[1,2], xlabel="t", ylabel="N(t)")
-	scatter!(ax, N, color=:black)
+	# ax = Axis(fig[1,2], xlabel="t", ylabel="N(t)")
+	# scatter!(ax, N, color=:black)
 
 	fig
+	# print(N)
 end
 
-# ╔═╡ 451aba41-3ca2-4aeb-a1b7-f7df481bc383
-md"
-But now we can do something fancy. Lets put the N(t) variable on the yaxis, and map how it changes as a function of parameter `r`. We can see a periodic orbit or limit cycles, whereas lower `r` (r=0.2) was an attracting fixed point."
+# ╔═╡ 9396430c-4ff6-4020-9b3a-f8caed9390fa
+let
+	function spoke_avg_size(n, p)
+	    result = 0.0
+	    for k in 1:n
+	        term = k*binomial(n, k) * p^k * (1 - p)^(n - k)
+	        result += term
 
-# ╔═╡ 41f56b48-dd48-40fd-ae7a-471fa3c7b7ce
-let 
-	N0 = 0.1
-	r_values = range(0.1, stop=5.0, length=500)  # Range of r values
-	Tb = 100  # Number of time steps
-	last_T = 50  # Number of time steps to capture after transients have settled
-	
-	function update_population(Nt, r)
-	    return Nt * exp(r * (1 - Nt))
-	end
-	
-	# Prepare data for the bifurcation diagram
-	r_data = Float64[]
-	N_data = Float64[]
-	
-	for rb in r_values
-	    Nb = N0
-	    # Iterate the population for T steps
-	    for t in 1:Tb
-	        Nb = update_population(Nb, rb)
-	        # After transient dynamics, store N for plotting
-	        if t > Tb - last_T
-	            push!(r_data, rb)
-	            push!(N_data, Nb)
-	        end
 	    end
+	    return result
 	end
-
-	f = Figure()
-	ax = Axis(f[1,1], title="Bifurcation diagram")
- 	scatter!(ax, r_data, N_data, color = :black, markersize=1)
-	xlims!(0.1, 5.0)
-	ylims!(0, 2)
-	f
+	
+	function lattice_1d_avg_size(n, p)
+		result = 0.0
+		for k in 1:n-1
+			term = k*(k+1)*p^k * (1-p)
+			result += term
+	
+		end
+		result += p^n
+		return result
+	end
+println(spoke_avg_size(10, .49))
+println(lattice_1d_avg_size(10, .49))
 end
+	
 
-# ╔═╡ d33beb81-7d9b-4bdb-9055-3194cc04597e
-md"### Model 2
-
-
-$$N(t+1) = \frac{\lambda N(t)}{1 + \exp[-A(1 - \frac{N(t)}{B})]}$$
-
-$$\Delta N = \frac{\lambda N(t)}{1 + \exp[-A(1 - \frac{N(t)}{B})]} - N(t)$$
-
-"
-
-# ╔═╡ 93cf4fd9-f316-431c-b3cc-c3d2aed59466
-λ = @bind λ Slider(0:0.1:5, show_value=true, default=1.5)
-
-# ╔═╡ f2b58da7-7e0d-4a28-8c97-c21bccd15219
-A = @bind A Slider(1.0:50.0, show_value=true, default=5.0)
-
-# ╔═╡ 1f5e28e7-08f0-4715-9003-fa5d2c6cf738
-B = @bind B Slider(10.0:150.0, show_value=true, default=100.0)
-
-# ╔═╡ 083f8145-95ae-48eb-a3d5-4ab2a19d8c7b
-let
-	# Initialize the population and time steps
-	N0 = 10.0  # initial population size
-	T = 50     # number of time steps
-	N = zeros(T)  # array to store population at each time step
-	N[1] = N0     # initial condition
-	
-	# Define the population equation
-	function update_population(Nt, λ, A, B)
-	    return λ * Nt / (1 + exp(-A * (1 - Nt / B)))
-	end
-
-	# Find N* numerically
-	equilibrium = find_zero(N -> update_population(N, λ, A, B) - N, B)  
-	
-	# Create the identity line (y = x)
-	N_range = range(0, stop=150, length=100)
-	
-	# Simulate the population over time
-	for t in 1:T-1
-	    N[t+1] = update_population(N[t], λ, A, B)
-	end
-	
-	# Plot the cobweb diagram
-	f = Figure(size=(800,400))
-	ax = Axis(f[1,1], xlabel="N(t)", ylabel="N(t+1)", )
-	lines!(ax, N_range, N_range, label="y = x", linewidth=2)  # y = x line
-	lines!(ax, N_range, update_population.(N_range, λ, A, B), label="N(t+1) = f(N(t))", linewidth=2)  # function N(t+1)
-	
-	
-	# Plot the cobweb steps
-	for t in 1:T-1
-	    scatter!(ax, [N[t], N[t]], [N[t], N[t+1]], color=:black, strokewidth=1) 
-	    scatter!(ax, [N[t], N[t+1]], [N[t+1], N[t+1]], color=:black, strokewidth=1)
-	end
-
-	scatter!(ax, [equilibrium], [equilibrium], label="Equilibrium N*", color=:red)
-
-	axislegend(ax)
-
-	ax = Axis(f[1,2])
-	scatter!(ax, N, label=false, color=:black)
-	f
-end
-
-# ╔═╡ f37619f4-c1a0-4cc7-930d-71359e614eee
-md"## More famous models"
-
-# ╔═╡ 1f6451e6-0f98-416e-aa1b-acee38c4f764
-r2 = @bind r2 Slider(0:0.01:4, show_value=true, default=3)
-
-# ╔═╡ 4f29b65f-1e7c-455e-b0b6-4cb87696592a
-m = @bind m Slider(1:50, show_value=true, default=20)
-
-# ╔═╡ 5c0e5f5a-a12b-46af-834b-c491f3ceb3dd
-k = @bind k Slider(1:50, show_value=true, default=20)
-
-# ╔═╡ ffacdb91-e5ca-4758-9706-e7d960c2c7fe
-let
-	# m = 20
-	# r = 3
-	BevertonHolt(Nt, r, m) = (Nt*r) / (1 - Nt / m)
-	
-	# Find the equilibrium N* (solve for N when N(t+1) = N(t))
-	equilibrium = find_zero(N -> BevertonHolt(N, r2, m) - N, 0.5) 
-	
-	# Initialize the population and time steps
-	N₀ = 0.1
-	Tmax = 50  
-	N = zeros(Tmax)
-	N[1] = N₀  	
-	
-	# Plotting N(t+1) = N(t)
-	# that is, the next step as a function of current step
-	for t in 1:(Tmax-1)
-	    N[t+1] = BevertonHolt(N[t], r2, m)
-	end
-
-	maxN = maximum(N)+1
-	
-	# Plotting
-	
-	fig = Figure(size=(800, 400))
-
-	# Cobweb Plot -----------------------------------------
-	
-	ax = Axis(fig[1,1], xlabel="N(t)", ylabel="N(t+1)", title="BevertonHolt")
-	
-	# y = x line
-	lines!(ax, 0:maxN+1, 0:maxN+1, linewidth=2, 
-			color=:grey, linestyle=:dash, label="x=y") 
-	
-	# N(t+1) = rN(t)(1 - N(t))
-	lines!(ax, 0:0.001:maxN, x -> BevertonHolt(x, r2, m), 
-		label=L"N(t+1) = \frac{rNt}{1 - Nt / m}", color=:red) 
-	
-	# Equilibrium point
-	scatter!(ax, [equilibrium], [equilibrium], strokewidth=1, 
-		     label="Equilibrium N*", color=:white, strokecolor=:black)
-	
-	axislegend(ax)
-	
-	ylims!(0,maxN)
-	xlims!(0,maxN)
-	
-	for t in 1:cobweb
-		# vertical line
-	    lines!(ax, [N[t], N[t]], [N[t], N[t+1]], color=:black) 
-		# horizontal line
-	    lines!(ax, [N[t], N[t+1]], [N[t+1], N[t+1]], color=:black)  #hlines
-	end
-	
-	# Iterative map plot -----------------------------------------
-	
-	ax = Axis(fig[1,2], xlabel="t", ylabel="N(t)")
-	scatter!(ax, N, color=:black)
-
-	fig
-end
-
-# ╔═╡ ad7af9c2-f96d-40de-8508-e2ca4949361a
-let
-	# k = 20
-	# r = 3
-	Ricker(Nt, r, k) = Nt*exp(r * (1− Nt/k))
-	
-	# Find the equilibrium N* (solve for N when N(t+1) = N(t))
-	equilibrium = find_zero(N -> Ricker(N, r2, k) - N, 0.5) 
-	
-	# Initialize the population and time steps
-	N₀ = 0.1
-	Tmax = 50  
-	N = zeros(Tmax)
-	N[1] = N₀  	
-	
-	# Plotting N(t+1) = N(t)
-	# that is, the next step as a function of current step
-	for t in 1:(Tmax-1)
-	    N[t+1] = Ricker(N[t], r2, k)
-	end
-
-	maxN = maximum(N)+1
-	
-	# Plotting
-	
-	fig = Figure(size=(800, 400))
-
-	# Cobweb Plot -----------------------------------------
-	
-	ax = Axis(fig[1,1], xlabel="N(t)", ylabel="N(t+1)", title="Ricker model")
-	
-	# y = x line
-	lines!(ax, 0:maxN+1, 0:maxN+1, linewidth=2, 
-			color=:grey, linestyle=:dash, label="x=y") 
-	
-	# N(t+1) = rN(t)(1 - N(t))
-	lines!(ax, 0:0.001:maxN, x -> Ricker(x, r2, k), 
-		label=L"N(t+1) = N(t)\exp(r(1− N(t)/k))", color=:red) 
-	
-	# Equilibrium point
-	scatter!(ax, [equilibrium], [equilibrium], strokewidth=1, 
-		     label="Equilibrium N*", color=:white, strokecolor=:black)
-	
-	axislegend(ax)
-	
-	ylims!(0,maxN)
-	xlims!(0,maxN)
-	
-	for t in 1:cobweb
-		# vertical line
-	    lines!(ax, [N[t], N[t]], [N[t], N[t+1]], color=:black) 
-		# horizontal line
-	    lines!(ax, [N[t], N[t+1]], [N[t+1], N[t+1]], color=:black)  #hlines
-	end
-	
-	# Iterative map plot -----------------------------------------
-	
-	ax = Axis(fig[1,2], xlabel="t", ylabel="N(t)")
-	scatter!(ax, N, color=:black)
-
-	fig
-end
-
-# ╔═╡ bab280fb-033f-49db-b205-325677314a1e
-
+		
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -412,24 +185,28 @@ uuid = "1520ce14-60c1-5f80-bbc7-55ef81b5835c"
 version = "0.4.5"
 
 [[deps.Accessors]]
-deps = ["CompositionsBase", "ConstructionBase", "Dates", "InverseFunctions", "LinearAlgebra", "MacroTools", "Markdown", "Test"]
-git-tree-sha1 = "f61b15be1d76846c0ce31d3fcfac5380ae53db6a"
+deps = ["CompositionsBase", "ConstructionBase", "InverseFunctions", "LinearAlgebra", "MacroTools", "Markdown"]
+git-tree-sha1 = "b392ede862e506d451fc1616e79aa6f4c673dab8"
 uuid = "7d9f7c33-5ae7-4f3b-8dc6-eff91059b697"
-version = "0.1.37"
+version = "0.1.38"
 
     [deps.Accessors.extensions]
     AccessorsAxisKeysExt = "AxisKeys"
+    AccessorsDatesExt = "Dates"
     AccessorsIntervalSetsExt = "IntervalSets"
     AccessorsStaticArraysExt = "StaticArrays"
     AccessorsStructArraysExt = "StructArrays"
+    AccessorsTestExt = "Test"
     AccessorsUnitfulExt = "Unitful"
 
     [deps.Accessors.weakdeps]
     AxisKeys = "94b1ba4f-4ee9-5380-92f1-94cde586c3c5"
+    Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
     IntervalSets = "8197267c-284f-5f27-9208-e0e47529a953"
     Requires = "ae029012-a4dd-5104-9daa-d747884805df"
     StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
     StructArrays = "09ab397b-f2b6-538f-b94a-2f83cf4a842a"
+    Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
     Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
 
 [[deps.Adapt]]
@@ -612,9 +389,9 @@ version = "1.18.0+2"
 
 [[deps.ChainRulesCore]]
 deps = ["Compat", "LinearAlgebra"]
-git-tree-sha1 = "71acdbf594aab5bbb2cec89b208c41b4c411e49f"
+git-tree-sha1 = "3e4b134270b372f2ed4d4d0e936aabaefc1802bc"
 uuid = "d360d2e6-b24c-11e9-a2a3-2a2ae2dbcce4"
-version = "1.24.0"
+version = "1.25.0"
 weakdeps = ["SparseArrays"]
 
     [deps.ChainRulesCore.extensions]
@@ -771,9 +548,9 @@ version = "5.48.1"
 
 [[deps.DiffEqBase]]
 deps = ["ArrayInterface", "ConcreteStructs", "DataStructures", "DocStringExtensions", "EnumX", "EnzymeCore", "FastBroadcast", "FastClosures", "ForwardDiff", "FunctionWrappers", "FunctionWrappersWrappers", "LinearAlgebra", "Logging", "Markdown", "MuladdMacro", "Parameters", "PreallocationTools", "PrecompileTools", "Printf", "RecursiveArrayTools", "Reexport", "SciMLBase", "SciMLOperators", "SciMLStructures", "Setfield", "Static", "StaticArraysCore", "Statistics", "Tricks", "TruncatedStacktraces"]
-git-tree-sha1 = "d7d43a1cc11dc4e4e5378816ae720fccd75a77c8"
+git-tree-sha1 = "fa7d580038451a8df4434ef5b079ac9b2d486194"
 uuid = "2b5f629d-d688-5b77-993f-72d75c75574e"
-version = "6.155.0"
+version = "6.155.1"
 
     [deps.DiffEqBase.extensions]
     DiffEqBaseCUDAExt = "CUDA"
@@ -990,9 +767,9 @@ version = "0.1.4"
 
 [[deps.FFMPEG_jll]]
 deps = ["Artifacts", "Bzip2_jll", "FreeType2_jll", "FriBidi_jll", "JLLWrappers", "LAME_jll", "Libdl", "Ogg_jll", "OpenSSL_jll", "Opus_jll", "PCRE2_jll", "Zlib_jll", "libaom_jll", "libass_jll", "libfdk_aac_jll", "libvorbis_jll", "x264_jll", "x265_jll"]
-git-tree-sha1 = "466d45dc38e15794ec7d5d63ec03d776a9aff36e"
+git-tree-sha1 = "8cc47f299902e13f90405ddb5bf87e5d474c0d38"
 uuid = "b22a6f82-2f65-5046-a5b2-351ab43fb4e5"
-version = "4.4.4+1"
+version = "6.1.2+0"
 
 [[deps.FFTW]]
 deps = ["AbstractFFTs", "FFTW_jll", "LinearAlgebra", "MKL_jll", "Preferences", "Reexport"]
@@ -1450,9 +1227,9 @@ version = "3.100.2+0"
 
 [[deps.LLVMOpenMP_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
-git-tree-sha1 = "e16271d212accd09d52ee0ae98956b8a05c4b626"
+git-tree-sha1 = "78211fb6cbc872f77cad3fc0b6cf647d923f4929"
 uuid = "1d63c593-3942-5779-bab2-d838dc0a180e"
-version = "17.0.6+0"
+version = "18.1.7+0"
 
 [[deps.LZO_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
@@ -1494,9 +1271,9 @@ version = "0.1.17"
 
 [[deps.LazyArrays]]
 deps = ["ArrayLayouts", "FillArrays", "LinearAlgebra", "MacroTools", "SparseArrays"]
-git-tree-sha1 = "507b423197fdd9e77b74aa2532c0a05eb7eb4004"
+git-tree-sha1 = "360f6039babd6e4d6364eff0d4fc9120834a2d9a"
 uuid = "5078a376-72f3-5289-bfd5-ec5146d43c02"
-version = "2.2.0"
+version = "2.2.1"
 
     [deps.LazyArrays.extensions]
     LazyArraysBandedMatricesExt = "BandedMatrices"
@@ -1884,9 +1661,9 @@ version = "0.8.1+2"
 
 [[deps.OpenSSL_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
-git-tree-sha1 = "a028ee3cb5641cccc4c24e90c36b0a4f7707bdf5"
+git-tree-sha1 = "7493f61f55a6cce7325f197443aa80d32554ba10"
 uuid = "458c3c95-2e84-50aa-8efc-19380b2a3a95"
-version = "3.0.14+0"
+version = "3.0.15+1"
 
 [[deps.OpenSpecFun_jll]]
 deps = ["Artifacts", "CompilerSupportLibraries_jll", "JLLWrappers", "Libdl", "Pkg"]
@@ -1931,15 +1708,15 @@ version = "1.1.0"
 
 [[deps.OrdinaryDiffEqBDF]]
 deps = ["ArrayInterface", "DiffEqBase", "FastBroadcast", "LinearAlgebra", "MacroTools", "MuladdMacro", "OrdinaryDiffEqCore", "OrdinaryDiffEqDifferentiation", "OrdinaryDiffEqNonlinearSolve", "OrdinaryDiffEqSDIRK", "PrecompileTools", "Preferences", "RecursiveArrayTools", "Reexport", "StaticArrays", "TruncatedStacktraces"]
-git-tree-sha1 = "f24c26cab671309428636643f0f540fb7360bbaa"
+git-tree-sha1 = "b4498d40bf35da0b6d22652ff2e9d8820590b3c6"
 uuid = "6ad6398a-0878-4a85-9266-38940aa047c8"
-version = "1.1.1"
+version = "1.1.2"
 
 [[deps.OrdinaryDiffEqCore]]
 deps = ["ADTypes", "Adapt", "ArrayInterface", "DataStructures", "DiffEqBase", "DocStringExtensions", "EnumX", "FastBroadcast", "FastClosures", "FillArrays", "FunctionWrappersWrappers", "InteractiveUtils", "LinearAlgebra", "Logging", "MacroTools", "MuladdMacro", "Polyester", "PrecompileTools", "Preferences", "RecursiveArrayTools", "Reexport", "SciMLBase", "SciMLOperators", "SciMLStructures", "SimpleUnPack", "Static", "StaticArrayInterface", "StaticArraysCore", "TruncatedStacktraces"]
-git-tree-sha1 = "bc70a38874c801549d415c16a23ec632ad91afd1"
+git-tree-sha1 = "5595eb94d0dd3cde2f5cf456394a1e0a61237e95"
 uuid = "bbf590c4-e513-4bbe-9b18-05decba2e5d8"
-version = "1.4.0"
+version = "1.6.0"
 weakdeps = ["EnzymeCore"]
 
     [deps.OrdinaryDiffEqCore.extensions]
@@ -1977,9 +1754,9 @@ version = "1.1.0"
 
 [[deps.OrdinaryDiffEqFIRK]]
 deps = ["DiffEqBase", "FastBroadcast", "LinearAlgebra", "LinearSolve", "MuladdMacro", "OrdinaryDiffEqCore", "OrdinaryDiffEqDifferentiation", "OrdinaryDiffEqNonlinearSolve", "RecursiveArrayTools", "Reexport", "SciMLOperators"]
-git-tree-sha1 = "92deb4a8e4a2bc011fd3b919e858d7a16568d3b1"
+git-tree-sha1 = "795221c662698851328cb7787965ab4a180d9468"
 uuid = "5960d6e9-dd7a-4743-88e7-cf307b64f125"
-version = "1.1.0"
+version = "1.1.1"
 
 [[deps.OrdinaryDiffEqFeagin]]
 deps = ["DiffEqBase", "FastBroadcast", "MuladdMacro", "OrdinaryDiffEqCore", "Polyester", "RecursiveArrayTools", "Reexport", "Static"]
@@ -2013,9 +1790,9 @@ version = "1.1.0"
 
 [[deps.OrdinaryDiffEqLowOrderRK]]
 deps = ["DiffEqBase", "FastBroadcast", "LinearAlgebra", "MuladdMacro", "OrdinaryDiffEqCore", "RecursiveArrayTools", "Reexport", "SciMLBase", "Static"]
-git-tree-sha1 = "1938fd639ae6688a46d606a5435e523dfdd80776"
+git-tree-sha1 = "d4bb32e09d6b68ce2eb45fb81001eab46f60717a"
 uuid = "1344f307-1e59-4825-a18e-ace9aa3fa4c6"
-version = "1.1.0"
+version = "1.2.0"
 
 [[deps.OrdinaryDiffEqLowStorageRK]]
 deps = ["Adapt", "DiffEqBase", "FastBroadcast", "MuladdMacro", "OrdinaryDiffEqCore", "Polyester", "PrecompileTools", "Preferences", "RecursiveArrayTools", "Reexport", "Static", "StaticArrays"]
@@ -2025,9 +1802,9 @@ version = "1.2.1"
 
 [[deps.OrdinaryDiffEqNonlinearSolve]]
 deps = ["ADTypes", "ArrayInterface", "DiffEqBase", "FastBroadcast", "FastClosures", "ForwardDiff", "LinearAlgebra", "LinearSolve", "MuladdMacro", "NonlinearSolve", "OrdinaryDiffEqCore", "OrdinaryDiffEqDifferentiation", "PreallocationTools", "RecursiveArrayTools", "SciMLBase", "SciMLOperators", "SciMLStructures", "SimpleNonlinearSolve", "StaticArrays"]
-git-tree-sha1 = "dab59b48708c15b0713d131759309c98ec9bac07"
+git-tree-sha1 = "a2a4119f3e35f7982f78e17beea7b12485d179e9"
 uuid = "127b3ac7-2247-4354-8eb6-78cf4e7c58e8"
-version = "1.1.0"
+version = "1.2.1"
 
 [[deps.OrdinaryDiffEqNordsieck]]
 deps = ["DiffEqBase", "FastBroadcast", "LinearAlgebra", "MuladdMacro", "OrdinaryDiffEqCore", "OrdinaryDiffEqTsit5", "Polyester", "RecursiveArrayTools", "Reexport", "Static"]
@@ -2060,10 +1837,10 @@ uuid = "af6ede74-add8-4cfd-b1df-9a4dbb109d7a"
 version = "1.1.0"
 
 [[deps.OrdinaryDiffEqRosenbrock]]
-deps = ["ADTypes", "DiffEqBase", "FastBroadcast", "FiniteDiff", "ForwardDiff", "LinearAlgebra", "LinearSolve", "MacroTools", "MuladdMacro", "OrdinaryDiffEqCore", "OrdinaryDiffEqDifferentiation", "OrdinaryDiffEqNonlinearSolve", "Polyester", "PrecompileTools", "Preferences", "RecursiveArrayTools", "Reexport", "Static"]
-git-tree-sha1 = "6810d539de1deb6e74f2d4ecc7e21b199cc3fd64"
+deps = ["ADTypes", "DiffEqBase", "FastBroadcast", "FiniteDiff", "ForwardDiff", "LinearAlgebra", "LinearSolve", "MacroTools", "MuladdMacro", "OrdinaryDiffEqCore", "OrdinaryDiffEqDifferentiation", "Polyester", "PrecompileTools", "Preferences", "RecursiveArrayTools", "Reexport", "Static"]
+git-tree-sha1 = "96b47cdd12cb4ce8f70d701b49f855271a462bd4"
 uuid = "43230ef6-c299-4910-a778-202eb28ce4ce"
-version = "1.1.1"
+version = "1.2.0"
 
 [[deps.OrdinaryDiffEqSDIRK]]
 deps = ["DiffEqBase", "FastBroadcast", "LinearAlgebra", "MacroTools", "MuladdMacro", "OrdinaryDiffEqCore", "OrdinaryDiffEqDifferentiation", "OrdinaryDiffEqNonlinearSolve", "RecursiveArrayTools", "Reexport", "SciMLBase", "TruncatedStacktraces"]
@@ -2379,15 +2156,15 @@ version = "1.1.1"
 
 [[deps.Rmath]]
 deps = ["Random", "Rmath_jll"]
-git-tree-sha1 = "f65dcb5fa46aee0cf9ed6274ccbd597adc49aa7b"
+git-tree-sha1 = "852bd0f55565a9e973fcfee83a84413270224dc4"
 uuid = "79098fc4-a85e-5d69-aa6a-4863f24498fa"
-version = "0.7.1"
+version = "0.8.0"
 
 [[deps.Rmath_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
-git-tree-sha1 = "e60724fd3beea548353984dc61c943ecddb0e29a"
+git-tree-sha1 = "58cdd8fb2201a6267e1db87ff148dd6c1dbd8ad8"
 uuid = "f50d1b31-88e8-58de-be2c-1cc44531875f"
-version = "0.4.3+0"
+version = "0.5.1+0"
 
 [[deps.Roots]]
 deps = ["Accessors", "ChainRulesCore", "CommonSolve", "Printf"]
@@ -2441,9 +2218,9 @@ version = "0.6.43"
 
 [[deps.SciMLBase]]
 deps = ["ADTypes", "Accessors", "ArrayInterface", "CommonSolve", "ConstructionBase", "Distributed", "DocStringExtensions", "EnumX", "Expronicon", "FunctionWrappersWrappers", "IteratorInterfaceExtensions", "LinearAlgebra", "Logging", "Markdown", "PrecompileTools", "Preferences", "Printf", "RecipesBase", "RecursiveArrayTools", "Reexport", "RuntimeGeneratedFunctions", "SciMLOperators", "SciMLStructures", "StaticArraysCore", "Statistics", "SymbolicIndexingInterface", "Tables"]
-git-tree-sha1 = "8001043f80051c86f264fd6e936d97e6b9eff401"
+git-tree-sha1 = "c96f81c3e98d5e2f0848fb42aba4383d772c3bb7"
 uuid = "0bca4576-84f4-4d90-8ffe-ffa030f20462"
-version = "2.52.0"
+version = "2.53.1"
 
     [deps.SciMLBase.extensions]
     SciMLBaseChainRulesCoreExt = "ChainRulesCore"
@@ -2667,9 +2444,9 @@ version = "0.34.3"
 
 [[deps.StatsFuns]]
 deps = ["HypergeometricFunctions", "IrrationalConstants", "LogExpFunctions", "Reexport", "Rmath", "SpecialFunctions"]
-git-tree-sha1 = "cef0472124fab0695b58ca35a77c6fb942fdab8a"
+git-tree-sha1 = "b423576adc27097764a90e163157bcfc9acf0f46"
 uuid = "4c63d2b9-4356-54db-8cca-17b64c39e42c"
-version = "1.3.1"
+version = "1.3.2"
 weakdeps = ["ChainRulesCore", "InverseFunctions"]
 
     [deps.StatsFuns.extensions]
@@ -2730,9 +2507,9 @@ version = "5.2.2+0"
 
 [[deps.SymbolicIndexingInterface]]
 deps = ["Accessors", "ArrayInterface", "RuntimeGeneratedFunctions", "StaticArraysCore"]
-git-tree-sha1 = "161e37de84fdc2d071c50b55ed07c8bac537268c"
+git-tree-sha1 = "988e04b34a4c3b824fb656f542473df99a4f610d"
 uuid = "2efcf032-c050-4f8e-a9bb-153293bab1f5"
-version = "0.3.29"
+version = "0.3.30"
 
 [[deps.SymbolicLimits]]
 deps = ["SymbolicUtils"]
@@ -3045,40 +2822,22 @@ uuid = "3f19e933-33d8-53b3-aaab-bd5110c3b7a0"
 version = "17.4.0+2"
 
 [[deps.x264_jll]]
-deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
-git-tree-sha1 = "4fea590b89e6ec504593146bf8b988b2c00922b2"
+deps = ["Artifacts", "JLLWrappers", "Libdl"]
+git-tree-sha1 = "35976a1216d6c066ea32cba2150c4fa682b276fc"
 uuid = "1270edf5-f2f9-52d2-97e9-ab00b5d0237a"
-version = "2021.5.5+0"
+version = "10164.0.0+0"
 
 [[deps.x265_jll]]
-deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
-git-tree-sha1 = "ee567a171cce03570d77ad3a43e90218e38937a9"
+deps = ["Artifacts", "JLLWrappers", "Libdl"]
+git-tree-sha1 = "dcc541bb19ed5b0ede95581fb2e41ecf179527d2"
 uuid = "dfaa095f-4041-5dcd-9319-2fabd8486b76"
-version = "3.5.0+0"
+version = "3.6.0+0"
 """
 
 # ╔═╡ Cell order:
-# ╠═7b578bb1-ce45-417a-82b2-504c1d1a3b41
-# ╟─11fee4f8-6c55-11ef-266d-8b9f0f158ef2
-# ╟─b9932967-c1f4-4f9b-9b4f-de2100adc3dc
-# ╟─8d76f42d-7d5c-4c7c-abf5-0cc1cf66e79f
-# ╟─f590d50a-2aa8-440b-92c7-ca448e77c535
-# ╟─b725d413-b725-4e1f-8039-ff048f8c7104
-# ╠═26ebe704-c7ea-492a-8dbc-edcde1189cbf
-# ╠═92eb1f58-353a-40f3-ba15-afb48f4bbedf
-# ╟─451aba41-3ca2-4aeb-a1b7-f7df481bc383
-# ╟─41f56b48-dd48-40fd-ae7a-471fa3c7b7ce
-# ╟─d33beb81-7d9b-4bdb-9055-3194cc04597e
-# ╟─93cf4fd9-f316-431c-b3cc-c3d2aed59466
-# ╟─f2b58da7-7e0d-4a28-8c97-c21bccd15219
-# ╟─1f5e28e7-08f0-4715-9003-fa5d2c6cf738
-# ╟─083f8145-95ae-48eb-a3d5-4ab2a19d8c7b
-# ╟─f37619f4-c1a0-4cc7-930d-71359e614eee
-# ╟─1f6451e6-0f98-416e-aa1b-acee38c4f764
-# ╟─4f29b65f-1e7c-455e-b0b6-4cb87696592a
-# ╟─5c0e5f5a-a12b-46af-834b-c491f3ceb3dd
-# ╟─ffacdb91-e5ca-4758-9706-e7d960c2c7fe
-# ╟─ad7af9c2-f96d-40de-8508-e2ca4949361a
-# ╠═bab280fb-033f-49db-b205-325677314a1e
+# ╠═5e559b18-b17e-431d-946f-950113d847d3
+# ╠═0f043b80-7656-439f-ad22-3606e9bfebf5
+# ╠═8fb68ee0-8a1f-11ef-0a19-8750b48b1d7a
+# ╠═9396430c-4ff6-4020-9b3a-f8caed9390fa
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
